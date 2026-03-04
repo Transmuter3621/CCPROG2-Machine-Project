@@ -74,7 +74,7 @@ void AlphabeticalSort()
 	Precondition: 
 	@param option is the user's input into the menu items
 */
-void Search()
+void Search(recipeType aRecipe)
 {
 	int low = 0, high = n - 1, mid;
 	int found = 0, index;
@@ -126,7 +126,6 @@ void AccessModifier(char option)
 	}while(option != 'X');
 }
 
-
 /*
 	Function 2: Password Checker
 	This function checks for user's password
@@ -164,7 +163,6 @@ mealType AddCalorie(string food, float quantity, string unit, float calories)
 	aMeal.calories = calories;
 	return aMeal;
 };
-
 
 /*
 	Function 4: View food-calorie chart
@@ -282,13 +280,28 @@ void ModifyRecipe(char option)
 
 /*
 	Function 11: Delete Recipe
-	This function checks for user's password
+	This function deletes a recipe from the repository
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void DeleteRecipe(string dish)
+void DeleteRecipe(recipeType aRecipe)
 {
-	
+	int a = 0, i;
+	int delete = A[Search(key, A, *pElem)];
+	while(a < *pElem)
+	{
+		if(A[a] == delete)
+		{
+			if(a < *pElem - 1)
+			{
+				for(i = a; i < *pElem - 1; i++)
+					A[i] = A[i + 1];
+			}
+			(*pElem)--;
+		}
+		else
+			a++;
+	}
 }
 
 /*
