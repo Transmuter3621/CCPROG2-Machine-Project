@@ -61,9 +61,9 @@ void AlphabeticalSort()
 		}
 		if(i != min)
 		{
-			temp = *aCandidate;
-			*aCandidate = *bCandidate;
-			*bCandidate = temp;
+			temp = ;
+			 = ;
+			 = temp;
 		}
 	}
 }
@@ -147,17 +147,24 @@ int PassCheck(string username, string sUsername, string password, string sPasswo
 
 /*
 	Function 3: Add food-calorie info
-	This function 
+	This function adds the info of a food item to struct meal
 	Precondition: 
-	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
+	@param food - food item input
+	@param quantity - quantity input
+	@param unit - unit input
+	@param calories - calorie input
+	@returns contents of temporary struct
 */
-void AddCalorie(mealType aMeal)
+mealType AddCalorie(string food, float quantity, string unit, float calories)
 {
-	scanf("%s", aMeal[a]->food);
-	scanf("%f", &aMeal[a]->quantity);
-	scanf("%s", aMeal[a]->unit);
-	scanf("%f", &aMeal[a]->calories);
-}
+	mealType aMeal;
+	strcpy(aMeal.food, food);
+	aMeal.quantity = quantity;
+	strcpy(aMeal.unit, unit);
+	aMeal.calories = calories;
+	return aMeal;
+};
+
 
 /*
 	Function 4: View food-calorie chart
@@ -224,6 +231,7 @@ void LoadCalorie(mealType aMeal)
 	fprintf(fp, "%s ", aMeal.unit);
 	fprintf(fp, "%f\n\n", aMeal->calories);
 	fclose(fp);
+}
 
 /*
 	Function 7: Add Recipe
@@ -231,7 +239,7 @@ void LoadCalorie(mealType aMeal)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void AddRecipe(string dish, string class, int servings, )
+void AddRecipe(string dish, string class, int servings, string steps[])
 {
 	
 }
@@ -280,7 +288,7 @@ void ModifyRecipe(char option)
 */
 void DeleteRecipe(string dish)
 {
-	if(
+	
 }
 
 /*
@@ -423,7 +431,17 @@ int main()
 				printf("[0] Return to main menu\n");
 				
 				if(box_option == 1)
-					
+				{
+					printf("Food item: ");
+					scanf("%s", aMeal[a]->food);
+					printf("Quantity: ");
+					scanf("%f", &aMeal[a]->quantity);
+					printf("Unit: ");
+					scanf("%s", aMeal[a]->unit);
+					printf("Calorie amount: ");
+					scanf("%f", &aMeal[a]->calories);
+
+				}
 				else if(box_option == 2)
 					
 				else if(box_option == 3)
