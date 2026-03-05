@@ -23,21 +23,22 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 
 typedef char string[100];
 
-struct meal
+struct ingredient
 {
 	string food;
 	float quantity;
 	string unit;
 	float calories;
 };
-typedef struct meal mealType;
+typedef struct ingredient ingredientType;
 
 struct recipe
 {
 	string name;
 	string class;
-	int servings
-	float calories;
+	int servings;
+	ingredientType items[MAX];
+	string steps[];
 };
 typedef struct recipe recipeType;
 
@@ -145,7 +146,7 @@ int PassCheck(string username, string sUsername, string password, string sPasswo
 }
 
 /*
-	Function 3: Add food-calorie info
+	Function 3: Add food-calorie info / ingredient
 	This function adds the info of a food item to struct meal
 	Precondition: 
 	@param food - food item input
@@ -154,9 +155,9 @@ int PassCheck(string username, string sUsername, string password, string sPasswo
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-mealType AddCalorie(string food, float quantity, string unit, float calories)
+ingredientType AddIngredient(string food, float quantity, string unit, float calories)
 {
-	mealType aMeal;
+	ingredientType aMeal;
 	strcpy(aMeal.food, food);
 	aMeal.quantity = quantity;
 	strcpy(aMeal.unit, unit);
@@ -171,7 +172,7 @@ mealType AddCalorie(string food, float quantity, string unit, float calories)
 	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
 	@param option is either N for next display or X for exit
 */
-void ViewCalorie(mealType aMeal)
+void ViewCalorie(ingredientType aMeal)
 {
 	int a = 0;
 	printf("		Food			Quantity	Unit	Calories");
@@ -201,12 +202,14 @@ void ViewCalorie(mealType aMeal)
 	@param quantity
 	@param unit
 	@param calories
-	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
+	@param aMeal - struct that holds a food item's name, quantity in certain units, and calorie count
 */
-void SaveCalorie(mealType aMeal)
+void SaveCalorie(ingredientType aMeal)
 {
 	FILE *fp;
-	fp = fopen("Food-calorie information.txt", "a");
+	printf("Save data to what file? ");
+	scanf("%s", );
+	fp = fopen(" ", "a");
 	fprintf(fp, "%s\n", aMeal.food);
 	fprintf(fp, "%f ", aMeal->quantity);
 	fprintf(fp, "%s ", aMeal.unit);
@@ -220,10 +223,12 @@ void SaveCalorie(mealType aMeal)
 	Precondition: option must be a single character
 	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
 */
-void LoadCalorie(mealType aMeal)
+void LoadCalorie(ingredientType aMeal)
 {
 	FILE *fp;
-	fp = fopen("Food-calorie information.txt", "r");
+	printf("Load data from what file? ");
+	scanf("%s", );
+	fp = fopen(" ", "r");
 	fprintf(fp, "%s\n", aMeal.food);
 	fprintf(fp, "%f ", aMeal->quantity);
 	fprintf(fp, "%s ", aMeal.unit);
@@ -237,18 +242,28 @@ void LoadCalorie(mealType aMeal)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void AddRecipe(string dish, string class, int servings, string steps[])
+recipeType AddRecipe(string dish, string class, int servings, ingredientType aIngredient, string step)
 {
-	
+	recipeType aRecipe;
+	strcpy(aRecipe.dish, dish);
+	strcpy(aRecipe.class, class);
+	aRecipe.servings = servings;
+	strcpy(aRecipe.ingredient, ingredient);
+	strcpy(aRecipe.step, step);
+	return aRecipe;
 }
 
 /*
-	Function 8: Add Ingredient
+	Function 8: Delete Ingredient
 	This function checks for user's menu input
 	Precondition: option must be a single character
-	@param option is the user's input into the menu items
+	@param food - food item input
+	@param quantity - quantity input
+	@param unit - unit input
+	@param calories - calorie input
+	@returns contents of temporary struct
 */
-void ModifyIngredient(string ingredientList[])
+ingredientType DeleteIngredient(ingredientType aIngredient)
 {
 	
 }
@@ -259,23 +274,20 @@ void ModifyIngredient(string ingredientList[])
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void ModifyStep(string instructions[])
+void AddStep(string instruction)
 {
 	
 }
 
 /*
-	Function 10: Modify Recipe
+	Function 10: Delete Step
 	This function checks for user's password
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void ModifyRecipe(char option)
+void DeleteStep(string instruction)
 {
-	while(option != 'X')
-	{
-		
-	}
+	
 }
 
 /*
@@ -310,7 +322,7 @@ void DeleteRecipe(recipeType aRecipe)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void DisplayRecipeTitles(string )
+void DisplayRecipeTitles(recipeType recipeList)
 {
 	
 }
@@ -321,7 +333,7 @@ void DisplayRecipeTitles(string )
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void DisplayRecipes(string )
+void DisplayRecipes(recipeType recipeList)
 {
 	
 }
@@ -376,7 +388,7 @@ void ScanRecipe(string )
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void ShoppingList(string )
+void SearchByIngredient(string )
 {
 	
 }
@@ -387,7 +399,7 @@ void ShoppingList(string )
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void RecommendMenu(string )
+void ShoppingList(string )
 {
 	
 }
@@ -398,21 +410,32 @@ void RecommendMenu(string )
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void SearchByIngredient(string )
+void RecommendMenu(string )
 {
-	
+	if()
+	{
+		
+	}
 }
 
 int main()
 {
 	char main_option;
-	int box_option;
+	int box_option, recipe_option;
+	int a = 0;	// calorie_info
 	int i, n = 0;
 	string username, password;
 	string sUsername, sPassword;
 	strcpy(sUsername, "admin");
 	strcpy(sPassword, "ad1234");
-	printf("******************Main Menu******************\n");
+	string food, unit;
+	float quantity, calories;
+	mealType calorie_info;
+	string dish, class, ingredients[MAX], procedure[];
+	int servings;
+	srand(time(NULL));
+	
+	printf("******************** Main Menu ********************\n");
 	printf("[U] Update recipe box\n");
 	printf("[A] Access recipe box\n");
 	printf("[E] Exit\n");
@@ -428,6 +451,8 @@ int main()
 			scanf("%s", password);
 			while(box_option != 0)
 			{
+				printf("************** Update Recipe Box **************\n");
+				printf("[0] Return to main menu\n");
 				printf("[1] Add food-calorie info\n");
 				printf("[2] View food-calorie chart\n");
 				printf("[3] Save calorie info\n");
@@ -441,22 +466,29 @@ int main()
 				printf("[11] Export recipes\n");
 				printf("[12] Import recipes\n");
 				printf("[13] Change username and/or password\n");
-				printf("[0] Return to main menu\n");
+				printf("Choose an update option from 0-13: ");
+				scanf("%d", box_option);
 				
 				if(box_option == 1)
 				{
 					printf("Food item: ");
-					scanf("%s", aMeal[a]->food);
+					scanf("%s", food);
 					printf("Quantity: ");
-					scanf("%f", &aMeal[a]->quantity);
+					scanf("%f", &quantity);
 					printf("Unit: ");
-					scanf("%s", aMeal[a]->unit);
+					scanf("%s", unit);
 					printf("Calorie amount: ");
-					scanf("%f", &aMeal[a]->calories);
-
+					scanf("%f", &calories);
+					calorie_info[a] = AddCalorie(food, quantity, unit, calories);
+					a++;
 				}
 				else if(box_option == 2)
-					
+				{
+					if(a == 0)
+						printf("No data to view.\n");
+					else
+						ViewCalorie(calorie_info[a]);
+				}
 				else if(box_option == 3)
 					
 				else if(box_option == 4)
@@ -464,7 +496,15 @@ int main()
 				else if(box_option == 5)
 					
 				else if(box_option == 6)
-					
+				{
+					printf("[0] Return to update menu\n");
+					printf("[1] Add food-calorie info\n");
+					printf("[2] View food-calorie chart\n");
+					printf("[3] Save calorie info\n");
+					printf("[4] Load calorie info\n");
+					printf("Choose an update option from 0-4: ");
+					scanf("%d", recipe_option);
+				}
 				else if(box_option == 7)
 					
 				else if(box_option == 8)
@@ -485,13 +525,15 @@ int main()
 		{
 			do
 			{
+				printf("[0] Return to main menu\n");
 				printf("[1] Import recipes\n");
 				printf("[2] List recipe titles\n");
 				printf("[3] Display recipes\n");
 				printf("[4] Scan recipes by ingredient\n");
 				printf("[5] Generate shopping list\n");
 				printf("[6] Recommend menu\n");
-				printf("[0] Return to main menu\n");
+				printf("Choose an access option from 0-6: ");
+				scanf("%d", box_option);
 				
 				if(box_option == 1)
 					
