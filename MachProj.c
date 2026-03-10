@@ -40,7 +40,7 @@ struct recipe
 	float calorie_total;
 	ingredientType items[MAX];
 	int numIngredients;
-	string steps[];
+	string steps[MAX];
 	int numSteps;
 };
 typedef struct recipe recipeType;
@@ -173,7 +173,7 @@ void ViewCalorie(ingredientType aMeal)
 	printf("		Food			Quantity	Unit	Calories");
 	while(a < 10)
 	{
-		printf("%s		%f		%s		%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
+		printf("%s\t\t%f\t\t%s\t\t%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
 		a++;
 	}
 	printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
@@ -181,7 +181,7 @@ void ViewCalorie(ingredientType aMeal)
 	{
 		while(a % 10 != 0)
 		{
-			printf("%s		%f		%s		%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
+			printf("%s\t\t%f\t\t%s\t\t%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
 			a++;
 		}
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
@@ -201,19 +201,24 @@ void ViewCalorie(ingredientType aMeal)
 */
 void SaveCalorie(ingredientType aMeal[], int *numRecipes)
 {
-	FILE *fp;
+	FILE *CalText;
 	int a;
+	printf("******* Save Food-Calorie Info *******\n");
 	printf("Save data to what file? ");
-	scanf("%s", );
-	fp = fopen(" ", "w");
-	for(a = 0; a < *numRecipes; a++)
+	scanf("%[^\n]", file);
+	if(fopen(file, "w") != NULL)
 	{
-		fprintf(fp, "%s\n", aMeal[a].food);
-		fprintf(fp, "%f ", aMeal[a]->quantity);
-		fprintf(fp, "%s ", aMeal[a].unit);
-		fprintf(fp, "%f\n\n", aMeal[a]->calories);
+		for(a = 0; a < *numRecipes; a++)
+		{
+			fprintf(CalText, "%s\n", aMeal[a].food);
+			fprintf(CalText, "%f ", aMeal[a]->quantity);
+			fprintf(CalText, "%s ", aMeal[a].unit);
+			fprintf(CalText, "%f\n\n", aMeal[a]->calories);
+		}
+		fclose(CalText);
 	}
-	fclose(fp);
+	else
+		printf("Error loading file. Please try again.\n");
 }
 
 /*
@@ -224,15 +229,20 @@ void SaveCalorie(ingredientType aMeal[], int *numRecipes)
 */
 void LoadCalorie(ingredientType aMeal)
 {
-	FILE *fp;
+	FILE *CalText;
+	printf("******* Load Food-Calorie Info *******\n");
 	printf("Load data from what file? ");
-	scanf("%[^\n]", );
-	fp = fopen(" ", "r");
-	fprintf(fp, "%s\n", aMeal.food);
-	fprintf(fp, "%f ", aMeal->quantity);
-	fprintf(fp, "%s ", aMeal.unit);
-	fprintf(fp, "%f\n\n", aMeal->calories);
-	fclose(fp);
+	scanf("%[^\n]", file);
+	if(fopen(file, "r") != NULL)
+	{
+		fprintf(fp, "%s\n", aMeal.food);
+		fprintf(fp, "%f ", aMeal->quantity);
+		fprintf(fp, "%s ", aMeal.unit);
+		fprintf(fp, "%f\n\n", aMeal->calories);
+		fclose(fp);
+	}
+	else
+		printf("Error loading file. Please try again.\n");
 }
 
 /*
@@ -510,7 +520,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void RecommendMenu(string , float calorie_goal)
+void RecommendMenu(recipeType aRecipes[], float calorie_goal)
 {
 	int index = Search()
 	if(calorie_goal)
@@ -572,6 +582,7 @@ int main()
 				
 				if(box_option == 1)
 				{
+					printf("******* Add Food-Calorie Info *******\n");
 					printf("Food item: ");
 					scanf("%[^\n]", food);
 					printf("Quantity: ");
@@ -585,6 +596,7 @@ int main()
 				}
 				else if(box_option == 2)
 				{
+					printf("******** Food-Calorie Chart ********\n");
 					if(a == 0)
 						printf("No data to view.\n");
 					else
@@ -678,3 +690,4 @@ int main()
 	}
 	return 0;
 }
+
