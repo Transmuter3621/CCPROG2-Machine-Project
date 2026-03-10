@@ -205,8 +205,8 @@ void SaveCalorie(ingredientType aMeal[], int *numRecipes)
 	int a;
 	printf("******* Save Food-Calorie Info *******\n");
 	printf("Save data to what file? ");
-	scanf("%[^\n]", file);
-	if(fopen(file, "w") != NULL)
+	scanf("%[^\n]", CalText);
+	if(fopen(CalText, "w") != NULL)
 	{
 		for(a = 0; a < *numRecipes; a++)
 		{
@@ -232,8 +232,8 @@ void LoadCalorie(ingredientType aMeal)
 	FILE *CalText;
 	printf("******* Load Food-Calorie Info *******\n");
 	printf("Load data from what file? ");
-	scanf("%[^\n]", file);
-	if(fopen(file, "r") != NULL)
+	scanf("%[^\n]", CalText);
+	if(fopen(CalText, "r") != NULL)
 	{
 		fprintf(fp, "%s\n", aMeal.food);
 		fprintf(fp, "%f ", aMeal->quantity);
@@ -294,7 +294,7 @@ ingredientType DeleteIngredient(recipeType aRecipes[], ingredientType aIngredien
 
 /*
 	Function 9: Add Step
-	This function checks for user's menu input
+	This function adds a step to a recipe
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
@@ -305,7 +305,7 @@ void AddStep(string instruction)
 
 /*
 	Function 10: Delete Step
-	This function checks for user's password
+	This function deletes a step to a recipe
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
