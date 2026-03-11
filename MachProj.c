@@ -23,16 +23,16 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 
 typedef char string[100];
 
-struct ingredient
+struct ingredientTag
 {
 	string food;
 	float quantity;
 	string unit;
 	float calories;
 };
-typedef struct ingredient ingredientType;
+typedef struct ingredientTag ingredientType;
 
-struct recipe
+struct recipeTag
 {
 	string name;
 	string class;
@@ -43,7 +43,7 @@ struct recipe
 	string steps[MAX];
 	int numSteps;
 };
-typedef struct recipe recipeType;
+typedef struct recipeTag recipeType;
 
 /*
 	Helper Function 1: Alphabetical Organizer
@@ -152,40 +152,41 @@ int PassCheck(string username, string sUsername, string password, string sPasswo
 */
 ingredientType AddIngredient(string food, float quantity, string unit, float calories)
 {
-	ingredientType aMeal;
-	strcpy(aMeal.food, food);
-	aMeal.quantity = quantity;
-	strcpy(aMeal.unit, unit);
-	aMeal.calories = calories;
-	return aMeal;
+	ingredientType ingredient;
+	strcpy(ingredient.food, food);
+	ingredient.quantity = quantity;
+	strcpy(ingredient.unit, unit);
+	ingredient.calories = calories;
+	return ingredient;
 };
 
 /*
 	Function 4: View food-calorie chart
 	This function displays the food, its quantity, unit, and calorie count
 	Precondition: option must be a single character
-	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
-	@param option is either N for next display or X for exit
+	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
 */
-void ViewCalorie(ingredientType aMeal)
+void ViewCalorie(ingredientType ingredient[])
 {
 	int a = 0;
+	char option;
 	printf("		Food			Quantity	Unit	Calories");
 	while(a < 10)
 	{
-		printf("%s\t\t%f\t\t%s\t\t%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
+		printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[a].food, ingredient[a].quantity, ingredient[a].unit, ingredient[a].calories);
 		a++;
 	}
 	printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
+	scanf(" %c", &option);
 	while(option != 'X')
 	{
 		while(a % 10 != 0)
 		{
-			printf("%s\t\t%f\t\t%s\t\t%f\n", aMeal[a].food, aMeal[a].quantity, aMeal[a].unit, aMeal[a].calories);
+			printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[a].food, ingredient[a].quantity, ingredient[a].unit, ingredient[a].calories);
 			a++;
 		}
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
-		scanf(" %c", option);
+		scanf(" %c", &option);
 	}
 }
 
@@ -197,9 +198,9 @@ void ViewCalorie(ingredientType aMeal)
 	@param quantity
 	@param unit
 	@param calories
-	@param aMeal - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
 */
-void SaveCalorie(ingredientType aMeal[], int *numRecipes)
+void SaveCalorie(ingredientType ingredient[], int *numRecipes)
 {
 	FILE *CalText;
 	int a;
@@ -210,10 +211,10 @@ void SaveCalorie(ingredientType aMeal[], int *numRecipes)
 	{
 		for(a = 0; a < *numRecipes; a++)
 		{
-			fprintf(CalText, "%s\n", aMeal[a].food);
-			fprintf(CalText, "%f ", aMeal[a]->quantity);
-			fprintf(CalText, "%s ", aMeal[a].unit);
-			fprintf(CalText, "%f\n\n", aMeal[a]->calories);
+			fprintf(CalText, "%s\n", ingredient[a].food);
+			fprintf(CalText, "%f ", ingredient[a]->quantity);
+			fprintf(CalText, "%s ", ingredient[a].unit);
+			fprintf(CalText, "%f\n\n", ingredient[a]->calories);
 		}
 		fclose(CalText);
 	}
@@ -223,11 +224,11 @@ void SaveCalorie(ingredientType aMeal[], int *numRecipes)
 
 /*
 	Function 6: Load Calorie Info
-	This function checks for user's password
-	Precondition: option must be a single character
-	@param aMeal - struct that holds a meal's name, quantity in certain units, and calorie count
+	This function loads a food item's calorie info
+	Precondition: 
+	@param ingredient - struct that holds a meal's name, quantity in certain units, and calorie count
 */
-void LoadCalorie(ingredientType aMeal)
+void LoadCalorie(ingredientType ingredient)
 {
 	FILE *CalText;
 	printf("******* Load Food-Calorie Info *******\n");
@@ -235,11 +236,11 @@ void LoadCalorie(ingredientType aMeal)
 	scanf("%[^\n]", CalText);
 	if(fopen(CalText, "r") != NULL)
 	{
-		fprintf(fp, "%s\n", aMeal.food);
-		fprintf(fp, "%f ", aMeal->quantity);
-		fprintf(fp, "%s ", aMeal.unit);
-		fprintf(fp, "%f\n\n", aMeal->calories);
-		fclose(fp);
+		fprintf(CalText, "%s\n", ingredient.food);
+		fprintf(CalText, "%f ", ingredient.quantity);
+		fprintf(CalText, "%s ", ingredient.unit);
+		fprintf(CalText, "%f\n\n", ingredient.calories);
+		fclose(CalText);
 	}
 	else
 		printf("Error loading file. Please try again.\n");
@@ -272,15 +273,15 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType aIn
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-ingredientType DeleteIngredient(recipeType aRecipes[], ingredientType aIngredient, int *numItems)
+ingredientType DeleteIngredient(recipeType aRecipe, ingredientType ingredient, int *numItems)
 {
 	int a = 0, i;
-	int delete = A[Search(key, A, *pElem)];
-	while(a < *pElem)
+	string delete = items[Search(aRecipe.items.food, ingredient.food, *numItems)];
+	while(a < *numItems)
 	{
-		if(A[a] == delete)
+		if(strcmp(delete, ) == 0)
 		{
-			if(a < *pElem - 1)
+			if(a < *numItems - 1)
 			{
 				for(i = a; i < *pElem - 1; i++)
 					A[i] = A[i + 1];
@@ -414,25 +415,25 @@ void SearchByTitle(recipeType aRecipes[], string recipeTitle, int *numRecipes)
 */
 void ExportRecipes(recipeType aRecipes[], int *numRecipes)
 {
-	FILE *fp;
+	FILE *RecipeList;
 	int a, i, j;
 	printf("Save data to what file? ");
-	scanf("%[^\n]", );
+	scanf("%[^\n]", RecipeList);
 	for(a = 0; a < *numRecipes; a++)
 	{
-		fp = fopen(" ", "w");
-		fprintf(fp, "%s\n", aRecipes[a].name);
-		fprintf(fp, "%f ", aRecipes[a]->quantity);
-		fprintf(fp, "%s ", aRecipes[a].unit);
-		fprintf(fp, "%f\n\n", aRecipes[a]->calories);
+		RecipeList = fopen(" ", "w");
+		fprintf(RecipeList, "%s\n", aRecipes[a].name);
+		fprintf(RecipeList, "%f ", aRecipes[a]->quantity);
+		fprintf(RecipeList, "%s ", aRecipes[a].unit);
+		fprintf(RecipeList, "%f\n\n", aRecipes[a]->calories);
 		fprintf("Ingredients:\n");
-		for(i = 0; i < numIngredients; i++)
-			fprintf("%f %s %s\t\t%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calorie);
+		for(i = 0; i < aRecipes[a].numIngredients; i++)
+			fprintf("%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calorie);
 		fprintf("Steps:\n");
-		for(j = 0; j < numSteps; j++)
-			fprintf("%d. %s\n", j + 1, steps[j]);
+		for(j = 0; j < aRecipes[a].numSteps; j++)
+			fprintf("%d. %s\n", j + 1, aRecipes[a].steps[j]);
 	}
-	fclose(fp);
+	fclose(RecipeList);
 }
 
 /*
@@ -443,25 +444,25 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes)
 */
 void ImportRecipes(recipeType aRecipes[], int *numRecipes)
 {
-	FILE *fp;
+	FILE *RecipeList;
 	int a;
 	printf("Load data from what file? ");
-	scanf("%[^\n]", );
+	scanf("%[^\n]", RecipeList);
 	for(a = 0; a < *numRecipes; a++)
 	{
-		fp = fopen(" ", "r");
-		fprintf(fp, "%s\n", aRecipes[a].name);
-		fprintf(fp, "%f ", aRecipes[a]->quantity);
-		fprintf(fp, "%s ", aRecipes[a].unit);
-		fprintf(fp, "%f\n\n", aRecipes[a]->calories);
+		RecipeList = fopen(" ", "r");
+		fprintf(RecipeList, "%s\n", aRecipes[a].name);
+		fprintf(RecipeList, "%f ", aRecipes[a].quantity);
+		fprintf(RecipeList, "%s ", aRecipes[a].unit);
+		fprintf(RecipeList, "%f\n\n", aRecipes[a]->calories);
 		fprintf("Ingredients:\n");
-		for(i = 0; i < numIngredients; i++)
-			fprintf("%f %s %s\t\t%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calorie);
+		for(i = 0; i < aRecipes[a].numIngredients; i++)
+			fprintf("%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calorie);
 		fprintf("Steps:\n");
-		for(j = 0; j < numSteps; j++)
-			fprintf("%d. %s\n", j + 1, steps[j]);
+		for(j = 0; j < aRecipes[a].numSteps; j++)
+			fprintf("%d. %s\n", j + 1, aRecipes[a].steps[j]);
 	}
-	fclose(fp);
+	fclose(RecipeList);
 }
 
 /*
