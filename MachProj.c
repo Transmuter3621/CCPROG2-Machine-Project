@@ -250,15 +250,19 @@ void LoadCalorie(ingredientType ingredient)
 	Function 7: Add Recipe
 	This function checks for user's menu input
 	Precondition: option must be a single character
-	@param option is the user's input into the menu items
+	@param dish
+	@param class
+	@param servings
+	@param ingredient
+	@param step
 */
-recipeType AddRecipe(string dish, string class, int servings, ingredientType aIngredient, string step)
+recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient, string step)
 {
 	recipeType aRecipe;
 	strcpy(aRecipe.dish, dish);
 	strcpy(aRecipe.class, class);
 	aRecipe.servings = servings;
-	strcpy(aRecipe.ingredient, ingredient);
+	aRecipe.items = ingredient;
 	strcpy(aRecipe.step, step);
 	return aRecipe;
 }
@@ -299,29 +303,29 @@ ingredientType DeleteIngredient(recipeType aRecipe, ingredientType ingredient, i
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void AddStep(string instruction)
+void AddStep(recipeType aRecipe, string aStep)
 {
-	
+	strcpy(aRecipe.steps[aRecipe.numSteps], aStep);
 }
 
 /*
 	Function 10: Delete Step
 	This function deletes a step to a recipe
-	Precondition: option must be a single character
+	Precondition: 
 	@param option is the user's input into the menu items
 */
-void DeleteStep(recipeType aRecipes[], string aStep, int *numSteps)
+void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 {
 	int a = 0, i;
-	int delete = A[Search(key, A, *pElem)];
-	while(a < *pElem)
+	int delete = aRecipe.steps[Search(aRecipe.steps, aStep, *numSteps)];
+	while(a < *numSteps)
 	{
-		if(A[a] == delete)
+		if(aRecipe.steps[a] == delete)
 		{
-			if(a < *pElem - 1)
+			if(a < *numSteps - 1)
 			{
-				for(i = a; i < *pElem - 1; i++)
-					A[i] = A[i + 1];
+				for(i = a; i < *numSteps - 1; i++)
+					aRecipe.steps[i] = aRecipe.steps[i + 1];
 			}
 			(*numSteps)--;
 		}
@@ -512,7 +516,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	printf("Enter number of people: ");	
 	scanf(" %d", num);
 	printf("List of ingredients for %s:\n", aRecipes[index].name);
-	printf("
+	printf(" ");
 }
 
 /*
@@ -521,10 +525,14 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void RecommendMenu(recipeType aRecipes[], float calorie_goal)
+void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int index = Search()
-	if(calorie_goal)
+	int index = Search(aRecipes, "Lunch", *numRecipes);
+	if(calorie_goal == aRecipes[index].calorie_total)
+	{
+		
+	}
+	else
 	{
 		
 	}
