@@ -508,8 +508,8 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	int num, index;
 	string recipe;
 	printf("********* Generate Shopping List *********\n");
-	DisplayRecipeTitles(aRecipes);
-	printf("Choose recipe: ")
+	DisplayRecipeTitles(aRecipes, &numRecipes);
+	printf("Choose recipe: ");
 	scanf("%[^\n]", title);
 	index = Search(aRecipes->name, recipe, &numRecipes);
 	printf("Enter number of people: ");	
@@ -533,7 +533,12 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	}
 	else
 	{
-		
+		int index = Search(aRecipes, "Starter", *numRecipes);
+		aRecipes[index].calorie_total += aRecipes[index].calorie_total;		// update calorie total
+		if(calorie_goal == aRecipes[index].calorie_total)
+		{
+			
+		}
 	}
 }
 
@@ -564,9 +569,9 @@ int main()
 	{
 		if(main_option == 'U')
 		{
-			printf("Username: ")
+			printf("Username: ");
 			scanf("%[^\n]", username);
-			printf("Password: ")
+			printf("Password: ");
 			scanf("%[^\n]", password);
 			while(box_option != 0)
 			{
