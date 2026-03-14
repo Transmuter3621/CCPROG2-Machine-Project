@@ -278,13 +278,13 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-void DeleteIngredient(recipeType aRecipe, ingredientType ingredient, int *numItems)
+void DeleteIngredient(recipeType aRecipe, string ingredient, int *numItems)
 {
 	int a = 0, i;
-	int delete = Search(aRecipe.items, ingredient.food, *numItems);
+	int delete = Search(aRecipe.items, ingredient, *numItems);
 	while(a < *numItems)
 	{
-		if(strcmp(aRecipe.items[delete].food, ingredient.food) == 0)
+		if(strcmp(aRecipe.items[delete].food, ingredient) == 0)
 		{
 			if(a < *numItems - 1)
 			{
@@ -550,8 +550,9 @@ int main()
 	int a = 0, b = 0;
 	int i = 0, j = 0, n = 0;
 	int *numRecipes = 0;	// to be updated whenever the user adds recipes
+	int recipe_index;
 	recipeType aRecipes[MAX];
-	string food, unit, recipeTitle;
+	string food, unit, recipeTitle, step;
 	float quantity, calories;
 	ingredientType calorie_info[MAX], ingredients[MAX];
 	string dish, class, procedure[MAX], filename;
@@ -635,7 +636,7 @@ int main()
 					do
 					{
 						ingredients[i] = AddIngredient(food, quantity, unit, calories);
-					} while (strcmp(ingredients[i++].food, "888"));
+					} while(strcmp(ingredients[i++].food, "888"));
 					do
 					{
 						scanf("%[^\n]", procedure[j]);
@@ -652,11 +653,14 @@ int main()
 						printf("[2] Delete ingredient\n");
 						printf("[3] Add step\n");
 						printf("[4] Delete step\n");
+						printf("Choose recipe: ");
+						scanf("%[^\n]", recipeTitle);
+						recipe_index = Search(aRecipes, recipeTitle, &numRecipes);
 						printf("Choose what to modify from 0-4: ");
-						scanf(" %d", recipe_option);
+						scanf(" %d", &recipe_option);
 						if(recipe_option == 1)
 						{
-							printf("******* Add Ingredient *******\n");
+							printf("********** Add Ingredient **********\n");
 							printf("Food item: ");
 							scanf("%[^\n]", food);
 							printf("Quantity: ");
@@ -665,20 +669,29 @@ int main()
 							scanf("%[^\n]", unit);
 							printf("Calorie amount: ");
 							scanf(" %f", &calories);
-							aRecipes[a].items[b] = AddIngredient(food, quantity, unit, calories);
+							aRecipes[recipe_index].items[b] = AddIngredient(food, quantity, unit, calories);
 							b++;
 						}
 						else if(recipe_option == 2)
 						{
-
+							printf("********** Delete Recipe **********\n");
+							printf("Ingredient: ");
+							scanf("%[^\n]", food);
+							DeleteIngredient(aRecipes[recipe_index], food, &aRecipes[recipe_index].numIngredients);
 						}
 						else if(recipe_option == 3)
 						{
-
+							printf("************* Add Step *************\n");
+							printf("Enter step: ");
+							scanf("%[^\n]", step);
+							AddStep(aRecipes[recipe_index], step);
 						}
 						else if(recipe_option == 4)
 						{
-
+							printf("*********** Delete Step ***********\n");
+							printf("Enter step: ");
+							scanf("%[^\n]", step);
+							DeleteStep(aRecipes[recipe_index], step, &aRecipes[recipe_index].numSteps);
 						}
 					}while(recipe_option != 0);
 				}
@@ -699,7 +712,12 @@ int main()
 				}
 				else if(box_option == 10)
 				{
-
+					printf("******* Search recipe by title *******\n");
+					DisplayRecipeTitles(aRecipes, &numRecipes);
+					printf("Choose recipe: ");
+					scanf("%[^\n]", recipeTitle);
+					recipe_index = Search(aRecipes, recipeTitle, &numRecipes);
+					DisplayRecipe(aRecipes[recipe_index]);
 				}
 				else if(box_option == 11)
 				{
@@ -738,7 +756,7 @@ int main()
 				
 				if(box_option == 1)
 				{
-					
+
 				}
 				else if(box_option == 2)
 					DisplayRecipeTitles(aRecipes, &numRecipes);
@@ -755,9 +773,7 @@ int main()
 
 				}
 				else if(box_option == 5)
-				{
-
-				}
+					ShoppingList(aRecipes, &numRecipes);
 				else if(box_option == 6)
 				{
 					printf("******* Menu Recommendation *******\n");
