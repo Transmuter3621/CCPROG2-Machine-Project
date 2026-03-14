@@ -546,8 +546,10 @@ int main()
 {
 	char main_option, recipe_option, user_pass;
 	int box_option;
-	int a = 0;	// calorie_info
+	int a = 0;	// for calorie_info
 	int i, n = 0;
+	int *numRecipes = 0;	// to be updated whenever the user adds recipes
+	recipeType aRecipes[MAX];
 	string food, unit;
 	float quantity, calories;
 	ingredientType calorie_info;
@@ -646,7 +648,7 @@ int main()
 				else if(box_option == 7)
 					
 				else if(box_option == 8)
-					
+					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 9)
 				{
 					printf("*********** Scan Recipes ***********\n");
@@ -695,13 +697,19 @@ int main()
 				if(box_option == 1)
 					
 				else if(box_option == 2)
-					
+					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 3)
-					
+				{
+					printf("*********** Scan Recipes ***********\n");
+					do
+					{
+						
+					}while(recipe_option != 'X');
+				}
 				else if(box_option == 4)
 					
 				else if(box_option == 5)
-					
+				
 				else if(box_option == 6)
 				{
 					printf("******* Menu Recommendation *******\n");
