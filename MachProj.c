@@ -280,15 +280,15 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 ingredientType DeleteIngredient(recipeType aRecipe, ingredientType ingredient, int *numItems)
 {
 	int a = 0, i;
-	string delete = items[Search(aRecipe.items.food, ingredient.food, *numItems)];
+	string delete = aRecipe.items[Search(aRecipe.items.food, ingredient.food, *numItems)];
 	while(a < *numItems)
 	{
-		if(strcmp(delete, ) == 0)
+		if(strcmp(delete, ingredient.food) == 0)
 		{
 			if(a < *numItems - 1)
 			{
-				for(i = a; i < *pElem - 1; i++)
-					A[i] = A[i + 1];
+				for(i = a; i < *numItems - 1; i++)
+					aRecipe.items[i] = aRecipe.items[i + 1];
 			}
 			(*numItems)--;
 		}
@@ -340,13 +340,13 @@ void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void DeleteRecipe(recipeType aRecipes[], string recipeTitle, int *numRecipes)
+void DeleteRecipe(recipeType aRecipe[], string recipeTitle, int *numRecipes)
 {
 	int a = 0, i;
-	int delete = A[Search(key, A, *pElem)];
+	int delete = aRecipe[Search(recipeTitle, aRecipe, *numRecipes)];
 	while(a < *pElem)
 	{
-		if(strcmp(aRecipes[a], recipeTitle) == 0)
+		if(strcmp(aRecipe[a], recipeTitle) == 0)
 		{
 			if(a < *pElem - 1)
 			{
@@ -389,7 +389,7 @@ void DisplayRecipe(recipeType aRecipe)
 		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calorie);
 	printf("Procedure:\n");
 	for(j = 0; j < aRecipe.numSteps; j++)
-		printf("%d. %s\n", j + 1, steps[j]);
+		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
 }
 
 /*
@@ -550,7 +550,7 @@ int main()
 	int i, n = 0;
 	int *numRecipes = 0;	// to be updated whenever the user adds recipes
 	recipeType aRecipes[MAX];
-	string food, unit;
+	string food, unit, recipeTitle;
 	float quantity, calories;
 	ingredientType calorie_info;
 	string dish, class, ingredients[MAX], procedure[MAX], filename;
@@ -566,7 +566,7 @@ int main()
 	printf("[A] Access recipe box\n");
 	printf("[E] Exit\n");
 	printf("\nChoose a menu option from A-E: ");
-	scanf(" %c", &option);
+	scanf(" %c", &main_option);
 	while(main_option != 'E')
 	{
 		if(main_option == 'U')
@@ -606,7 +606,7 @@ int main()
 					scanf("%[^\n]", unit);
 					printf("Calorie amount: ");
 					scanf(" %f", &calories);
-					calorie_info[a] = AddCalorie(food, quantity, unit, calories);
+					calorie_info[a] = AddIngredient(food, quantity, unit, calories);
 					a++;
 				}
 				else if(box_option == 2)
@@ -646,7 +646,10 @@ int main()
 					}while(recipe_option != 0);
 				}
 				else if(box_option == 7)
-					
+				{
+					printf("*********** Delete Recipe ***********\n");
+					DeleteRecipe(aRecipes, recipeTitle, &numRecipes)
+				}
 				else if(box_option == 8)
 					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 9)
