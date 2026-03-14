@@ -417,7 +417,7 @@ void SearchByTitle(recipeType aRecipes[], string recipeTitle, int *numRecipes)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void ExportRecipes(recipeType aRecipes[], int *numRecipes)
+void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 {
 	FILE *RecipeList;
 	int a, i, j;
@@ -427,10 +427,9 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes)
 	{
 		RecipeList = fopen(" ", "w");
 		fprintf(RecipeList, "%s\n", aRecipes[a].name);
-		fprintf(RecipeList, "%f ", aRecipes[a]->quantity);
+		fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
+		fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
 		fprintf(RecipeList, "%s ", aRecipes[a].unit);
-		fprintf(RecipeList, "%f\n\n", aRecipes[a]->calories);
-		fprintf("Ingredients:\n");
 		for(i = 0; i < aRecipes[a].numIngredients; i++)
 			fprintf("%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calorie);
 		fprintf("Steps:\n");
@@ -540,19 +539,19 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 
 int main()
 {
-	char main_option;
-	int box_option, recipe_option;
+	char main_option, recipe_option, user_pass;
+	int box_option;
 	int a = 0;	// calorie_info
 	int i, n = 0;
+	string food, unit;
+	float quantity, calories;
+	ingredientType calorie_info;
+	string dish, class, ingredients[MAX], procedure[MAX], filename;
+	int servings;
 	string username, password;
 	string sUsername, sPassword;
 	strcpy(sUsername, "admin");
 	strcpy(sPassword, "ad1234");
-	string food, unit;
-	float quantity, calories;
-	mealType calorie_info;
-	string dish, class, ingredients[MAX], procedure[];
-	int servings;
 	srand(time(NULL));
 	
 	printf("******************** Main Menu ********************\n");
@@ -649,16 +648,29 @@ int main()
 					do
 					{
 						
-					}while();
+					}while(recipe_option != 'X');
 				}
 				else if(box_option == 10)
 					
 				else if(box_option == 11)
-					
+				{
+					printf("********** Export Recipes **********\n");
+					printf("Save data to what file? ");
+					scanf("%[^\n]", filename);
+				}
 				else if(box_option == 12)
-					
+				{
+					printf("********** Import Recipes **********\n");
+					printf("Load data to what file? ");
+					scanf("%[^\n]", filename);
+				}
 				else if(box_option == 13)
-					
+				{
+					printf("********** Change Username or Password **********\n");
+					printf("What will you change? Press U for username or P for password. ");
+					scanf("%c", &user_pass);
+					AccessModifier(user_pass);
+				}
 			}
 		}
 		else if(main_option == 'A')
