@@ -256,14 +256,14 @@ void LoadCalorie(ingredientType ingredient)
 	@param ingredient
 	@param step
 */
-recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient, string step)
+recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient[], string step)
 {
 	int a;
 	recipeType aRecipe;
 	strcpy(aRecipe.name, dish);
 	strcpy(aRecipe.class, class);
 	aRecipe.servings = servings;
-	aRecipe.items[a] = ingredient;
+	aRecipe.items[a] = ingredient[a];
 	strcpy(aRecipe.steps[a], step);
 	return aRecipe;
 }
@@ -546,14 +546,15 @@ int main()
 {
 	char main_option, recipe_option, user_pass;
 	int box_option;
-	int a = 0;	// for calorie_info
-	int i, n = 0;
+	int c = 0;	// for calorie_info
+	int a = 0, b = 0;
+	int i = 0, j = 0, n = 0;
 	int *numRecipes = 0;	// to be updated whenever the user adds recipes
 	recipeType aRecipes[MAX];
 	string food, unit, recipeTitle;
 	float quantity, calories;
-	ingredientType calorie_info[MAX];
-	string dish, class, ingredients[MAX], procedure[MAX], filename;
+	ingredientType calorie_info[MAX], ingredients[MAX];
+	string dish, class, procedure[MAX], filename;
 	int servings;
 	string username, password;
 	string sUsername, sPassword;
@@ -606,23 +607,41 @@ int main()
 					scanf("%[^\n]", unit);
 					printf("Calorie amount: ");
 					scanf(" %f", &calories);
-					calorie_info[a] = AddIngredient(food, quantity, unit, calories);
-					a++;
+					calorie_info[c] = AddIngredient(food, quantity, unit, calories);
+					c++;
 				}
 				else if(box_option == 2)
 				{
 					printf("******** Food-Calorie Chart ********\n");
-					if(a == 0)
+					if(c == 0)
 						printf("No data to view.\n");
 					else
-						ViewCalorie(&calorie_info[a]);
+						ViewCalorie(&calorie_info[c]);
 				}
 				else if(box_option == 3)
-					
+					SaveCalorie(calorie_info, &c);
 				else if(box_option == 4)
-					
+					LoadCalorie(calorie_info[c]);
 				else if(box_option == 5)
-					
+				{
+					printf("******* Add Recipe *******\n");
+					printf("Recipe: ");
+					scanf("%[^\n]", dish);
+					printf("Class: ");
+					scanf("%[^\n]", class);
+					printf("Servings: ");
+					scanf(" %d", &servings);
+					printf("Ingredients: ");
+					do
+					{
+						ingredients[i] = AddIngredient(food, quantity, unit, calories);
+					} while (strcmp(ingredients[i++].food, "888"));
+					do
+					{
+						scanf("%[^\n]", procedure[j]);
+					} while (strcmp(procedure[j++], "888"));
+					aRecipes[a] = AddRecipe(dish, class, servings, ingredients, procedure);
+				}
 				else if(box_option == 6)
 				{
 					do
@@ -636,13 +655,31 @@ int main()
 						printf("Choose what to modify from 0-4: ");
 						scanf(" %d", recipe_option);
 						if(recipe_option == 1)
-							
+						{
+							printf("******* Add Ingredient *******\n");
+							printf("Food item: ");
+							scanf("%[^\n]", food);
+							printf("Quantity: ");
+							scanf(" %f", &quantity);
+							printf("Unit: ");
+							scanf("%[^\n]", unit);
+							printf("Calorie amount: ");
+							scanf(" %f", &calories);
+							aRecipes[a].items[b] = AddIngredient(food, quantity, unit, calories);
+							b++;
+						}
 						else if(recipe_option == 2)
-							
+						{
+
+						}
 						else if(recipe_option == 3)
-							
+						{
+
+						}
 						else if(recipe_option == 4)
-							
+						{
+
+						}
 					}while(recipe_option != 0);
 				}
 				else if(box_option == 7)
@@ -660,7 +697,8 @@ int main()
 						
 					}while(recipe_option != 'X');
 				}
-				else if(box_option == 10) {
+				else if(box_option == 10)
+				{
 
 				}
 				else if(box_option == 11)
@@ -699,7 +737,9 @@ int main()
 				scanf(" %d", box_option);
 				
 				if(box_option == 1)
+				{
 					
+				}
 				else if(box_option == 2)
 					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 3)
@@ -711,9 +751,13 @@ int main()
 					}while(recipe_option != 'X');
 				}
 				else if(box_option == 4)
-					
+				{
+
+				}
 				else if(box_option == 5)
-				
+				{
+
+				}
 				else if(box_option == 6)
 				{
 					printf("******* Menu Recommendation *******\n");
