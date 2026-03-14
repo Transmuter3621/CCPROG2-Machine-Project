@@ -51,14 +51,14 @@ typedef struct recipeTag recipeType;
 	Precondition: 
 	@param aRecipes[] - list of recipes
 */
-void AlphabeticalSort(recipeType aRecipes[])
+void AlphabeticalSort(recipeType aRecipes[], int *numRecipes)
 {
 	int i, j, min;
 	recipeType temp;
-	for(i = 0; i < n; i++)
+	for(i = 0; i < *numRecipes; i++)
 	{
 		min = i;
-		for(j = i; j < n; j++)
+		for(j = i; j < *numRecipes; j++)
 		{
 			if(strcmp(aRecipes[min].name, aRecipes[j].name) > 0)
 				min = j;
@@ -105,20 +105,20 @@ void AccessModifier(char option)
 	{
 		if(option == 'U')
 		{
-			printf("Old username: ")
-			scanf("%[^\n]", old_password)
-			printf("New username: ")
-			scanf("%[^\n]", new_username)
+			printf("Old username: ");
+			scanf("%[^\n]", old_password);
+			printf("New username: ");
+			scanf("%[^\n]", new_username);
 		}
 		else if(option == 'P')
 		{
-			printf("Old password: ")
-			scanf("%[^\n]", old_password)
-			printf("New password: ")
-			scanf("%[^\n]", new_password)
+			printf("Old password: ");
+			scanf("%[^\n]", old_password);
+			printf("New password: ");
+			scanf("%[^\n]", new_password);
 		}
 		else
-			printf("Invalid input, please try again.\n")
+			printf("Invalid input, please try again.\n");
 	}while(option != 'X');
 }
 
@@ -176,7 +176,7 @@ void ViewCalorie(ingredientType ingredient[])
 		printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[a].food, ingredient[a].quantity, ingredient[a].unit, ingredient[a].calories);
 		a++;
 	}
-	printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
+	printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
 	scanf(" %c", &option);
 	while(option != 'X')
 	{
@@ -185,7 +185,7 @@ void ViewCalorie(ingredientType ingredient[])
 			printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[a].food, ingredient[a].quantity, ingredient[a].unit, ingredient[a].calories);
 			a++;
 		}
-		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n")
+		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
 		scanf(" %c", &option);
 	}
 }
@@ -212,9 +212,9 @@ void SaveCalorie(ingredientType ingredient[], int *numRecipes)
 		for(a = 0; a < *numRecipes; a++)
 		{
 			fprintf(CalText, "%s\n", ingredient[a].food);
-			fprintf(CalText, "%f ", ingredient[a]->quantity);
+			fprintf(CalText, "%f ", ingredient[a].quantity);
 			fprintf(CalText, "%s ", ingredient[a].unit);
-			fprintf(CalText, "%f\n\n", ingredient[a]->calories);
+			fprintf(CalText, "%f\n\n", ingredient[a].calories);
 		}
 		fclose(CalText);
 	}
@@ -258,12 +258,13 @@ void LoadCalorie(ingredientType ingredient)
 */
 recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient, string step)
 {
+	int a;
 	recipeType aRecipe;
-	strcpy(aRecipe.dish, dish);
+	strcpy(aRecipe.name, dish);
 	strcpy(aRecipe.class, class);
 	aRecipe.servings = servings;
-	aRecipe.items = ingredient;
-	strcpy(aRecipe.step, step);
+	aRecipe.items[a] = ingredient;
+	strcpy(aRecipe.steps[a], step);
 	return aRecipe;
 }
 
@@ -277,13 +278,13 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-ingredientType DeleteIngredient(recipeType aRecipe, ingredientType ingredient, int *numItems)
+void DeleteIngredient(recipeType aRecipe, ingredientType ingredient, int *numItems)
 {
 	int a = 0, i;
-	string delete = aRecipe.items[Search(aRecipe.items.food, ingredient.food, *numItems)];
+	int delete = Search(aRecipe.items, ingredient.food, *numItems);
 	while(a < *numItems)
 	{
-		if(strcmp(delete, ingredient.food) == 0)
+		if(strcmp(aRecipe.items[delete].food, ingredient.food) == 0)
 		{
 			if(a < *numItems - 1)
 			{
@@ -325,7 +326,7 @@ void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 			if(a < *numSteps - 1)
 			{
 				for(i = a; i < *numSteps - 1; i++)
-					aRecipe.steps[i] = aRecipe.steps[i + 1];
+					strcpy(aRecipe.steps[i], aRecipe.steps[i + 1]);
 			}
 			(*numSteps)--;
 		}
@@ -343,15 +344,15 @@ void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 void DeleteRecipe(recipeType aRecipe[], string recipeTitle, int *numRecipes)
 {
 	int a = 0, i;
-	int delete = aRecipe[Search(recipeTitle, aRecipe, *numRecipes)];
-	while(a < *pElem)
+	int delete = Search(recipeTitle, aRecipe, *numRecipes);
+	while(a < *numRecipes)
 	{
-		if(strcmp(aRecipe[a], recipeTitle) == 0)
+		if(strcmp(aRecipe[a].name, recipeTitle) == 0)
 		{
-			if(a < *pElem - 1)
+			if(a < *numRecipes - 1)
 			{
-				for(i = a; i < *pElem - 1; i++)
-					A[i] = A[i + 1];
+				for(i = a; i < *numRecipes - 1; i++)
+					aRecipe[i] = aRecipe[i + 1];
 			}
 			(*numRecipes)--;
 		}
@@ -386,7 +387,7 @@ void DisplayRecipe(recipeType aRecipe)
 	printf("%s		%d		%f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
 	printf("Ingredients:\n");
 	for(i = 0; i < aRecipe.numIngredients; i++)
-		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calorie);
+		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
 	printf("Procedure:\n");
 	for(j = 0; j < aRecipe.numSteps; j++)
 		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
@@ -423,20 +424,21 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 	int a, i, j;
 	printf("Save data to what file? ");
 	scanf("%[^\n]", RecipeList);
-	for(a = 0; a < *numRecipes; a++)
+	if(RecipeList = fopen(" ", "w"))
 	{
-		RecipeList = fopen(" ", "w");
-		fprintf(RecipeList, "%s\n", aRecipes[a].name);
-		fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
-		fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
-		fprintf(RecipeList, "%s ", aRecipes[a].unit);
-		for(i = 0; i < aRecipes[a].numIngredients; i++)
-			fprintf("%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calorie);
-		fprintf("Steps:\n");
-		for(j = 0; j < aRecipes[a].numSteps; j++)
-			fprintf("%d. %s\n", j + 1, aRecipes[a].steps[j]);
+		for(a = 0; a < *numRecipes; a++)
+		{
+			fprintf(RecipeList, "%s\n", aRecipes[a].name);
+			fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
+			fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
+			for(i = 0; i < aRecipes[a].numIngredients; i++)
+				fprintf(RecipeList, "%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calories);
+			fprintf(RecipeList, "Steps:\n");
+			for(j = 0; j < aRecipes[a].numSteps; j++)
+				fprintf(RecipeList, "%d. %s\n", j + 1, aRecipes[a].steps[j]);
+		}
+		fclose(filename);
 	}
-	fclose(RecipeList);
 }
 
 /*
@@ -445,27 +447,25 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 	Precondition: option must be a single character
 	@param option is the user's input into the menu items
 */
-void ImportRecipes(recipeType aRecipes[], int *numRecipes)
+void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a;
-	printf("Load data from what file? ");
-	scanf("%[^\n]", RecipeList);
-	for(a = 0; a < *numRecipes; a++)
+	int a, i, j;
+	if(RecipeList = fopen(filename, "r"))
 	{
-		RecipeList = fopen(" ", "r");
-		fprintf(RecipeList, "%s\n", aRecipes[a].name);
-		fprintf(RecipeList, "%f ", aRecipes[a].quantity);
-		fprintf(RecipeList, "%s ", aRecipes[a].unit);
-		fprintf(RecipeList, "%f\n\n", aRecipes[a]->calories);
-		fprintf("Ingredients:\n");
-		for(i = 0; i < aRecipes[a].numIngredients; i++)
-			fprintf("%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calorie);
-		fprintf("Steps:\n");
-		for(j = 0; j < aRecipes[a].numSteps; j++)
-			fprintf("%d. %s\n", j + 1, aRecipes[a].steps[j]);
+		for(a = 0; a < *numRecipes; a++)
+		{
+			fprintf(RecipeList, "%s\n", aRecipes[a].name);
+			fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
+			fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
+			for(i = 0; i < aRecipes[a].numIngredients; i++)
+				fprintf(RecipeList, "%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calories);
+			fprintf(RecipeList, "Steps:\n");
+			for(j = 0; j < aRecipes[a].numSteps; j++)
+				fprintf(RecipeList, "%d. %s\n", j + 1, aRecipes[a].steps[j]);
+		}
+		fclose(filename);
 	}
-	fclose(RecipeList);
 }
 
 /*
@@ -510,7 +510,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	printf("********* Generate Shopping List *********\n");
 	DisplayRecipeTitles(aRecipes, &numRecipes);
 	printf("Choose recipe: ");
-	scanf("%[^\n]", title);
+	scanf("%[^\n]", recipe);
 	index = Search(aRecipes->name, recipe, &numRecipes);
 	printf("Enter number of people: ");	
 	scanf(" %d", num);
@@ -552,7 +552,7 @@ int main()
 	recipeType aRecipes[MAX];
 	string food, unit, recipeTitle;
 	float quantity, calories;
-	ingredientType calorie_info;
+	ingredientType calorie_info[MAX];
 	string dish, class, ingredients[MAX], procedure[MAX], filename;
 	int servings;
 	string username, password;
@@ -615,7 +615,7 @@ int main()
 					if(a == 0)
 						printf("No data to view.\n");
 					else
-						ViewCalorie(calorie_info[a]);
+						ViewCalorie(&calorie_info[a]);
 				}
 				else if(box_option == 3)
 					
@@ -648,7 +648,7 @@ int main()
 				else if(box_option == 7)
 				{
 					printf("*********** Delete Recipe ***********\n");
-					DeleteRecipe(aRecipes, recipeTitle, &numRecipes)
+					DeleteRecipe(aRecipes, recipeTitle, &numRecipes);
 				}
 				else if(box_option == 8)
 					DisplayRecipeTitles(aRecipes, &numRecipes);
@@ -660,8 +660,9 @@ int main()
 						
 					}while(recipe_option != 'X');
 				}
-				else if(box_option == 10)
-					
+				else if(box_option == 10) {
+
+				}
 				else if(box_option == 11)
 				{
 					printf("********** Export Recipes **********\n");
