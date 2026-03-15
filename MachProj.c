@@ -7,7 +7,8 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 ***************************************************************************/
 
 /*
-	Description: This program .
+	Description: This program is a meal repository with access and modification features on the recipes,
+	as well as having a shopping list generator and a menu recommendation function.
 	Programmed by: Sy, Eryn Claire Go, S21B
 	Last modified: March 30, 2025
 	Version: 
@@ -194,13 +195,10 @@ void ViewCalorie(ingredientType ingredient[])
 	Function 5: Save Calorie Info
 	This function checks for user's password
 	Precondition: 
-	@param food
-	@param quantity
-	@param unit
-	@param calories
 	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param numItems - number of ingredients
 */
-void SaveCalorie(ingredientType ingredient[], int *numRecipes)
+void SaveCalorie(ingredientType ingredient[], int *numItems)
 {
 	FILE *CalText;
 	int a;
@@ -209,7 +207,7 @@ void SaveCalorie(ingredientType ingredient[], int *numRecipes)
 	scanf("%[^\n]", CalText);
 	if(fopen(CalText, "w") != NULL)
 	{
-		for(a = 0; a < *numRecipes; a++)
+		for(a = 0; a < *numItems; a++)
 		{
 			fprintf(CalText, "%s\n", ingredient[a].food);
 			fprintf(CalText, "%f ", ingredient[a].quantity);
@@ -278,20 +276,20 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-void DeleteIngredient(recipeType aRecipe, string ingredient, int *numItems)
+void DeleteIngredient(recipeType aRecipe, string ingredient)
 {
 	int a = 0, i;
-	int delete = Search(aRecipe.items, ingredient, *numItems);
-	while(a < *numItems)
+	int delete = Search(aRecipe.items, ingredient, aRecipe.numIngredients);
+	while(a < aRecipe.numIngredients)
 	{
 		if(strcmp(aRecipe.items[delete].food, ingredient) == 0)
 		{
-			if(a < *numItems - 1)
+			if(a < aRecipe.numIngredients - 1)
 			{
-				for(i = a; i < *numItems - 1; i++)
+				for(i = a; i < aRecipe.numIngredients - 1; i++)
 					aRecipe.items[i] = aRecipe.items[i + 1];
 			}
-			(*numItems)--;
+			(aRecipe.numIngredients)--;
 		}
 		else
 			a++;
@@ -370,6 +368,7 @@ void DeleteRecipe(recipeType aRecipe[], string recipeTitle, int *numRecipes)
 void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 {
 	int i;
+	AlphabeticalSort(aRecipes, *numRecipes);
 	printf("********* List of Recipes *********\n");
 	for(i = 0; i < *numRecipes; i++)
 		printf("%s\n", aRecipes[i].name);
@@ -477,7 +476,7 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 	@param fooditem - user-inputted ingredient
 	@param savedRecipes[] - list of recipes that have searched ingredient
 */
-void SearchByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, recipeType savedRecipes[])
+void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, recipeType savedRecipes[])
 {
 	int a, i, found, save = 0;
 	for(a = 0; a < *numRecipes; a++)
@@ -557,12 +556,15 @@ int main()
 	ingredientType calorie_info[MAX], ingredients[MAX];
 	string dish, class, procedure[MAX], filename;
 	int servings;
-	string username, password;
+	string username, password, displaynext;
 	string sUsername, sPassword;
 	strcpy(sUsername, "admin");
 	strcpy(sPassword, "ad1234");
 	srand(time(NULL));
 	
+	aRecipes[MAX].numIngredients = 0;
+	aRecipes[MAX].numSteps = 0;
+
 	printf("******************** Main Menu ********************\n");
 	printf("[U] Update recipe box\n");
 	printf("[A] Access recipe box\n");
@@ -641,7 +643,8 @@ int main()
 					{
 						scanf("%[^\n]", procedure[j]);
 					} while (strcmp(procedure[j++], "888"));
-					aRecipes[a] = AddRecipe(dish, class, servings, ingredients, procedure);
+					aRecipes[*numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
+					(*numRecipes)++;
 				}
 				else if(box_option == 6)
 				{
@@ -669,15 +672,15 @@ int main()
 							scanf("%[^\n]", unit);
 							printf("Calorie amount: ");
 							scanf(" %f", &calories);
-							aRecipes[recipe_index].items[b] = AddIngredient(food, quantity, unit, calories);
-							b++;
+							aRecipes[recipe_index].items[aRecipes[recipe_index].numIngredients] = AddIngredient(food, quantity, unit, calories);
+							aRecipes[recipe_index].numIngredients++;
 						}
 						else if(recipe_option == 2)
 						{
 							printf("********** Delete Recipe **********\n");
 							printf("Ingredient: ");
 							scanf("%[^\n]", food);
-							DeleteIngredient(aRecipes[recipe_index], food, &aRecipes[recipe_index].numIngredients);
+							DeleteIngredient(aRecipes[recipe_index], food);
 						}
 						else if(recipe_option == 3)
 						{
@@ -704,11 +707,21 @@ int main()
 					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 9)
 				{
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
 					printf("*********** Scan Recipes ***********\n");
 					do
 					{
-						
-					}while(recipe_option != 'X');
+						DisplayRecipe(aRecipes[a]);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
 				}
 				else if(box_option == 10)
 				{
@@ -724,12 +737,14 @@ int main()
 					printf("********** Export Recipes **********\n");
 					printf("Save data to what file? ");
 					scanf("%[^\n]", filename);
+					ExportRecipes(aRecipes, &numRecipes, filename);
 				}
 				else if(box_option == 12)
 				{
 					printf("********** Import Recipes **********\n");
 					printf("Load data to what file? ");
 					scanf("%[^\n]", filename);
+					ImportRecipes(aRecipes, &numRecipes, filename);
 				}
 				else if(box_option == 13)
 				{
@@ -788,4 +803,3 @@ int main()
 	}
 	return 0;
 }
-
