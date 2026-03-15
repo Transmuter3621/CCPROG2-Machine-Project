@@ -550,8 +550,8 @@ int main()
 	int i = 0, j = 0, n = 0;
 	int *numRecipes = 0;	// to be updated whenever the user adds recipes
 	int recipe_index;
-	recipeType aRecipes[MAX];
-	string food, unit, recipeTitle, step;
+	recipeType aRecipes[MAX], savedRecipes[MAX];
+	string food, unit, recipeTitle, ingredient, step;
 	float quantity, calories;
 	ingredientType calorie_info[MAX], ingredients[MAX];
 	string dish, class, procedure[MAX], filename;
@@ -771,21 +771,50 @@ int main()
 				
 				if(box_option == 1)
 				{
-
+					printf("********** Import Recipes **********\n");
+					printf("Load data to what file? ");
+					scanf("%[^\n]", filename);
+					ImportRecipes(aRecipes, &numRecipes, filename);
 				}
 				else if(box_option == 2)
 					DisplayRecipeTitles(aRecipes, &numRecipes);
 				else if(box_option == 3)
 				{
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
 					printf("*********** Scan Recipes ***********\n");
 					do
 					{
-						
-					}while(recipe_option != 'X');
+						DisplayRecipe(aRecipes[a]);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
 				}
 				else if(box_option == 4)
 				{
-
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
+					printf("Enter ingredient: ");
+					scanf("%[^\n]", ingredient);
+					printf("******** Scan Recipes By Ingredient ********\n");
+					do
+					{
+						ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
 				}
 				else if(box_option == 5)
 					ShoppingList(aRecipes, &numRecipes);
