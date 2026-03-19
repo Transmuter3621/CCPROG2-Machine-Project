@@ -2,10 +2,10 @@
 
 int main()
 {
-	char main_option, recipe_option, overwrite, user_pass;
+	char main_option, recipe_option, overwrite, displaynext, user_pass;
 	int box_option;
 	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
-	int *numRecipes = 0;	// to be updated whenever the user adds recipes
+	int numRecipes = 0;	// to be updated whenever the user adds recipes
 	int recipe_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, unit, recipeTitle, ingredient, step;
@@ -13,10 +13,9 @@ int main()
 	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX];
 	string dish, class, procedure[MAX], filename;
 	int servings;
-	string username, password, displaynext;
-	string sUsername, sPassword;
-	strcpy(sUsername, "admin");
-	strcpy(sPassword, "ad1234");
+	string username, password;
+	strcpy(username, "admin");
+	strcpy(password, "ad1234");
 	srand(time(NULL));
 	
 	aRecipes[MAX].numIngredients = 0;
@@ -126,8 +125,8 @@ int main()
 					{
 						scanf("%[^\n]", procedure[j]);
 					} while (strcmp(procedure[j++], "888"));
-					aRecipes[*numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
-					(*numRecipes)++;
+					aRecipes[numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
+					numRecipes++;
 				}
 				else if(box_option == 6)
 				{
@@ -177,20 +176,20 @@ int main()
 							printf("*********** Delete Step ***********\n");
 							printf("Enter step: ");
 							scanf("%[^\n]", step);
-							DeleteStep(aRecipes[recipe_index], step, &aRecipes[recipe_index].numSteps);
+							DeleteStep(aRecipes[recipe_index], step);
 						}
 					}while(recipe_option != 0);
 				}
 				else if(box_option == 7)
 				{
 					printf("*********** Delete Recipe ***********\n");
-					DeleteRecipe(aRecipes, recipeTitle, &numRecipes);
+					DeleteRecipe(aRecipes, recipeTitle, numRecipes);
 				}
 				else if(box_option == 8)
-					DisplayRecipeTitles(aRecipes, &numRecipes);
+					DisplayRecipeTitles(aRecipes, numRecipes);
 				else if(box_option == 9)
 				{
-					AlphabeticalSort(aRecipes, &numRecipes);
+					AlphabeticalSort(aRecipes, numRecipes);
 					a = 0;
 					printf("*********** Scan Recipes ***********\n");
 					do
@@ -209,10 +208,10 @@ int main()
 				else if(box_option == 10)
 				{
 					printf("******* Search recipe by title *******\n");
-					DisplayRecipeTitles(aRecipes, &numRecipes);
+					DisplayRecipeTitles(aRecipes, numRecipes);
 					printf("Choose recipe: ");
 					scanf("%[^\n]", recipeTitle);
-					recipe_index = Search(aRecipes, recipeTitle, &numRecipes);
+					recipe_index = Search(aRecipes, recipeTitle, numRecipes);
 					DisplayRecipe(aRecipes[recipe_index]);
 				}
 				else if(box_option == 11)
@@ -220,14 +219,14 @@ int main()
 					printf("********** Export Recipes **********\n");
 					printf("Save data to what file? ");
 					scanf("%[^\n]", filename);
-					ExportRecipes(aRecipes, &numRecipes, filename);
+					ExportRecipes(aRecipes, numRecipes, filename);
 				}
 				else if(box_option == 12)
 				{
 					printf("********** Import Recipes **********\n");
 					printf("Load data to what file? ");
 					scanf("%[^\n]", filename);
-					ImportRecipes(aRecipes, &numRecipes, filename);
+					ImportRecipes(aRecipes, numRecipes, filename);
 				}
 				else if(box_option == 13)
 				{
@@ -257,13 +256,13 @@ int main()
 					printf("********** Import Recipes **********\n");
 					printf("Load data to what file? ");
 					scanf("%[^\n]", filename);
-					ImportRecipes(aRecipes, &numRecipes, filename);
+					ImportRecipes(aRecipes, numRecipes, filename);
 				}
 				else if(box_option == 2)
-					DisplayRecipeTitles(aRecipes, &numRecipes);
+					DisplayRecipeTitles(aRecipes, numRecipes);
 				else if(box_option == 3)
 				{
-					AlphabeticalSort(aRecipes, &numRecipes);
+					AlphabeticalSort(aRecipes, numRecipes);
 					a = 0;
 					printf("*********** Scan Recipes ***********\n");
 					do
@@ -281,14 +280,14 @@ int main()
 				}
 				else if(box_option == 4)
 				{
-					AlphabeticalSort(aRecipes, &numRecipes);
+					AlphabeticalSort(aRecipes, numRecipes);
 					a = 0;
 					printf("Enter ingredient: ");
 					scanf("%[^\n]", ingredient);
 					printf("******** Scan Recipes By Ingredient ********\n");
 					do
 					{
-						ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
+						ScanByIngredient(aRecipes, numRecipes, ingredient, savedRecipes);
 						a++;
 						printf("Display next recipe? Press N for next or X for exit. ");
 						scanf("%s", displaynext);
@@ -300,13 +299,13 @@ int main()
 					}while(displaynext != 'X');
 				}
 				else if(box_option == 5)
-					ShoppingList(aRecipes, &numRecipes);
+					ShoppingList(aRecipes, numRecipes);
 				else if(box_option == 6)
 				{
 					printf("******* Menu Recommendation *******\n");
 					printf("Enter calorie goal: ");
 					scanf("%f", &calorie_goal);
-					RecommendMenu(aRecipes, &numRecipes, calorie_goal);
+					RecommendMenu(aRecipes, numRecipes, calorie_goal);
 				}
 			}while(box_option != 0);
 		}
