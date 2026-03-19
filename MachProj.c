@@ -107,7 +107,7 @@ void AccessModifier(char option)
 		if(option == 'U')
 		{
 			printf("Old username: ");
-			scanf("%[^\n]", old_password);
+			scanf("%[^\n]", old_username);
 			printf("New username: ");
 			scanf("%[^\n]", new_username);
 		}
@@ -198,14 +198,11 @@ void ViewCalorie(ingredientType ingredient[])
 	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param numItems - number of ingredients
 */
-void SaveCalorie(ingredientType ingredient[], int *numItems)
+void SaveCalorie(ingredientType ingredient[], int *numItems, string filename)
 {
 	FILE *CalText;
 	int a;
-	printf("******* Save Food-Calorie Info *******\n");
-	printf("Save data to what file? ");
-	scanf("%[^\n]", CalText);
-	if(fopen(CalText, "w") != NULL)
+	if((CalText = fopen(filename, "w")) != NULL)
 	{
 		for(a = 0; a < *numItems; a++)
 		{
@@ -226,18 +223,24 @@ void SaveCalorie(ingredientType ingredient[], int *numItems)
 	Precondition: 
 	@param ingredient - struct that holds a meal's name, quantity in certain units, and calorie count
 */
-void LoadCalorie(ingredientType ingredient)
+void LoadCalorie(ingredientType ingredient, string filename, ingredientType calorie_info[], int calorie_info_count)
 {
+	int c, f1, f2, f3, f4, scan_check;
 	FILE *CalText;
-	printf("******* Load Food-Calorie Info *******\n");
-	printf("Load data from what file? ");
-	scanf("%[^\n]", CalText);
-	if(fopen(CalText, "r") != NULL)
+	if((CalText = fopen(filename, "r")) != NULL)
 	{
-		fprintf(CalText, "%s\n", ingredient.food);
-		fprintf(CalText, "%f ", ingredient.quantity);
-		fprintf(CalText, "%s ", ingredient.unit);
-		fprintf(CalText, "%f\n\n", ingredient.calories);
+		for(c = 0; c < calorie_info_count; c++)
+		{
+			scan_check = 0;
+			f1 = fscanf(CalText, "%[^\n]", ingredient.food);
+			f2 = fscanf(CalText, " %f", ingredient.quantity);
+			f3 = fscanf(CalText, "%[^\n]", ingredient.unit);
+			f4 = fscanf(CalText, " %f", ingredient.calories);
+			if(f1 == 1 && f2 == 1 && f3 == 1 && f4 == 1)
+				scan_check++;
+			if(scan_check == 1)
+				calorie_info[c] = ingredient;
+		}
 		fclose(CalText);
 	}
 	else
@@ -279,10 +282,11 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 void DeleteIngredient(recipeType aRecipe, string ingredient)
 {
 	int a = 0, i;
-	int delete = Search(aRecipe.items, ingredient, aRecipe.numIngredients);
+	string delete;
+	strcpy(delete, aRecipe.items[Search(aRecipe.items, ingredient, aRecipe.numIngredients)].food);
 	while(a < aRecipe.numIngredients)
 	{
-		if(strcmp(aRecipe.items[delete].food, ingredient) == 0)
+		if(strcmp(aRecipe.items[a].food, delete) == 0)
 		{
 			if(a < aRecipe.numIngredients - 1)
 			{
@@ -316,10 +320,11 @@ void AddStep(recipeType aRecipe, string aStep)
 void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 {
 	int a = 0, i;
-	int delete = aRecipe.steps[Search(aRecipe.steps, aStep, *numSteps)];
+	string delete;
+	strcpy(delete, aRecipe.steps[Search(aRecipe.steps, aStep, *numSteps)]);
 	while(a < *numSteps)
 	{
-		if(aRecipe.steps[a] == delete)
+		if(strcmp(aRecipe.steps[a], delete) == 0)
 		{
 			if(a < *numSteps - 1)
 			{
@@ -342,10 +347,11 @@ void DeleteStep(recipeType aRecipe, string aStep, int *numSteps)
 void DeleteRecipe(recipeType aRecipe[], string recipeTitle, int *numRecipes)
 {
 	int a = 0, i;
-	int delete = Search(recipeTitle, aRecipe, *numRecipes);
+	string delete;
+	strcpy(delete, aRecipe[Search(aRecipe, recipeTitle, *numRecipes)].name);
 	while(a < *numRecipes)
 	{
-		if(strcmp(aRecipe[a].name, recipeTitle) == 0)
+		if(strcmp(aRecipe[a].name, delete) == 0)
 		{
 			if(a < *numRecipes - 1)
 			{

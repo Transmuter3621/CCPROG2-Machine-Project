@@ -2,17 +2,15 @@
 
 int main()
 {
-	char main_option, recipe_option, user_pass;
+	char main_option, recipe_option, overwrite, user_pass;
 	int box_option;
-	int c = 0;	// for calorie_info
-	int a = 0, b = 0;
-	int i = 0, j = 0, n = 0;
+	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
 	int *numRecipes = 0;	// to be updated whenever the user adds recipes
 	int recipe_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, unit, recipeTitle, ingredient, step;
 	float quantity, calories, calorie_goal;
-	ingredientType calorie_info[MAX], ingredients[MAX];
+	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX];
 	string dish, class, procedure[MAX], filename;
 	int servings;
 	string username, password, displaynext;
@@ -69,21 +67,47 @@ int main()
 					scanf("%[^\n]", unit);
 					printf("Calorie amount: ");
 					scanf(" %f", &calories);
-					calorie_info[c] = AddIngredient(food, quantity, unit, calories);
-					c++;
+					calorie_info[calorie_info_count] = AddIngredient(food, quantity, unit, calories);
+					calorie_info_count++;
 				}
 				else if(box_option == 2)
 				{
 					printf("******** Food-Calorie Chart ********\n");
-					if(c == 0)
+					if(calorie_info_count == 0)
 						printf("No data to view.\n");
 					else
-						ViewCalorie(&calorie_info[c]);
+						ViewCalorie(&calorie_info[calorie_info_count]);
 				}
 				else if(box_option == 3)
-					SaveCalorie(calorie_info, &c);
+				{
+					printf("******* Save Food-Calorie Info *******\n");
+					printf("Save data to what file? ");
+					scanf("%[^\n]", filename);
+					SaveCalorie(calorie_info, &calorie_info_count, filename);
+				}
 				else if(box_option == 4)
-					LoadCalorie(calorie_info[c]);
+				{
+					printf("******* Load Food-Calorie Info *******\n");
+					printf("Load data from what file? ");
+					scanf("%[^\n]", filename);
+					for(i = 0; i < MAX; i++)
+					{
+						for(j = 0; j < MAX; j++)
+						{
+							if(strcmp(calorie_add[i].food, calorie_info[j].food) == 0)
+								same_count++;
+						}
+						if(same_count == 0)
+							LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
+						else
+						{
+							printf("Overwrite data? Press Y for yes or N for no. ");
+							scanf("%c", &overwrite);
+							if(overwrite == 'Y' || overwrite == 'y')
+								LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
+						}
+					}
+				}
 				else if(box_option == 5)
 				{
 					printf("******* Add Recipe *******\n");
