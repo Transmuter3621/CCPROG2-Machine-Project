@@ -1,0 +1,295 @@
+#include "MachProj.c"
+
+int main()
+{
+	char main_option, recipe_option, user_pass;
+	int box_option;
+	int c = 0;	// for calorie_info
+	int a = 0, b = 0;
+	int i = 0, j = 0, n = 0;
+	int *numRecipes = 0;	// to be updated whenever the user adds recipes
+	int recipe_index;
+	recipeType aRecipes[MAX], savedRecipes[MAX];
+	string food, unit, recipeTitle, ingredient, step;
+	float quantity, calories, calorie_goal;
+	ingredientType calorie_info[MAX], ingredients[MAX];
+	string dish, class, procedure[MAX], filename;
+	int servings;
+	string username, password, displaynext;
+	string sUsername, sPassword;
+	strcpy(sUsername, "admin");
+	strcpy(sPassword, "ad1234");
+	srand(time(NULL));
+	
+	aRecipes[MAX].numIngredients = 0;
+	aRecipes[MAX].numSteps = 0;
+
+	printf("******************** Main Menu ********************\n");
+	printf("[U] Update recipe box\n");
+	printf("[A] Access recipe box\n");
+	printf("[E] Exit\n");
+	printf("\nChoose a menu option from A-E: ");
+	scanf(" %c", &main_option);
+	while(main_option != 'E')
+	{
+		if(main_option == 'U')
+		{
+			printf("Username: ");
+			scanf("%[^\n]", username);
+			printf("Password: ");
+			scanf("%[^\n]", password);
+			while(box_option != 0)
+			{
+				printf("************** Update Recipe Box **************\n");
+				printf("[0] Return to main menu\n");
+				printf("[1] Add food-calorie info\n");
+				printf("[2] View food-calorie chart\n");
+				printf("[3] Save calorie info\n");
+				printf("[4] Load calorie info\n");
+				printf("[5] Add recipe\n");
+				printf("[6] Modify recipe\n");
+				printf("[7] Delete recipe\n");
+				printf("[8] List recipe titles\n");
+				printf("[9] Scan recipes\n");
+				printf("[10] Search recipe by title\n");
+				printf("[11] Export recipes\n");
+				printf("[12] Import recipes\n");
+				printf("[13] Change username and/or password\n");
+				printf("Choose an update option from 0-13: ");
+				scanf(" %d", box_option);
+				
+				if(box_option == 1)
+				{
+					printf("******* Add Food-Calorie Info *******\n");
+					printf("Food item: ");
+					scanf("%[^\n]", food);
+					printf("Quantity: ");
+					scanf(" %f", &quantity);
+					printf("Unit: ");
+					scanf("%[^\n]", unit);
+					printf("Calorie amount: ");
+					scanf(" %f", &calories);
+					calorie_info[c] = AddIngredient(food, quantity, unit, calories);
+					c++;
+				}
+				else if(box_option == 2)
+				{
+					printf("******** Food-Calorie Chart ********\n");
+					if(c == 0)
+						printf("No data to view.\n");
+					else
+						ViewCalorie(&calorie_info[c]);
+				}
+				else if(box_option == 3)
+					SaveCalorie(calorie_info, &c);
+				else if(box_option == 4)
+					LoadCalorie(calorie_info[c]);
+				else if(box_option == 5)
+				{
+					printf("******* Add Recipe *******\n");
+					printf("Recipe: ");
+					scanf("%[^\n]", dish);
+					printf("Class: ");
+					scanf("%[^\n]", class);
+					printf("Servings: ");
+					scanf(" %d", &servings);
+					printf("Ingredients: ");
+					do
+					{
+						ingredients[i] = AddIngredient(food, quantity, unit, calories);
+					} while(strcmp(ingredients[i++].food, "888"));
+					do
+					{
+						scanf("%[^\n]", procedure[j]);
+					} while (strcmp(procedure[j++], "888"));
+					aRecipes[*numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
+					(*numRecipes)++;
+				}
+				else if(box_option == 6)
+				{
+					do
+					{
+						printf("************** Modify Recipe **************\n");
+						printf("[0] Return to update menu\n");
+						printf("[1] Add ingredient\n");
+						printf("[2] Delete ingredient\n");
+						printf("[3] Add step\n");
+						printf("[4] Delete step\n");
+						printf("Choose recipe: ");
+						scanf("%[^\n]", recipeTitle);
+						recipe_index = Search(aRecipes, recipeTitle, &numRecipes);
+						printf("Choose what to modify from 0-4: ");
+						scanf(" %d", &recipe_option);
+						if(recipe_option == 1)
+						{
+							printf("********** Add Ingredient **********\n");
+							printf("Food item: ");
+							scanf("%[^\n]", food);
+							printf("Quantity: ");
+							scanf(" %f", &quantity);
+							printf("Unit: ");
+							scanf("%[^\n]", unit);
+							printf("Calorie amount: ");
+							scanf(" %f", &calories);
+							aRecipes[recipe_index].items[aRecipes[recipe_index].numIngredients] = AddIngredient(food, quantity, unit, calories);
+							aRecipes[recipe_index].numIngredients++;
+						}
+						else if(recipe_option == 2)
+						{
+							printf("********** Delete Recipe **********\n");
+							printf("Ingredient: ");
+							scanf("%[^\n]", food);
+							DeleteIngredient(aRecipes[recipe_index], food);
+						}
+						else if(recipe_option == 3)
+						{
+							printf("************* Add Step *************\n");
+							printf("Enter step: ");
+							scanf("%[^\n]", step);
+							AddStep(aRecipes[recipe_index], step);
+						}
+						else if(recipe_option == 4)
+						{
+							printf("*********** Delete Step ***********\n");
+							printf("Enter step: ");
+							scanf("%[^\n]", step);
+							DeleteStep(aRecipes[recipe_index], step, &aRecipes[recipe_index].numSteps);
+						}
+					}while(recipe_option != 0);
+				}
+				else if(box_option == 7)
+				{
+					printf("*********** Delete Recipe ***********\n");
+					DeleteRecipe(aRecipes, recipeTitle, &numRecipes);
+				}
+				else if(box_option == 8)
+					DisplayRecipeTitles(aRecipes, &numRecipes);
+				else if(box_option == 9)
+				{
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
+					printf("*********** Scan Recipes ***********\n");
+					do
+					{
+						DisplayRecipe(aRecipes[a]);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
+				}
+				else if(box_option == 10)
+				{
+					printf("******* Search recipe by title *******\n");
+					DisplayRecipeTitles(aRecipes, &numRecipes);
+					printf("Choose recipe: ");
+					scanf("%[^\n]", recipeTitle);
+					recipe_index = Search(aRecipes, recipeTitle, &numRecipes);
+					DisplayRecipe(aRecipes[recipe_index]);
+				}
+				else if(box_option == 11)
+				{
+					printf("********** Export Recipes **********\n");
+					printf("Save data to what file? ");
+					scanf("%[^\n]", filename);
+					ExportRecipes(aRecipes, &numRecipes, filename);
+				}
+				else if(box_option == 12)
+				{
+					printf("********** Import Recipes **********\n");
+					printf("Load data to what file? ");
+					scanf("%[^\n]", filename);
+					ImportRecipes(aRecipes, &numRecipes, filename);
+				}
+				else if(box_option == 13)
+				{
+					printf("********** Change Username or Password **********\n");
+					printf("What will you change? Press U for username or P for password. ");
+					scanf("%c", &user_pass);
+					AccessModifier(user_pass);
+				}
+			}
+		}
+		else if(main_option == 'A')
+		{
+			do
+			{
+				printf("[0] Return to main menu\n");
+				printf("[1] Import recipes\n");
+				printf("[2] List recipe titles\n");
+				printf("[3] Display recipes\n");
+				printf("[4] Scan recipes by ingredient\n");
+				printf("[5] Generate shopping list\n");
+				printf("[6] Recommend menu\n");
+				printf("Choose an access option from 0-6: ");
+				scanf(" %d", box_option);
+				
+				if(box_option == 1)
+				{
+					printf("********** Import Recipes **********\n");
+					printf("Load data to what file? ");
+					scanf("%[^\n]", filename);
+					ImportRecipes(aRecipes, &numRecipes, filename);
+				}
+				else if(box_option == 2)
+					DisplayRecipeTitles(aRecipes, &numRecipes);
+				else if(box_option == 3)
+				{
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
+					printf("*********** Scan Recipes ***********\n");
+					do
+					{
+						DisplayRecipe(aRecipes[a]);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
+				}
+				else if(box_option == 4)
+				{
+					AlphabeticalSort(aRecipes, &numRecipes);
+					a = 0;
+					printf("Enter ingredient: ");
+					scanf("%[^\n]", ingredient);
+					printf("******** Scan Recipes By Ingredient ********\n");
+					do
+					{
+						ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
+						a++;
+						printf("Display next recipe? Press N for next or X for exit. ");
+						scanf("%s", displaynext);
+						while(displaynext != 'N')
+						{
+							printf("Invalid input, please try again. ");
+							scanf("%s", displaynext);
+						}
+					}while(displaynext != 'X');
+				}
+				else if(box_option == 5)
+					ShoppingList(aRecipes, &numRecipes);
+				else if(box_option == 6)
+				{
+					printf("******* Menu Recommendation *******\n");
+					printf("Enter calorie goal: ");
+					scanf("%f", &calorie_goal);
+					RecommendMenu(aRecipes, &numRecipes, calorie_goal);
+				}
+			}while(box_option != 0);
+		}
+		else if(main_option != 'U' && main_option != 'A' && main_option != 'E')
+			printf("Invalid option.");
+		printf("\nChoose a menu option: ");
+		scanf(" %c", &main_option);
+	}
+	return 0;
+}
