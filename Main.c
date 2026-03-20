@@ -10,16 +10,17 @@ int main()
 	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, unit, recipeTitle, ingredient, step;
 	float quantity, calories, calorie_goal;
-	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX];
-	string dish, class, procedure[MAX], filename;
+	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX_INGREDIENTS];
+	string dish, class, filename;
 	int servings;
+	string_step procedure[MAX_STEPS];
 	string username, password, current_username, current_password;
 	strcpy(current_username, "admin");
 	strcpy(current_password, "ad1234");
 	srand(time(NULL));
 	
-	aRecipes[MAX].numIngredients = 0;
-	aRecipes[MAX].numSteps = 0;
+	aRecipes[MAX_INGREDIENTS].numIngredients = 0;
+	aRecipes[MAX_STEPS].numSteps = 0;
 
 	printf("******************** Main Menu ********************\n");
 	printf("[U] Update recipe box\n");

@@ -20,9 +20,12 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 #include <string.h>
 #include <time.h>
 
-#define MAX 50
+#define MAX 50		// recipes and food items
+#define MAX_INGREDIENTS 20
+#define MAX_STEPS 15
 
-typedef char string[100];
+typedef char string[20];
+typedef char string_step[70];
 
 struct ingredientTag
 {
@@ -39,9 +42,9 @@ struct recipeTag
 	string class;
 	int servings;
 	float calorie_total;
-	ingredientType items[MAX];
+	ingredientType items[MAX_INGREDIENTS];
 	int numIngredients;
-	string steps[MAX];
+	string steps[MAX_STEPS];
 	int numSteps;
 };
 typedef struct recipeTag recipeType;
@@ -286,7 +289,7 @@ void LoadCalorie(ingredientType ingredient, string filename, ingredientType calo
 	@param ingredient - 
 	@param step - 
 */
-recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient[], string procedure[])
+recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient[], string_step procedure[])
 {
 	int i = 0, j = 0;
 	recipeType aRecipe;
@@ -345,9 +348,9 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 	Precondition: option must be a single character
 	@param aRecipe - recipe struct
 */
-void AddStep(recipeType aRecipe, string aStep)
+void AddStep(recipeType aRecipe, string_step step)
 {
-	strcpy(aRecipe.steps[aRecipe.numSteps], aStep);
+	strcpy(aRecipe.steps[aRecipe.numSteps], step);
 	aRecipe.numSteps++;
 }
 
@@ -357,13 +360,13 @@ void AddStep(recipeType aRecipe, string aStep)
 	Precondition: 
 	@param aRecipe - recipe struct
 */
-void DeleteStep(recipeType aRecipe, string aStep)
+void DeleteStep(recipeType aRecipe, string_step step)
 {
 	int a = 0, i;
-	string delete;
+	string_step delete;
 	for(i = 0; i < aRecipe.numSteps; i++)
 	{
-		if(strcmp(aRecipe.steps[i], aStep) == 0)
+		if(strcmp(aRecipe.steps[i], step) == 0)
 			strcpy(delete, aRecipe.steps[i]);
 	}
 	while(a < aRecipe.numSteps)
