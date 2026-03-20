@@ -25,13 +25,14 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 #define MAX_STEPS 15
 
 typedef char string[20];
+typedef char string_unit[15];
 typedef char string_step[70];
 
 struct ingredientTag
 {
 	string food;
 	float quantity;
-	string unit;
+	string_unit unit;
 	float calories;
 };
 typedef struct ingredientTag ingredientType;
@@ -84,6 +85,7 @@ void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
 	@param aRecipes[] - list of recipes
 	@param recipeTitle - recipe name the user is trying to find
 	@param numRecipes - number of recipes
+	@return index of recipe array where recipe was found or -1 if not found
 */
 int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 {
@@ -99,6 +101,7 @@ int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 /*
 	Function 1: Username and Password Changer
 	This function changes the user's username and/or password
+	Precondition: username and password can only be 20 characters max
 	@param username - current username
 	@param password - current password
 */
@@ -175,7 +178,7 @@ int PassCheck(string username, string current_username, string password, string 
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-ingredientType AddIngredient(string food, float quantity, string unit, float calories)
+ingredientType AddIngredient(string food, float quantity, string_unit unit, float calories)
 {
 	ingredientType ingredient;
 	strcpy(ingredient.food, food);
@@ -188,8 +191,9 @@ ingredientType AddIngredient(string food, float quantity, string unit, float cal
 /*
 	Function 4: View food-calorie chart
 	This function displays the food, its quantity, unit, and calorie count
-	Precondition: option must be a single character
+	Precondition: the number of food items must not exceed 50
 	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param ingredient_count - number of existing food items
 */
 void ViewCalorie(ingredientType ingredient[], int ingredient_count)
 {
@@ -279,15 +283,15 @@ void LoadCalorie(ingredientType ingredient, string filename, ingredientType calo
 
 /*
 	Function 7: Add Recipe
-	This function checks for user's menu input
+	This function adds an ingredient to a recipe
 	Precondition: dish, class, and step only contain letters in the alphabet
-				  class can only be main, starter, or dessert
+				  class can only be starter, main, or dessert
 				  servings must be a positive integer
 	@param dish - name of recipe user inputs
-	@param class - type of recipe ()
-	@param servings - 
-	@param ingredient - 
-	@param step - 
+	@param class - recipe category (starter, main, or dessert)
+	@param servings - number of servings
+	@param ingredient - list of ingredients which contain their quantity and calorie info
+	@param step - list of steps in making the recipe
 */
 recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient[], string_step procedure[])
 {
@@ -313,9 +317,10 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 
 /*
 	Function 8: Delete Ingredient
-	This function checks for user's menu input
-	Precondition: 
+	This function deletes an ingredient from a recipe
+	Precondition: the name of the ingredient only contains letters in the alphabet
 	@param aRecipe - recipe struct
+	@param ingredient - ingredient to be deleted
 */
 void DeleteIngredient(recipeType aRecipe, string ingredient)
 {
@@ -347,6 +352,7 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 	This function adds a step to a recipe
 	Precondition: option must be a single character
 	@param aRecipe - recipe struct
+	@param step - step to be deleted
 */
 void AddStep(recipeType aRecipe, string_step step)
 {

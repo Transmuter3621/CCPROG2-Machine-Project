@@ -3,21 +3,21 @@
 int main()
 {
 	char main_option, overwrite, displaynext;
+	char garbage;
 	int access_check, recipe_option, box_option;
 	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
 	int recipe_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
-	string food, unit, recipeTitle, ingredient, step;
+	string food, unit, recipeTitle, ingredient;
 	float quantity, calories, calorie_goal;
 	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX_INGREDIENTS];
 	string dish, class, filename;
 	int servings;
-	string_step procedure[MAX_STEPS];
+	string_step procedure[MAX_STEPS], step;
 	string username, password, current_username, current_password;
 	strcpy(current_username, "admin");
 	strcpy(current_password, "ad1234");
-	srand(time(NULL));
 	
 	aRecipes[MAX_INGREDIENTS].numIngredients = 0;
 	aRecipes[MAX_STEPS].numSteps = 0;
@@ -28,6 +28,7 @@ int main()
 	printf("[E] Exit\n");
 	printf("Choose a menu option from A-E: ");
 	scanf("%c", &main_option);
+	scanf("%c", &garbage);
 	while(main_option != 'E')
 	{
 		if(main_option == 'U')
