@@ -108,19 +108,22 @@ int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 void AccessModifier(string username, string password)
 {
 	string old_username, new_username, old_password, new_password;
-	char option;
+	char option, garbage;
 	printf("What will you change? Press U for username, P for password, or X for exit. ");
 	scanf("%c", &option);
+	scanf("%c", &garbage);
 	while(option != 'X')
 	{
 		if(option == 'U')
 		{
 			printf("Old username: ");
 			scanf("%[^\n]", old_username);
+			scanf("%c", &garbage);
 			if(strcmp(old_username, username) == 0)
 			{
 				printf("New username: ");
 				scanf("%[^\n]", new_username);
+				scanf("%c", &garbage);
 				strcpy(username, new_username);
 			}
 			else
@@ -130,10 +133,12 @@ void AccessModifier(string username, string password)
 		{
 			printf("Old password: ");
 			scanf("%[^\n]", old_password);
+			scanf("%c", &garbage);
 			if(strcmp(old_password, password) == 0)
 			{
 				printf("New password: ");
 				scanf("%[^\n]", new_password);
+				scanf("%c", &garbage);
 				strcpy(password, new_password);
 			}
 			else
@@ -142,7 +147,8 @@ void AccessModifier(string username, string password)
 		else
 			printf("Invalid input, please try again.\n");
 		printf("What will you change? Press U for username, P for password, or X for exit. ");
-		scanf("%c", &option);
+		scanf(" %c", &option);
+		scanf("%c", &garbage);
 	}
 }
 
@@ -178,13 +184,33 @@ int PassCheck(string username, string current_username, string password, string 
 	@param calories - calorie input
 	@returns contents of temporary struct
 */
-ingredientType AddIngredient(string food, float quantity, string_unit unit, float calories)
+ingredientType AddIngredient(ingredientType ingredient)
 {
-	ingredientType ingredient;
+	char garbage;
+	string food;
+	string_unit unit;
+	float quantity, calories;
+
+	printf("Food item: ");
+	scanf("%[^\n]", food);
+	scanf("%c", &garbage);
 	strcpy(ingredient.food, food);
+
+	printf("Quantity: ");
+	scanf(" %f", &quantity);
+	scanf("%c", &garbage);
 	ingredient.quantity = quantity;
+
+	printf("Unit: ");
+	scanf("%[^\n]", unit);
+	scanf("%c", &garbage);
 	strcpy(ingredient.unit, unit);
+
+	printf("Calorie amount: ");
+	scanf(" %f", &calories);
+	scanf("%c", &garbage);
 	ingredient.calories = calories;
+
 	return ingredient;
 };
 
@@ -199,10 +225,10 @@ void ViewCalorie(ingredientType ingredient[], int ingredient_count)
 {
 	int i = 0;
 	char option;
-	printf("		Food			Quantity	Unit	Calories");
+	printf("		Food			Quantity	Unit	Calories\n");
 	while(i < ingredient_count && i < 10)
 	{
-		printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
+		printf("%s\t\t%.2f\t\t%s\t\t%.2f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
 		i++;
 	}
 	if(ingredient_count > 10)
@@ -213,7 +239,7 @@ void ViewCalorie(ingredientType ingredient[], int ingredient_count)
 		{
 			do
 			{
-				printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
+				printf("%s\t\t%.2f\t\t%s\t\t%.2f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
 				i++;
 			} while(i % 10 != 0);
 			printf("View next 10 items? Press 'N' to proceed or 'X' to exit.\n");

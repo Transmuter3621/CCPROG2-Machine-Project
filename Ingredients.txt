@@ -1,5 +1,6 @@
 Olive oil
-100 grams 884
+100.000000 grams 168.000000
 
-Tomato
-200 grams 36
+Garlic
+50.000000 grams 75.000000
+

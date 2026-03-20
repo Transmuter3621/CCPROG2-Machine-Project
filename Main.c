@@ -9,9 +9,9 @@ int main()
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
 	int recipe_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
-	string food, unit, recipeTitle, ingredient;
-	float quantity, calories, calorie_goal;
-	ingredientType calorie_info[MAX], calorie_add[MAX], ingredients[MAX_INGREDIENTS];
+	string food, recipeTitle, ingredient;
+	float calorie_goal;
+	ingredientType calorie_input, calorie_info[MAX], calorie_add[MAX], ingredients[MAX_INGREDIENTS];
 	string dish, class, filename;
 	int servings;
 	string_step procedure[MAX_STEPS], step;
@@ -26,7 +26,7 @@ int main()
 	printf("[U] Update recipe box\n");
 	printf("[A] Access recipe box\n");
 	printf("[E] Exit\n");
-	printf("Choose a menu option from A-E: ");
+	printf("Choose a menu option: ");
 	scanf("%c", &main_option);
 	scanf("%c", &garbage);
 	while(main_option != 'E')
@@ -35,14 +35,16 @@ int main()
 		{
 			printf("Username: ");
 			scanf("%[^\n]", username);
+			scanf("%c", &garbage);
 			printf("Password: ");
 			scanf("%[^\n]", password);
+			scanf("%c", &garbage);
 			access_check = PassCheck(username, current_username, password, current_password);
 			if(access_check == 3)
 			{
 				do
 				{
-					printf("************** Update Recipe Box **************\n");
+					printf("\n************** Update Recipe Box **************\n");
 					printf("[0] Return to main menu\n");
 					printf("[1] Add food-calorie info\n");
 					printf("[2] View food-calorie chart\n");
@@ -59,19 +61,13 @@ int main()
 					printf("[13] Change username and/or password\n");
 					printf("Choose an update option from 0-13: ");
 					scanf(" %d", &box_option);
+					scanf("%c", &garbage);
+					printf("\n");
 					
 					if(box_option == 1)
 					{
 						printf("******* Add Food-Calorie Info *******\n");
-						printf("Food item: ");
-						scanf("%[^\n]", food);
-						printf("Quantity: ");
-						scanf(" %f", &quantity);
-						printf("Unit: ");
-						scanf("%[^\n]", unit);
-						printf("Calorie amount: ");
-						scanf(" %f", &calories);
-						calorie_info[calorie_info_count] = AddIngredient(food, quantity, unit, calories);
+						calorie_info[calorie_info_count] = AddIngredient(calorie_input);
 						calorie_info_count++;
 					}
 
@@ -99,7 +95,7 @@ int main()
 						scanf("%[^\n]", filename);
 						for(i = 0; i < MAX; i++)
 						{
-							for(j = 0; j < MAX; j++)
+							for(j = i; j < MAX; j++)
 							{
 								if(strcmp(calorie_add[i].food, calorie_info[j].food) == 0)
 									same_count++;
@@ -108,8 +104,9 @@ int main()
 								LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
 							else
 							{
-								printf("Overwrite data? Press Y for yes. ");
+								printf("Overwrite data? Press y for yes. ");
 								scanf("%c", &overwrite);
+								scanf("%c", &garbage);
 								if(overwrite == 'Y' || overwrite == 'y')
 									LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
 							}
@@ -121,18 +118,22 @@ int main()
 						printf("******* Add Recipe *******\n");
 						printf("Recipe: ");
 						scanf("%[^\n]", dish);
+						scanf("%c", &garbage);
 						printf("Class: ");
 						scanf("%[^\n]", class);
+						scanf("%c", &garbage);
 						printf("Servings: ");
 						scanf(" %d", &servings);
-						printf("Ingredients: ");
+						scanf("%c", &garbage);
+						printf("Ingredients:\n");
 						do
 						{
-							ingredients[i] = AddIngredient(food, quantity, unit, calories);
+							ingredients[i] = AddIngredient(calorie_input);
 						} while(strcmp(ingredients[i++].food, "888"));
 						do
 						{
 							scanf("%[^\n]", procedure[j]);
+							scanf("%c", &garbage);
 						} while(strcmp(procedure[j++], "888"));
 						aRecipes[numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
 						numRecipes++;
@@ -156,15 +157,7 @@ int main()
 							if(recipe_option == 1)
 							{
 								printf("********** Add Ingredient **********\n");
-								printf("Food item: ");
-								scanf("%[^\n]", food);
-								printf("Quantity: ");
-								scanf(" %f", &quantity);
-								printf("Unit: ");
-								scanf("%[^\n]", unit);
-								printf("Calorie amount: ");
-								scanf(" %f", &calories);
-								aRecipes[recipe_index].items[aRecipes[recipe_index].numIngredients] = AddIngredient(food, quantity, unit, calories);
+								aRecipes[recipe_index].items[aRecipes[recipe_index].numIngredients] = AddIngredient(calorie_input);
 								aRecipes[recipe_index].numIngredients++;
 							}
 							else if(recipe_option == 2)
@@ -263,6 +256,7 @@ int main()
 		{
 			do
 			{
+				printf("\n************** Access Recipe Box **************\n");
 				printf("[0] Return to main menu\n");
 				printf("[1] Import recipes\n");
 				printf("[2] List recipe titles\n");
@@ -272,6 +266,7 @@ int main()
 				printf("[6] Recommend menu\n");
 				printf("Choose an access option from 0-6: ");
 				scanf(" %d", &box_option);
+				printf("\n");
 				
 				if(box_option == 1)
 				{
@@ -294,11 +289,11 @@ int main()
 						DisplayRecipe(aRecipes[a]);
 						a++;
 						printf("Display next recipe? Press N for next or X for exit. ");
-						scanf("%c", &displaynext);
+						scanf(" %c", &displaynext);
 						while(displaynext != 'N')
 						{
 							printf("Invalid input, please try again. ");
-							scanf("%c", &displaynext);
+							scanf(" %c", &displaynext);
 						}
 					}while(displaynext != 'X');
 				}
@@ -309,17 +304,18 @@ int main()
 					a = 0;
 					printf("Enter ingredient: ");
 					scanf("%[^\n]", ingredient);
+					scanf("%c", &garbage);
 					printf("******** Scan Recipes By Ingredient ********\n");
 					do
 					{
 						ScanByIngredient(aRecipes, numRecipes, ingredient, savedRecipes);
 						a++;
 						printf("Display next recipe? Press N for next or X for exit. ");
-						scanf("%c", &displaynext);
+						scanf(" %c", &displaynext);
 						while(displaynext != 'N')
 						{
 							printf("Invalid input, please try again. ");
-							scanf("%c", &displaynext);
+							scanf(" %c", &displaynext);
 						}
 					}while(displaynext != 'X');
 				}
@@ -338,6 +334,10 @@ int main()
 		}
 		else if(main_option != 'U' && main_option != 'A' && main_option != 'E')
 			printf("Invalid option.");
+		printf("\n******************** Main Menu ********************\n");
+		printf("[U] Update recipe box\n");
+		printf("[A] Access recipe box\n");
+		printf("[E] Exit\n");
 		printf("\nChoose a menu option: ");
 		scanf(" %c", &main_option);
 	}
