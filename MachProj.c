@@ -10,7 +10,7 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 	Description: This program is a meal repository with access and modification features on the recipes,
 	as well as having a shopping list generator and a menu recommendation function.
 	Programmed by: Sy, Eryn Claire Go, S21B
-	Last modified: March 30, 2025
+	Last modified: March 30, 2026
 	Version: 
 	[Acknowledgements: <stdio.h>, <stdlib.h>, <string.h>, <time.h>]
 */
@@ -49,8 +49,9 @@ typedef struct recipeTag recipeType;
 /*
 	Helper Function 1: Alphabetical Organizer
 	This function organizes the recipe list in increasing alphabetical order
-	Precondition: 
+	Precondition: all recipe info is valid
 	@param aRecipes[] - list of recipes
+	@param numRecipes - number of recipes
 */
 void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
 {
@@ -76,7 +77,7 @@ void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
 /*
 	Helper Function 2: Search recipe title
 	This function searches for a recipe title in an array of recipes
-	Precondition: 
+	Precondition: all recipe info is valid
 	@param aRecipes[] - list of recipes
 	@param recipeTitle - recipe name the user is trying to find
 	@param numRecipes - number of recipes
@@ -95,7 +96,6 @@ int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 /*
 	Function 1: Username and Password Changer
 	This function changes the user's username and/or password
-	Precondition: option must be a single character
 	@param username - current username
 	@param password - current password
 */
@@ -131,7 +131,7 @@ void AccessModifier(string username, string password)
 				strcpy(password, new_password);
 			}
 			else
-				printf("Invalid username. Please try again.\n");
+				printf("Invalid password. Please try again.\n");
 		}
 		else
 			printf("Invalid input, please try again.\n");
@@ -150,11 +150,15 @@ void AccessModifier(string username, string password)
 	@param sPassword - saved password
 	@returns 0 or 1 depending on whether or not both username and password match
 */
-int PassCheck(string username, string sUsername, string password, string sPassword)
+int PassCheck(string username, string current_username, string password, string current_password)
 {
-	int check = 0;
-	if((strcmp(username, sUsername) == 0) && (strcmp(password, sPassword) == 0))
+	int check = 0;		// nothing is correct
+	if((strcmp(username, current_username) == 0) && (strcmp(password, current_password) != 0))			// correct username
 		check = 1;
+	else if((strcmp(username, current_username) != 0) && (strcmp(password, current_password) == 0))		// correct password
+		check = 2;
+	else if((strcmp(username, current_username) == 0) && (strcmp(password, current_password) == 0))		// correct username and password
+		check = 3;
 	return check;
 }
 
@@ -186,25 +190,28 @@ ingredientType AddIngredient(string food, float quantity, string unit, float cal
 */
 void ViewCalorie(ingredientType ingredient[], int ingredient_count)
 {
-	int i = ingredient_count;
+	int i = 0;
 	char option;
 	printf("		Food			Quantity	Unit	Calories");
-	while(i < 10)
+	while(i < ingredient_count && i < 10)
 	{
 		printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
 		i++;
 	}
-	printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
-	scanf(" %c", &option);
-	while(option != 'X')
+	if(ingredient_count > 10)
 	{
-		while(i % 10 != 0)
-		{
-			printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
-			i++;
-		}
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
 		scanf(" %c", &option);
+		while(option != 'X')
+		{
+			do
+			{
+				printf("%s\t\t%f\t\t%s\t\t%f\n", ingredient[i].food, ingredient[i].quantity, ingredient[i].unit, ingredient[i].calories);
+				i++;
+			} while(i % 10 != 0);
+			printf("View next 10 items? Press 'N' to proceed or 'X' to exit.\n");
+			scanf(" %c", &option);
+		}
 	}
 }
 

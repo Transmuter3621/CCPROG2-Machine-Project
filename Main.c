@@ -3,7 +3,7 @@
 int main()
 {
 	char main_option, overwrite, displaynext;
-	int recipe_option, box_option;
+	int access_check, recipe_option, box_option;
 	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
 	int recipe_index;
@@ -25,8 +25,8 @@ int main()
 	printf("[U] Update recipe box\n");
 	printf("[A] Access recipe box\n");
 	printf("[E] Exit\n");
-	printf("\nChoose a menu option from A-E: ");
-	scanf(" %c", &main_option);
+	printf("Choose a menu option from A-E: ");
+	scanf("%c", &main_option);
 	while(main_option != 'E')
 	{
 		if(main_option == 'U')
@@ -35,9 +35,10 @@ int main()
 			scanf("%[^\n]", username);
 			printf("Password: ");
 			scanf("%[^\n]", password);
-			if(strcmp(username, current_username) == 0 && strcmp(password, current_password) == 0)
+			access_check = PassCheck(username, current_username, password, current_password);
+			if(access_check == 3)
 			{
-				while(box_option != 0)
+				do
 				{
 					printf("************** Update Recipe Box **************\n");
 					printf("[0] Return to main menu\n");
@@ -247,11 +248,11 @@ int main()
 						printf("********** Change Username or Password **********\n");
 						AccessModifier(username, password);
 					}
-				}
+				} while(box_option != 0);
 			}
-			else if(strcmp(username, current_username) && strcmp(password, current_password) == 0)
+			else if(access_check == 2)
 				printf("Invalid username. Please try again.\n");
-			else if(strcmp(username, current_username) == 0 && strcmp(password, current_password))
+			else if(access_check == 1)
 				printf("Invalid password. Please try again.\n");
 			else
 				printf("Invalid username and password. Please try again.\n");
