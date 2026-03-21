@@ -7,14 +7,12 @@ int main()
 	int access_check, recipe_option, box_option;
 	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
-	int recipe_index;
+	int recipe_index, ingredient_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
-	string food, recipeTitle, ingredient;
+	string food, recipeTitle, ingredient, filename;
+	ingredientType calorie_input, calorie_info[MAX], calorie_add[MAX];
 	float calorie_goal;
-	ingredientType calorie_input, calorie_info[MAX], calorie_add[MAX], ingredients[MAX_INGREDIENTS];
-	string dish, class, filename;
-	int servings;
-	string_step procedure[MAX_STEPS], step;
+	string_step step;
 	string username, password, current_username, current_password;
 	strcpy(current_username, "admin");
 	strcpy(current_password, "ad1234");
@@ -67,7 +65,7 @@ int main()
 					if(box_option == 1)
 					{
 						printf("******* Add Food-Calorie Info *******\n");
-						calorie_info[calorie_info_count] = AddIngredient(calorie_input);
+						calorie_info[calorie_info_count] = AddFoodCalorie(calorie_input);
 						calorie_info_count++;
 					}
 
@@ -116,26 +114,7 @@ int main()
 					else if(box_option == 5)
 					{
 						printf("******* Add Recipe *******\n");
-						printf("Recipe: ");
-						scanf("%[^\n]", dish);
-						scanf("%c", &garbage);
-						printf("Class: ");
-						scanf("%[^\n]", class);
-						scanf("%c", &garbage);
-						printf("Servings: ");
-						scanf(" %d", &servings);
-						scanf("%c", &garbage);
-						printf("Ingredients:\n");
-						do
-						{
-							ingredients[i] = AddIngredient(calorie_input);
-						} while(strcmp(ingredients[i++].food, "888"));
-						do
-						{
-							scanf("%[^\n]", procedure[j]);
-							scanf("%c", &garbage);
-						} while(strcmp(procedure[j++], "888"));
-						aRecipes[numRecipes] = AddRecipe(dish, class, servings, ingredients, procedure);
+						aRecipes[numRecipes] = AddRecipe(aRecipes[numRecipes], calorie_info, calorie_info_count);
 						numRecipes++;
 					}
 
@@ -157,12 +136,13 @@ int main()
 							if(recipe_option == 1)
 							{
 								printf("********** Add Ingredient **********\n");
-								aRecipes[recipe_index].items[aRecipes[recipe_index].numIngredients] = AddIngredient(calorie_input);
+								ingredient_index = aRecipes[recipe_index].numIngredients;
+								aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index], calorie_info, calorie_info_count);
 								aRecipes[recipe_index].numIngredients++;
 							}
 							else if(recipe_option == 2)
 							{
-								printf("********** Delete Recipe **********\n");
+								printf("********* Delete Ingredient ********\n");
 								printf("Ingredient: ");
 								scanf("%[^\n]", food);
 								DeleteIngredient(aRecipes[recipe_index], food);
@@ -176,7 +156,7 @@ int main()
 							}
 							else if(recipe_option == 4)
 							{
-								printf("*********** Delete Step ***********\n");
+								printf("************ Delete Step ***********\n");
 								printf("Enter step: ");
 								scanf("%[^\n]", step);
 								DeleteStep(aRecipes[recipe_index], step);
