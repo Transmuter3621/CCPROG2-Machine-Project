@@ -108,19 +108,22 @@ int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 void AccessModifier(string username, string password)
 {
 	string old_username, new_username, old_password, new_password;
-	char option;
+	char option, garbage;
 	printf("What will you change? Press U for username, P for password, or X for exit. ");
 	scanf("%c", &option);
+	scanf("%c", &garbage);
 	while(option != 'X')
 	{
 		if(option == 'U')
 		{
 			printf("Old username: ");
-			fgets(old_username, sizeof(old_username), stdin);
+			scanf("%[^\n]", old_username);
+			scanf("%c", &garbage);
 			if(strcmp(old_username, username) == 0)
 			{
 				printf("New username: ");
-				fgets(new_username, sizeof(new_username), stdin);
+				scanf("%[^\n]", new_username);
+				scanf("%c", &garbage);
 				strcpy(username, new_username);
 			}
 			else
@@ -129,11 +132,13 @@ void AccessModifier(string username, string password)
 		else if(option == 'P')
 		{
 			printf("Old password: ");
-			fgets(old_password, sizeof(old_password), stdin);
+			scanf("%[^\n]", old_password);
+			scanf("%c", &garbage);
 			if(strcmp(old_password, password) == 0)
 			{
 				printf("New password: ");
-				fgets(new_password, sizeof(new_password), stdin);
+				scanf("%[^\n]", new_password);
+				scanf("%c", &garbage);
 				strcpy(password, new_password);
 			}
 			else
@@ -143,6 +148,7 @@ void AccessModifier(string username, string password)
 			printf("Invalid input, please try again.\n");
 		printf("What will you change? Press U for username, P for password, or X for exit. ");
 		scanf(" %c", &option);
+		scanf("%c", &garbage);
 	}
 }
 
@@ -180,16 +186,16 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	char garbage;	// to get rid of leftover \n
 
 	printf("Food item: ");
-	fgets(food_info.food, sizeof(food_info.food), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", food_info.food);
+	scanf("%c", &garbage);
 
 	printf("Quantity: ");
 	scanf(" %f", &food_info.quantity);
 	scanf("%c", &garbage);
 
 	printf("Unit: ");
-	fgets(food_info.unit, sizeof(food_info.unit), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", food_info.unit);
+	scanf("%c", &garbage);
 
 	printf("Calorie amount: ");
 	scanf(" %f", &food_info.calories);
@@ -212,7 +218,7 @@ void ViewCalorie(ingredientType food_info[], int food_count)
 	printf("		Food			Quantity	Unit	Calories\n");
 	while(i < food_count && i < 10)
 	{
-		printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+		printf("%s\t\t%.2f\t\t%s\t\t%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
 	if(food_count > 10)
@@ -223,7 +229,7 @@ void ViewCalorie(ingredientType food_info[], int food_count)
 		{
 			do
 			{
-				printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+				printf("%s\t\t%.2f\t\t%s\t\t%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
 			} while(i % 10 != 0);
 			printf("View next 10 items? Press 'N' to proceed or 'X' to exit.\n");
@@ -312,19 +318,20 @@ void LoadCalorie(ingredientType food_info, string filename, ingredientType calor
 */
 ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int food_count)
 {
+	char garbage;	// to get rid of leftover \n
 	int i;
 
 	printf("Food item: ");
-	fgets(ingredient.food, sizeof(ingredient.food), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", ingredient.food);
+	scanf("%c", &garbage);
 
 	printf("Quantity: ");
 	scanf(" %f", &ingredient.quantity);
-	fflush(stdin);
+	scanf("%c", &garbage);
 
 	printf("Unit: ");
-	fgets(ingredient.unit, sizeof(ingredient.unit), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", ingredient.unit);
+	scanf("%c", &garbage);
 
 	ingredient.calories = 0;
 	for(i = 0; i < food_count; i++)
@@ -350,18 +357,19 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_count)
 {
 	int i = 0, j = 0;
+	char garbage;
 
 	printf("Recipe: ");
-	fgets(aRecipe.name, sizeof(aRecipe.name), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", aRecipe.name);
+	scanf("%c", &garbage);
 
 	printf("Class: ");
-	fgets(aRecipe.class, sizeof(aRecipe.class), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", aRecipe.class);
+	scanf("%c", &garbage);
 
 	printf("Servings: ");
 	scanf(" %d", &aRecipe.servings);
-	fflush(stdin);
+	scanf("%c", &garbage);
 
 	printf("Ingredients:\n");
 	do
@@ -372,7 +380,8 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 
 	do
 	{
-		fgets(aRecipe.steps[j], sizeof(aRecipe.steps[j]), stdin);
+		scanf("%[^\n]", aRecipe.steps[j]);
+		scanf("%c", &garbage);
 	} while(strcmp(aRecipe.steps[j++], "888"));
 	aRecipe.numSteps = j;
 
@@ -552,10 +561,10 @@ void SearchByTitle(recipeType aRecipes[], string recipeTitle, int numRecipes)
 
 /*
 	Function 15: Export Recipes
-	This function saves the current list of recipes in the user's text file of choice (if it's found)
+	This function checks for user's password
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
-	@param numRecipes - number of recipes
+	@param n - number of recipes
 	@param filename - name of file that will contain all recipes made at the time
 */
 void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
@@ -567,14 +576,13 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 		for(a = 0; a < numRecipes; a++)
 		{
 			fprintf(RecipeList, "%s\n", aRecipes[a].name);
-			fprintf(RecipeList, "%d %s\n", aRecipes[a].servings, aRecipes[a].class);
+			fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
 			fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
 			for(i = 0; i < aRecipes[a].numIngredients; i++)
-				fprintf(RecipeList, "%f %s %s\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
+				fprintf(RecipeList, "%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calories);
 			fprintf(RecipeList, "Steps:\n");
 			for(j = 0; j < aRecipes[a].numSteps; j++)
-				fprintf(RecipeList, "%s\n", aRecipes[a].steps[j]);
-			fprintf(RecipeList, "\n");
+				fprintf(RecipeList, "%d. %s\n", j + 1, aRecipes[a].steps[j]);
 		}
 		fclose(RecipeList);
 	}
@@ -584,35 +592,29 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 
 /*
 	Function 16: Import Recipes
-	This function loads a list of recipes from the user's inputted text file (if it's found)
+	This function checks for user's password
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
+	@param numRecipes - number of recipes
 	@param filename - name of file user will load recipes from
 */
-void ImportRecipes(recipeType aRecipes[], string filename)
+void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a = 0, i, j;
-	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
+	int a, i, j;
 	if((RecipeList = fopen(filename, "r")) != NULL)
 	{
-		do
+		for(a = 0; a < numRecipes; a++)
 		{
-			fgets(aRecipes[a].name, sizeof(aRecipes[a].name), RecipeList);
-			fscanf(RecipeList, "%d %s", &aRecipes[a].servings, aRecipes[a].class);
-			fscanf(RecipeList, "%c", &garbage);
-			fscanf(RecipeList, "%s %d", word, &aRecipes[a].numIngredients);
-			fscanf(RecipeList, "%c", &garbage);
+			fprintf(RecipeList, "%s\n", aRecipes[a].name);
+			fprintf(RecipeList, "%d servings %s\n", aRecipes[a].servings, aRecipes[a].class);
+			fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
 			for(i = 0; i < aRecipes[a].numIngredients; i++)
-			{
-				fscanf(RecipeList, "%f %s %s", &aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
-				fscanf(RecipeList, "%c", &garbage);
-			}
-			fscanf(RecipeList, "%s", word);
+				fprintf(RecipeList, "%f %s %s\t\t%f\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food, aRecipes[a].items[i].calories);
+			fprintf(RecipeList, "Steps:\n");
 			for(j = 0; j < aRecipes[a].numSteps; j++)
-				fgets(aRecipes[a].steps[j], sizeof(aRecipes[a].steps[j]), RecipeList);
-			a++;
-		} while(a != 0);
+				fprintf(RecipeList, "%d. %s\n", j + 1, aRecipes[a].steps[j]);
+		}
 		fclose(RecipeList);
 	}
 	else
