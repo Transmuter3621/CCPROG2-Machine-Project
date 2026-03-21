@@ -254,6 +254,7 @@ void ViewCalorie(ingredientType ingredient[], int ingredient_count)
 	Precondition: 
 	@param ingredient - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param numItems - number of ingredients
+	@param filename - name of file that will store food-calorie info
 */
 void SaveCalorie(ingredientType ingredient[], int numItems, string filename)
 {
@@ -317,7 +318,7 @@ void LoadCalorie(ingredientType ingredient, string filename, ingredientType calo
 	@param class - recipe category (starter, main, or dessert)
 	@param servings - number of servings
 	@param ingredient - list of ingredients which contain their quantity and calorie info
-	@param step - list of steps in making the recipe
+	@param procedure - list of steps in making the recipe
 */
 recipeType AddRecipe(string dish, string class, int servings, ingredientType ingredient[], string_step procedure[])
 {
@@ -330,13 +331,13 @@ recipeType AddRecipe(string dish, string class, int servings, ingredientType ing
 	{
 		aRecipe.items[i] = ingredient[i];
 		i++;
-	} while(strcmp(aRecipe.items[i].food, "888"));
+	} while(strcmp(aRecipe.items[i - 1].food, "888"));
 	aRecipe.numIngredients = i;
 	do
 	{
 		strcpy(aRecipe.steps[j], procedure[j]);
 		j++;
-	} while(strcmp(aRecipe.steps[j], "888"));
+	} while(strcmp(aRecipe.steps[j - 1], "888"));
 	aRecipe.numSteps = j;
 	return aRecipe;
 }
@@ -352,33 +353,38 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 {
 	int a = 0, i;
 	string delete;
-	for(i = 0; i < aRecipe.numIngredients; i++)
+	if(aRecipe.numIngredients <= 1)
+		printf("Cannot delete any more ingredients.\n");
+	else
 	{
-		if(strcmp(aRecipe.items[i].food, ingredient) == 0)
-			strcpy(delete, aRecipe.items[i].food);
-	}
-	while(a < aRecipe.numIngredients)
-	{
-		if(strcmp(aRecipe.items[a].food, delete) == 0)
+		for(i = 0; i < aRecipe.numIngredients; i++)
 		{
-			if(a < aRecipe.numIngredients - 1)
-			{
-				for(i = a; i < aRecipe.numIngredients - 1; i++)
-					aRecipe.items[i] = aRecipe.items[i + 1];
-			}
-			(aRecipe.numIngredients)--;
+			if(strcmp(aRecipe.items[i].food, ingredient) == 0)
+				strcpy(delete, aRecipe.items[i].food);
 		}
-		else
-			a++;
+		while(a < aRecipe.numIngredients)
+		{
+			if(strcmp(aRecipe.items[a].food, delete) == 0)
+			{
+				if(a < aRecipe.numIngredients - 1)
+				{
+					for(i = a; i < aRecipe.numIngredients - 1; i++)
+						aRecipe.items[i] = aRecipe.items[i + 1];
+				}
+				(aRecipe.numIngredients)--;
+			}
+			else
+				a++;
+		}
 	}
 }
 
 /*
 	Function 9: Add Step
 	This function adds a step to a recipe
-	Precondition: option must be a single character
+	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
-	@param step - step to be deleted
+	@param step - step to be added
 */
 void AddStep(recipeType aRecipe, string_step step)
 {
@@ -389,79 +395,92 @@ void AddStep(recipeType aRecipe, string_step step)
 /*
 	Function 10: Delete Step
 	This function deletes a step to a recipe
-	Precondition: 
+	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
+	@param step - step to be deleted
 */
 void DeleteStep(recipeType aRecipe, string_step step)
 {
 	int a = 0, i;
 	string_step delete;
-	for(i = 0; i < aRecipe.numSteps; i++)
+	if(aRecipe.numSteps <= 1)
+		printf("Cannot delete any more steps.\n");
+	else
 	{
-		if(strcmp(aRecipe.steps[i], step) == 0)
-			strcpy(delete, aRecipe.steps[i]);
-	}
-	while(a < aRecipe.numSteps)
-	{
-		if(strcmp(aRecipe.steps[a], delete) == 0)
+		for(i = 0; i < aRecipe.numSteps; i++)
 		{
-			if(a < aRecipe.numSteps - 1)
-			{
-				for(i = a; i < aRecipe.numSteps - 1; i++)
-					strcpy(aRecipe.steps[i], aRecipe.steps[i + 1]);
-			}
-			(aRecipe.numSteps)--;
+			if(strcmp(aRecipe.steps[i], step) == 0)
+				strcpy(delete, aRecipe.steps[i]);
 		}
-		else
-			a++;
+		while(a < aRecipe.numSteps)
+		{
+			if(strcmp(aRecipe.steps[a], delete) == 0)
+			{
+				if(a < aRecipe.numSteps - 1)
+				{
+					for(i = a; i < aRecipe.numSteps - 1; i++)
+						strcpy(aRecipe.steps[i], aRecipe.steps[i + 1]);
+				}
+				(aRecipe.numSteps)--;
+			}
+			else
+				a++;
+		}
 	}
 }
 
 /*
 	Function 11: Delete Recipe
 	This function deletes a recipe from the repository
-	Precondition: option must be a single character
+	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipe - recipe struct
+	@param recipeTitle - name of recipe to be deleted
+	@param numRecipes - number of recipes
 */
 void DeleteRecipe(recipeType aRecipes[], string recipeTitle, int numRecipes)
 {
 	int a = 0, i;
 	int delete = SearchName(aRecipes, recipeTitle, numRecipes);
-	while(a < numRecipes)
+	if(delete == -1)
+		printf("Recipe not found. ");
+	else
 	{
-		if(strcmp(aRecipes[a].name, aRecipes[delete].name) == 0)
+		while(a < numRecipes)
 		{
-			if(a < numRecipes - 1)
+			if(strcmp(aRecipes[a].name, aRecipes[delete].name) == 0)
 			{
-				for(i = a; i < numRecipes - 1; i++)
-					aRecipes[i] = aRecipes[i + 1];
+				if(a < numRecipes - 1)
+				{
+					for(i = a; i < numRecipes - 1; i++)
+						aRecipes[i] = aRecipes[i + 1];
+				}
+				numRecipes--;
 			}
-			numRecipes--;
+			else
+				a++;
 		}
-		else
-			a++;
 	}
 }
 
 /*
 	Function 12: Display Recipe Titles
 	This function checks for user's password
-	Precondition: option must be a single character
+	Precondition: 
 	@param aRecipe - recipe struct
+	@param numRecipes - number of recipes
 */
 void DisplayRecipeTitles(recipeType aRecipes[], int numRecipes)
 {
 	int i;
 	AlphabeticalSort(aRecipes, numRecipes);
-	printf("********* List of Recipes *********\n");
 	for(i = 0; i < numRecipes; i++)
 		printf("%s\n", aRecipes[i].name);
 }
 
 /*
 	Function 13: Scan Recipes
-	This function checks for user's password
-	Precondition: option must be a single character
+	This function displays one recipe's details
+	Precondition: 
 	@param aRecipe - recipe struct
 */
 void DisplayRecipe(recipeType aRecipe)
@@ -479,14 +498,13 @@ void DisplayRecipe(recipeType aRecipe)
 /*
 	Function 14: Search Recipe by Title
 	This function searches a recipe by its title
-	Precondition: 
+	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
 	@param recipeTitle - recipe the user is trying to find
 	@param n - number of recipes
 */
 void SearchByTitle(recipeType aRecipes[], string recipeTitle, int numRecipes)
 {
-	printf("********** Recipe Search **********\n");
 	DisplayRecipeTitles(aRecipes, numRecipes);
 	int index = SearchName(aRecipes, recipeTitle, numRecipes);
 	if(index > -1)
@@ -498,8 +516,10 @@ void SearchByTitle(recipeType aRecipes[], string recipeTitle, int numRecipes)
 /*
 	Function 15: Export Recipes
 	This function checks for user's password
-	Precondition: option must be a single character
-	@param option is the user's input into the menu items
+	Precondition: recipeTitle contains 20 characters at most
+	@param aRecipes[] - list of recipes
+	@param n - number of recipes
+	@param filename - name of file that will contain all recipes made at the time
 */
 void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 {
@@ -527,7 +547,7 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 /*
 	Function 16: Import Recipes
 	This function checks for user's password
-	Precondition: option must be a single character
+	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 	@param filename - name of file user will load recipes from
@@ -588,13 +608,12 @@ void ScanByIngredient(recipeType aRecipes[], int numRecipes, string fooditem, re
 	This function randomizes a shopping list for the user
 	Precondition: option must be a single character
 	@param aRecipes[] - list of recipes
-	@param 
+	@param numRecipes - number of recipes
 */
 void ShoppingList(recipeType aRecipes[], int numRecipes)
 {
 	int i, index, num;
 	string recipe;
-	printf("********* Generate Shopping List *********\n");
 	DisplayRecipeTitles(aRecipes, numRecipes);
 	printf("Choose recipe: ");
 	scanf("%[^\n]", recipe);
@@ -609,20 +628,25 @@ void ShoppingList(recipeType aRecipes[], int numRecipes)
 /*
 	Function 19: Recommend Menu
 	This function searches a recipe according to its ingredient
-	Precondition: option must be a single character
-	@param option is the user's input into the menu items
+	Precondition: 
+	@param aRecipes[] - list of recipes
+	@param numRecipes - number of recipes
+	@param calorie_goal - amount of calories the user aims to gain
 */
 void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
 {
-	int a, b, c, closest = 0, counter = 0, i;
+	int a, b, c, closest = 0, counter = 0, i, saved_menu = 0;
 	recipeType recommend[3];
 	for(a = 0; a < numRecipes; a++)
 	{
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
 			if(aRecipes[a].calorie_total > aRecipes[closest].calorie_total && aRecipes[a].calorie_total <= calorie_goal)
+			{
 				closest = a;
-			recommend[0] = aRecipes[closest];
+				recommend[saved_menu] = aRecipes[closest];
+				saved_menu++;
+			}
 			if(aRecipes[closest].calorie_total == calorie_goal)
 				counter++;
 			calorie_goal -= aRecipes[closest].calorie_total;
@@ -636,8 +660,11 @@ void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
 			if(strcmp(aRecipes[b].class, "starter") == 0)
 			{
 				if(aRecipes[b].calorie_total > aRecipes[closest].calorie_total && aRecipes[b].calorie_total <= calorie_goal)
+				{
 					closest = b;
-				recommend[1] = aRecipes[closest];
+					recommend[saved_menu] = aRecipes[closest];
+					saved_menu++;
+				}
 				if(aRecipes[closest].calorie_total == calorie_goal)
 					counter++;
 				calorie_goal -= aRecipes[closest].calorie_total;
@@ -652,11 +679,14 @@ void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
 			if(strcmp(aRecipes[c].class, "dessert") == 0)
 			{
 				if(aRecipes[c].calorie_total > aRecipes[closest].calorie_total && aRecipes[c].calorie_total <= calorie_goal)
+				{
 					closest = c;
-				recommend[2] = aRecipes[closest];
+					recommend[saved_menu] = aRecipes[closest];
+					saved_menu++;
+				}
 			}
 		}
 	}
-	for(i = 0; i < 3; i++)
+	for(i = 0; i < saved_menu; i++)
 		DisplayRecipe(recommend[i]);
 }

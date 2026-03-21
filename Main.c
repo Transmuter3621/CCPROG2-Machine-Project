@@ -191,7 +191,10 @@ int main()
 					}
 
 					else if(box_option == 8)
+					{
+						printf("********* List of Recipes *********\n");
 						DisplayRecipeTitles(aRecipes, numRecipes);
+					}
 
 					else if(box_option == 9)
 					{
@@ -214,7 +217,7 @@ int main()
 
 					else if(box_option == 10)
 					{
-						printf("******* Search recipe by title *******\n");
+						printf("********** Recipe Search **********\n");
 						DisplayRecipeTitles(aRecipes, numRecipes);
 						printf("Choose recipe: ");
 						scanf("%[^\n]", recipeTitle);
@@ -277,7 +280,10 @@ int main()
 				}
 
 				else if(box_option == 2)
+				{
+					printf("********* List of Recipes *********\n");
 					DisplayRecipeTitles(aRecipes, numRecipes);
+				}
 
 				else if(box_option == 3)
 				{
@@ -300,12 +306,12 @@ int main()
 
 				else if(box_option == 4)
 				{
+					printf("******** Scan Recipes By Ingredient ********\n");
 					AlphabeticalSort(aRecipes, numRecipes);
 					a = 0;
 					printf("Enter ingredient: ");
 					scanf("%[^\n]", ingredient);
 					scanf("%c", &garbage);
-					printf("******** Scan Recipes By Ingredient ********\n");
 					do
 					{
 						ScanByIngredient(aRecipes, numRecipes, ingredient, savedRecipes);
@@ -321,7 +327,10 @@ int main()
 				}
 
 				else if(box_option == 5)
+				{
+					printf("********* Generate Shopping List *********\n");
 					ShoppingList(aRecipes, numRecipes);
+				}
 				
 				else if(box_option == 6)
 				{
@@ -333,7 +342,8 @@ int main()
 			}while(box_option != 0);
 		}
 		else if(main_option != 'U' && main_option != 'A' && main_option != 'E')
-			printf("Invalid option.");
+			printf("Invalid option.\n");
+		
 		printf("\n******************** Main Menu ********************\n");
 		printf("[U] Update recipe box\n");
 		printf("[A] Access recipe box\n");
