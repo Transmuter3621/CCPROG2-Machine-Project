@@ -2,10 +2,10 @@
 
 int main()
 {
-	char main_option, overwrite, displaynext;
+	char main_option, displaynext;
 	char garbage;
 	int access_check, recipe_option, box_option;
-	int a, i = 0, j = 0, same_count, calorie_info_count = 0;
+	int a, i = 0, calorie_info_count = 0;
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
 	int recipe_index, ingredient_index;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
@@ -94,26 +94,7 @@ int main()
 						if(calorie_info_count == 0)
 							printf("File has no content.\n");
 						else
-						{
-							for(i = 0; i < calorie_info_count; i++)
-							{
-								for(j = 0; j < i; j++)
-								{
-									if(strcmp(calorie_add[i].food, calorie_info[j].food) == 0)
-										same_count++;
-								}
-								if(same_count == 0)
-									LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
-								else
-								{
-									printf("Overwrite data? Press y for yes. ");
-									scanf("%c", &overwrite);
-									scanf("%c", &garbage);
-									if(overwrite == 'Y' || overwrite == 'y')
-										LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
-								}
-							}
-						}
+							LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
 					}
 
 					else if(box_option == 5)
@@ -223,7 +204,7 @@ int main()
 						printf("********** Import Recipes **********\n");
 						printf("Load data from what file? ");
 						scanf("%[^\n]", filename);
-						ImportRecipes(aRecipes, numRecipes, filename);
+						ImportRecipes(aRecipes, filename);
 					}
 
 					else if(box_option == 13)
@@ -261,7 +242,7 @@ int main()
 					printf("********** Import Recipes **********\n");
 					printf("Load data to what file? ");
 					scanf("%[^\n]", filename);
-					ImportRecipes(aRecipes, numRecipes, filename);
+					ImportRecipes(aRecipes, filename);
 				}
 
 				else if(box_option == 2)
@@ -295,8 +276,7 @@ int main()
 					AlphabeticalSort(aRecipes, numRecipes);
 					a = 0;
 					printf("Enter ingredient: ");
-					scanf("%[^\n]", ingredient);
-					scanf("%c", &garbage);
+					fgets(ingredient, sizeof(ingredient), stdin);
 					do
 					{
 						ScanByIngredient(aRecipes, numRecipes, ingredient, savedRecipes);
