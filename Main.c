@@ -91,22 +91,27 @@ int main()
 						printf("******* Load Food-Calorie Info *******\n");
 						printf("Load data from what file? ");
 						scanf("%[^\n]", filename);
-						for(i = 0; i < MAX; i++)
+						if(calorie_info_count == 0)
+							printf("File has no content.\n");
+						else
 						{
-							for(j = i; j < MAX; j++)
+							for(i = 0; i < calorie_info_count; i++)
 							{
-								if(strcmp(calorie_add[i].food, calorie_info[j].food) == 0)
-									same_count++;
-							}
-							if(same_count == 0)
-								LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
-							else
-							{
-								printf("Overwrite data? Press y for yes. ");
-								scanf("%c", &overwrite);
-								scanf("%c", &garbage);
-								if(overwrite == 'Y' || overwrite == 'y')
+								for(j = 0; j < i; j++)
+								{
+									if(strcmp(calorie_add[i].food, calorie_info[j].food) == 0)
+										same_count++;
+								}
+								if(same_count == 0)
 									LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
+								else
+								{
+									printf("Overwrite data? Press y for yes. ");
+									scanf("%c", &overwrite);
+									scanf("%c", &garbage);
+									if(overwrite == 'Y' || overwrite == 'y')
+										LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
+								}
 							}
 						}
 					}

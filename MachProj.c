@@ -276,22 +276,31 @@ void SaveCalorie(ingredientType food_info[], int food_count, string filename)
 */
 void LoadCalorie(ingredientType food_info, string filename, ingredientType calorie_info[], int calorie_info_count)
 {
-	int c, f1, f2, f3, f4, scan_check;
+	int c, f1, f2, f3, f4, unique_check = 0;
 	FILE *CalText;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
-		for(c = 0; c < calorie_info_count; c++)
+		do
 		{
-			scan_check = 0;
 			f1 = fscanf(CalText, "%[^\n]", food_info.food);
 			f2 = fscanf(CalText, " %f", &food_info.quantity);
 			f3 = fscanf(CalText, "%[^\n]", food_info.unit);
 			f4 = fscanf(CalText, " %f", &food_info.calories);
-			if(f1 == 1 && f2 == 1 && f3 == 1 && f4 == 1)
-				scan_check++;
-			if(scan_check == 1)
-				calorie_info[c] = food_info;
-		}
+			if(f1 && f2 && f3 && f4)
+			{
+				unique_check = 0;
+				for(c = 0; c < calorie_info_count; c++)
+				{
+					if(strcmp(food_info.food, calorie_info[c].food) == 0)
+						unique_check++;
+				}
+				if(unique_check == 0)
+				{
+					calorie_info[calorie_info_count] = food_info;
+					calorie_info_count++;
+				}
+			}
+		} while(f1 && f2 && f3 && f4);
 		fclose(CalText);
 	}
 	else
