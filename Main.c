@@ -116,7 +116,7 @@ int main()
 							printf("[4] Delete step\n");
 							printf("Choose recipe: ");
 							scanf("%[^\n]", recipeTitle);
-							recipe_index = SearchName(aRecipes, recipeTitle, numRecipes);
+							recipe_index = SearchName(aRecipes, numRecipes, recipeTitle);
 							printf("Choose what to modify from 0-4: ");
 							scanf(" %d", &recipe_option);
 							if(recipe_option == 1)
@@ -146,9 +146,9 @@ int main()
 							else if(recipe_option == 4)
 							{
 								printf("************ Delete Step ***********\n");
-								printf("Enter step: ");
-								scanf("%[^\n]", step);
-								DeleteStep(aRecipes[recipe_index], step);
+								printf("Enter step number to delete: ");
+								scanf("%d", &step_remove);
+								DeleteStep(aRecipes[recipe_index], step_remove);
 							}
 						}while(recipe_option != 0);
 					}
@@ -156,7 +156,7 @@ int main()
 					else if(box_option == 7)
 					{
 						printf("*********** Delete Recipe ***********\n");
-						DeleteRecipe(aRecipes, recipeTitle, numRecipes);
+						DeleteRecipe(aRecipes, numRecipes, recipeTitle);
 					}
 
 					else if(box_option == 8)
@@ -190,7 +190,7 @@ int main()
 						DisplayRecipeTitles(aRecipes, numRecipes);
 						printf("Choose recipe: ");
 						scanf("%[^\n]", recipeTitle);
-						recipe_index = SearchName(aRecipes, recipeTitle, numRecipes);
+						recipe_index = SearchName(aRecipes, numRecipes, recipeTitle);
 						DisplayRecipe(aRecipes[recipe_index]);
 					}
 
@@ -213,7 +213,7 @@ int main()
 					else if(box_option == 13)
 					{
 						printf("********** Change Username or Password **********\n");
-						AccessModifier(username, password);
+						AccessModifier(current_username, current_password);
 					}
 				} while(box_option != 0);
 			}

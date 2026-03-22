@@ -87,7 +87,7 @@ void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
 	@param numRecipes - number of recipes
 	@return index of recipe array where recipe was found or -1 if not found
 */
-int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
+int SearchName(recipeType aRecipes[], int numRecipes, string recipeTitle)
 {
 	int i, index = -1;
 	for(i = 0; i < numRecipes; i++)
@@ -126,19 +126,22 @@ void DisplayRecipe(recipeType aRecipe)
 void AccessModifier(string username, string password)
 {
 	string old_username, new_username, old_password, new_password;
-	char option;
+	char option, garbage;
 	printf("What will you change? Press U for username, P for password, or X for exit. ");
 	scanf("%c", &option);
+	scanf("%c", &garbage);
 	while(option != 'X')
 	{
 		if(option == 'U')
 		{
 			printf("Old username: ");
-			fgets(old_username, sizeof(old_username), stdin);
+			scanf("%[^\n]", old_username);
+			scanf("%c", &garbage);
 			if(strcmp(old_username, username) == 0)
 			{
 				printf("New username: ");
-				fgets(new_username, sizeof(new_username), stdin);
+				scanf("%[^\n]", new_username);
+				scanf("%c", &garbage);
 				strcpy(username, new_username);
 			}
 			else
@@ -147,11 +150,13 @@ void AccessModifier(string username, string password)
 		else if(option == 'P')
 		{
 			printf("Old password: ");
-			fgets(old_password, sizeof(old_password), stdin);
+			scanf("%[^\n]", old_password);
+			scanf("%c", &garbage);
 			if(strcmp(old_password, password) == 0)
 			{
 				printf("New password: ");
-				fgets(new_password, sizeof(new_password), stdin);
+				scanf("%[^\n]", new_password);
+				scanf("%c", &garbage);
 				strcpy(password, new_password);
 			}
 			else
@@ -290,11 +295,13 @@ void LoadCalorie(ingredientType food_info, string filename, ingredientType calor
 {
 	int c, f1, f2, f3, f4, unique_check = 0;
 	FILE *CalText;
+	char garbage;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
 		do
 		{
 			f1 = fscanf(CalText, "%[^\n]", food_info.food);
+			fscanf(CalText, "%c", &garbage);
 			f2 = fscanf(CalText, " %f", &food_info.quantity);
 			f3 = fscanf(CalText, "%s", food_info.unit);
 			f4 = fscanf(CalText, " %f", &food_info.calories);
@@ -502,10 +509,10 @@ void DeleteStep(recipeType aRecipe, int step_remove)
 	@param recipeTitle - name of recipe to be deleted
 	@param numRecipes - number of recipes
 */
-void DeleteRecipe(recipeType aRecipes[], string recipeTitle, int numRecipes)
+void DeleteRecipe(recipeType aRecipes[], int numRecipes, string recipeTitle)
 {
 	int a = 0, i;
-	int delete = SearchName(aRecipes, recipeTitle, numRecipes);
+	int delete = SearchName(aRecipes, numRecipes, recipeTitle);
 	if(delete == -1)
 		printf("Recipe not found. ");
 	else
@@ -550,10 +557,10 @@ void DisplayRecipeTitles(recipeType aRecipes[], int numRecipes)
 	@param recipeTitle - recipe the user is trying to find
 	@param n - number of recipes
 */
-void SearchByTitle(recipeType aRecipes[], string recipeTitle, int numRecipes)
+void SearchByTitle(recipeType aRecipes[], int numRecipes, string recipeTitle)
 {
 	DisplayRecipeTitles(aRecipes, numRecipes);
-	int index = SearchName(aRecipes, recipeTitle, numRecipes);
+	int index = SearchName(aRecipes, numRecipes, recipeTitle);
 	if(index > -1)
 		DisplayRecipe(aRecipes[index]);
 	else if(index == -1)
@@ -675,7 +682,7 @@ void ShoppingList(recipeType aRecipes[], int numRecipes)
 	DisplayRecipeTitles(aRecipes, numRecipes);
 	printf("Choose recipe: ");
 	scanf("%[^\n]", recipe);
-	index = SearchName(aRecipes, recipe, numRecipes);
+	index = SearchName(aRecipes, numRecipes, recipe);
 	printf("Enter number of people: ");	
 	scanf(" %d", &num);
 	printf("List of ingredients for %s:\n", aRecipes[index].name);
