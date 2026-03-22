@@ -24,9 +24,9 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 #define MAX_INGREDIENTS 20
 #define MAX_STEPS 15
 
-typedef char string[20];
-typedef char string_unit[15];
-typedef char string_step[70];
+typedef char string[21];
+typedef char string_unit[16];
+typedef char string_step[71];
 
 struct ingredientTag
 {
@@ -96,6 +96,24 @@ int SearchName(recipeType aRecipes[], string recipeTitle, int numRecipes)
 			index = i;
 	}
 	return index;
+}
+
+/*
+	Helper Function 3: Display Recipe
+	This function displays one recipe's details
+	Precondition: 
+	@param aRecipe - recipe struct
+*/
+void DisplayRecipe(recipeType aRecipe)
+{
+	int i, j;
+	printf("%s		%d		%f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
+	printf("Ingredients:\n");
+	for(i = 0; i < aRecipe.numIngredients; i++)
+		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
+	printf("Procedure:\n");
+	for(j = 0; j < aRecipe.numSteps; j++)
+		printf("%s\n", aRecipe.steps[j]);
 }
 
 /*
@@ -180,16 +198,16 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	char garbage;	// to get rid of leftover \n
 
 	printf("Food item: ");
-	fgets(food_info.food, sizeof(food_info.food), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", food_info.food);
+	scanf("%c", &garbage);
 
 	printf("Quantity: ");
 	scanf(" %f", &food_info.quantity);
 	scanf("%c", &garbage);
 
 	printf("Unit: ");
-	fgets(food_info.unit, sizeof(food_info.unit), stdin);
-	fflush(stdin);
+	scanf("%[^\n]", food_info.unit);
+	scanf("%c", &garbage);
 
 	printf("Calorie amount: ");
 	scanf(" %f", &food_info.calories);
@@ -212,7 +230,7 @@ void ViewCalorie(ingredientType food_info[], int food_count)
 	printf("		Food			Quantity	Unit	Calories\n");
 	while(i < food_count && i < 10)
 	{
-		printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+		printf("%s	%.2f	%s	%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
 	if(food_count > 10)
@@ -278,7 +296,7 @@ void LoadCalorie(ingredientType food_info, string filename, ingredientType calor
 		{
 			f1 = fscanf(CalText, "%[^\n]", food_info.food);
 			f2 = fscanf(CalText, " %f", &food_info.quantity);
-			f3 = fscanf(CalText, "%[^\n]", food_info.unit);
+			f3 = fscanf(CalText, "%s", food_info.unit);
 			f4 = fscanf(CalText, " %f", &food_info.calories);
 			if(f1 && f2 && f3 && f4)
 			{
@@ -312,17 +330,20 @@ void LoadCalorie(ingredientType food_info, string filename, ingredientType calor
 */
 ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int food_count)
 {
+	char garbage;
 	int i;
 
 	printf("Food item: ");
-	fgets(ingredient.food, sizeof(ingredient.food), stdin);
+	scanf("%[^\n]", ingredient.food);
+	scanf("%c", &garbage);
 
 	printf("Quantity: ");
 	scanf(" %f", &ingredient.quantity);
-	fflush(stdin);
+	scanf("%c", &garbage);
 
 	printf("Unit: ");
-	fgets(ingredient.unit, sizeof(ingredient.unit), stdin);
+	scanf("%[^\n]", ingredient.unit);
+	scanf("%c", &garbage);
 
 	ingredient.calories = 0;
 	for(i = 0; i < food_count; i++)
@@ -335,7 +356,7 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 }
 
 /*
-	Function 7: Add Recipe
+	Function 8: Add Recipe
 	This function adds an ingredient to a recipe
 	Precondition: dish, class, and step only contain letters in the alphabet
 				  class can only be starter, main, or dessert
@@ -347,17 +368,21 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 */
 recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_count)
 {
+	char garbage;
 	int i = 0, j = 0;
 
 	printf("Recipe: ");
-	fgets(aRecipe.name, sizeof(aRecipe.name), stdin);
+	scanf("%[^\n]", aRecipe.name);
+	scanf("%c", &garbage);
 
 	printf("Class: ");
+	scanf("%[^\n]", aRecipe.class);
 	fgets(aRecipe.class, sizeof(aRecipe.class), stdin);
+	scanf("%c", &garbage);
 
 	printf("Servings: ");
 	scanf(" %d", &aRecipe.servings);
-	fflush(stdin);
+	scanf("%c", &garbage);
 
 	printf("Ingredients:\n");
 	do
@@ -368,7 +393,8 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 
 	do
 	{
-		fgets(aRecipe.steps[j], sizeof(aRecipe.steps[j]), stdin);
+		scanf("%[^\n]", aRecipe.steps[j]);
+		scanf("%c", &garbage);
 	} while(strcmp(aRecipe.steps[j++], "888"));
 	aRecipe.numSteps = j;
 
@@ -376,7 +402,7 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 }
 
 /*
-	Function 8: Delete Ingredient
+	Function 9: Delete Ingredient
 	This function deletes an ingredient from a recipe
 	Precondition: the name of the ingredient only contains letters in the alphabet
 	@param aRecipe - recipe struct
@@ -413,7 +439,7 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 }
 
 /*
-	Function 9: Add Step
+	Function 10: Add Step
 	This function adds a step to a recipe
 	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
@@ -426,7 +452,7 @@ void AddStep(recipeType aRecipe, string_step step)
 }
 
 /*
-	Function 10: Delete Step
+	Function 11: Delete Step
 	This function deletes a step to a recipe
 	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
@@ -463,7 +489,7 @@ void DeleteStep(recipeType aRecipe, string_step step)
 }
 
 /*
-	Function 11: Delete Recipe
+	Function 12: Delete Recipe
 	This function deletes a recipe from the repository
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipe - recipe struct
@@ -496,7 +522,7 @@ void DeleteRecipe(recipeType aRecipes[], string recipeTitle, int numRecipes)
 }
 
 /*
-	Function 12: Display Recipe Titles
+	Function 13: Display Recipe Titles
 	This function checks for user's password
 	Precondition: 
 	@param aRecipe - recipe struct
@@ -508,24 +534,6 @@ void DisplayRecipeTitles(recipeType aRecipes[], int numRecipes)
 	AlphabeticalSort(aRecipes, numRecipes);
 	for(i = 0; i < numRecipes; i++)
 		printf("%s\n", aRecipes[i].name);
-}
-
-/*
-	Function 13: Scan Recipes
-	This function displays one recipe's details
-	Precondition: 
-	@param aRecipe - recipe struct
-*/
-void DisplayRecipe(recipeType aRecipe)
-{
-	int i, j;
-	printf("%s		%d		%f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
-	printf("Ingredients:\n");
-	for(i = 0; i < aRecipe.numIngredients; i++)
-		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
-	printf("Procedure:\n");
-	for(j = 0; j < aRecipe.numSteps; j++)
-		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
 }
 
 /*
@@ -594,19 +602,23 @@ void ImportRecipes(recipeType aRecipes[], string filename)
 	{
 		do
 		{
-			fgets(aRecipes[a].name, sizeof(aRecipes[a].name), RecipeList);
+			fscanf(RecipeList, "%[^\n]", aRecipes[a].name);
+			fscanf(RecipeList, "%c", &garbage);
 			fscanf(RecipeList, "%d %s", &aRecipes[a].servings, aRecipes[a].class);
 			fscanf(RecipeList, "%c", &garbage);
 			fscanf(RecipeList, "%s %d", word, &aRecipes[a].numIngredients);
 			fscanf(RecipeList, "%c", &garbage);
 			for(i = 0; i < aRecipes[a].numIngredients; i++)
 			{
-				fscanf(RecipeList, "%f %s %s", &aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
+				fscanf(RecipeList, "%f %s %[^\n]", &aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
 				fscanf(RecipeList, "%c", &garbage);
 			}
 			fscanf(RecipeList, "%s", word);
 			for(j = 0; j < aRecipes[a].numSteps; j++)
-				fgets(aRecipes[a].steps[j], sizeof(aRecipes[a].steps[j]), RecipeList);
+			{
+				fscanf(RecipeList, "%[^\n]", aRecipes[a].steps[j]);
+				fscanf(RecipeList, "%c", &garbage);
+			}
 			a++;
 		} while(a != 0);
 		fclose(RecipeList);
@@ -662,7 +674,7 @@ void ShoppingList(recipeType aRecipes[], int numRecipes)
 	scanf(" %d", &num);
 	printf("List of ingredients for %s:\n", aRecipes[index].name);
 	for(i = 0; i < aRecipes[index].numIngredients; i++)
-		printf("%f %s\n", aRecipes[index].items[i].quantity * num, aRecipes[index].items[i].food);
+		printf("%f %s %s\n", aRecipes[index].items[i].quantity * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
 /*
