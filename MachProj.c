@@ -370,6 +370,7 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 {
 	char garbage;
 	int i = 0, j = 0;
+	aRecipe.calorie_total = 0;
 
 	printf("Recipe: ");
 	scanf("%[^\n]", aRecipe.name);
@@ -388,6 +389,8 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 	do
 	{
 		aRecipe.items[i] = AddIngredient(aRecipe.items[i], food_info, food_count);
+		if(aRecipe.items[i].calories != 0)
+			aRecipe.calorie_total += aRecipe.items[i].calories;
 	} while(strcmp(aRecipe.items[i++].food, "888"));
 	aRecipe.numIngredients = i;
 
@@ -419,7 +422,10 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 		for(i = 0; i < aRecipe.numIngredients; i++)
 		{
 			if(strcmp(aRecipe.items[i].food, ingredient) == 0)
+			{
 				strcpy(delete, aRecipe.items[i].food);
+				aRecipe.calorie_total -= aRecipe.items[i].calories;
+			}
 		}
 		while(a < aRecipe.numIngredients)
 		{
@@ -443,12 +449,17 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 	This function adds a step to a recipe
 	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
+	@param step_insert - step number (not index) where new step will be inserted
 	@param step - step to be added
 */
-void AddStep(recipeType aRecipe, string_step step)
+void AddStep(recipeType aRecipe, int step_insert, string_step step)
 {
-	strcpy(aRecipe.steps[aRecipe.numSteps], step);
+	int a;
 	aRecipe.numSteps++;
+	for(a = step_insert; a < aRecipe.numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
+		strcpy(aRecipe.steps[a], aRecipe.steps[a + 1]);
+	step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
+	strcpy(aRecipe.steps[step_insert], step);
 }
 
 /*
@@ -456,24 +467,19 @@ void AddStep(recipeType aRecipe, string_step step)
 	This function deletes a step to a recipe
 	Precondition: step contains at most 70 characters
 	@param aRecipe - recipe struct
-	@param step - step to be deleted
+	@param step_remove - step number (not index) to be deleted
 */
-void DeleteStep(recipeType aRecipe, string_step step)
+void DeleteStep(recipeType aRecipe, int step_remove)
 {
 	int a = 0, i;
-	string_step delete;
+	step_remove--;
 	if(aRecipe.numSteps <= 1)
 		printf("Cannot delete any more steps.\n");
 	else
 	{
-		for(i = 0; i < aRecipe.numSteps; i++)
-		{
-			if(strcmp(aRecipe.steps[i], step) == 0)
-				strcpy(delete, aRecipe.steps[i]);
-		}
 		while(a < aRecipe.numSteps)
 		{
-			if(strcmp(aRecipe.steps[a], delete) == 0)
+			if(a == step_remove)
 			{
 				if(a < aRecipe.numSteps - 1)
 				{

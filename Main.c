@@ -7,7 +7,7 @@ int main()
 	int access_check, recipe_option, box_option;
 	int a, i = 0, calorie_info_count = 0;
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
-	int recipe_index, ingredient_index;
+	int recipe_index, ingredient_index, step_insert, step_remove;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, recipeTitle, ingredient, filename;
 	ingredientType calorie_input, calorie_info[MAX], calorie_add[MAX];
@@ -136,9 +136,12 @@ int main()
 							else if(recipe_option == 3)
 							{
 								printf("************* Add Step *************\n");
+								printf("Enter step number to insert: ");
+								scanf("%d", &step_insert);
+								scanf("%c", &garbage);
 								printf("Enter step: ");
 								scanf("%[^\n]", step);
-								AddStep(aRecipes[recipe_index], step);
+								AddStep(aRecipes[recipe_index], step_insert, step);
 							}
 							else if(recipe_option == 4)
 							{
@@ -315,6 +318,7 @@ int main()
 		printf("[E] Exit\n");
 		printf("\nChoose a menu option: ");
 		scanf(" %c", &main_option);
+		scanf("%c", &garbage);
 	}
 	return 0;
 }
