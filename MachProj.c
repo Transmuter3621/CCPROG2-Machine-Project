@@ -292,24 +292,57 @@ void SaveCalorie(ingredientType food_info[], int food_count, string filename)
 */
 void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_info_count)
 {
-	int c, unique_check = 0;
+	int a = 0, b, c, unique = 0;
 	ingredientType food_info;
 	FILE *CalText;
-	char garbage;
+	char garbage, overwrite;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
 		while(fscanf(CalText, "%[^\n]%c%f%c%s%c%f%c", food_info.food, &garbage, &food_info.quantity, &garbage, food_info.unit, &garbage, &food_info.calories, &garbage) == 8)
 		{
-			unique_check = 0;
+			unique = -1;
 			for(c = 0; c < calorie_info_count; c++)
 			{
 				if(strcmp(food_info.food, calorie_info[c].food) == 0)
-					unique_check++;
+					unique = c;
 			}
-			if(unique_check == 0)
+			if(unique == -1)
 			{
 				calorie_info[calorie_info_count] = food_info;
 				calorie_info_count++;
+			}
+			else
+			{
+				printf("This recipe already exists. Overwrite saved recipe? Y/N ");
+				scanf(" %c", &overwrite);
+				scanf("%c", &garbage);
+				while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n')
+				{
+					printf("Invalid input. Please try again.\n");
+					scanf(" %c", &overwrite);
+					scanf("%c", &garbage);
+				}
+				if(overwrite == 'Y' || overwrite == 'y')
+				{
+					calorie_info[calorie_info_count] = food_info;
+					calorie_info_count++;
+					while(a < calorie_info_count)
+					{
+						if(strcmp(calorie_info[a].food, calorie_info[unique].food) == 0)
+						{
+							if(a < calorie_info_count - 1)
+							{
+								for(b = a; b < calorie_info_count - 1; b++)
+									calorie_info[b] = calorie_info[b + 1];
+							}
+							calorie_info_count--;
+						}
+						else
+							a++;
+					}
+				}
+				else if(overwrite != 'N' || overwrite != 'n')
+					printf("%s skipped.\n", food_info.food);
 			}
 			fscanf(CalText, "%c", &garbage);	// to get rid of \n between recipes
 		}
@@ -640,30 +673,32 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 				{
 					unique = -1;
 					if(strcmp(recipe.name, aRecipes[a].name) == 0)
-						unique = a;
+						unique = a;		// duplicate recipe index is saved to unique
 				}
 				if(unique == -1)
 				{
 					aRecipes[numRecipes] = recipe;
 					numRecipes++;
 				}
-				else
+				else	// a recipe is found to have the same name
 				{
 					printf("This recipe already exists. Overwrite saved recipe? Y/N ");
 					scanf(" %c", &overwrite);
 					scanf("%c", &garbage);
-					do
+					while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n')
 					{
 						printf("Invalid input. Please try again.\n");
 						scanf(" %c", &overwrite);
 						scanf("%c", &garbage);
-					} while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n');
+					}
 					if(overwrite == 'Y' || overwrite == 'y')
 					{
-						
+						aRecipes[numRecipes] = recipe;
+						numRecipes++;
+						DeleteRecipe(aRecipes, numRecipes, aRecipes[unique].name);
 					}
 					else if(overwrite != 'N' || overwrite != 'n')
-						printf("Recipe skipped.\n");
+						printf("Recipe %s skipped.\n", recipe.name);
 				}
 			}
 			fscanf(RecipeList, "%c", &garbage);		// to get rid of \n between recipes
