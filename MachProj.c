@@ -385,7 +385,7 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 */
 recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_count)
 {
-	char garbage;
+	char garbage, option;
 	int i = 0, j = 0;
 	aRecipe.calorie_total = 0;
 
@@ -407,14 +407,22 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_c
 		aRecipe.items[i] = AddIngredient(aRecipe.items[i], food_info, food_count);
 		if(aRecipe.items[i].calories != 0)
 			aRecipe.calorie_total += aRecipe.items[i].calories;
-	} while(strcmp(aRecipe.items[i++].food, "888"));
+		i++;
+		printf("Continue adding ingredients? Y/N ");
+		scanf(" %c", &option);
+		scanf("%c", &garbage);
+	} while(option == 'Y' || option == 'y');
 	aRecipe.numIngredients = i;
 
 	do
 	{
 		scanf("%[^\n]", aRecipe.steps[j]);
 		scanf("%c", &garbage);
-	} while(strcmp(aRecipe.steps[j++], "888"));
+		j++;
+		printf("Continue adding steps? Y/N ");
+		scanf(" %c", &option);
+		scanf("%c", &garbage);
+	} while(option == 'Y' || option == 'y');
 	aRecipe.numSteps = j;
 
 	return aRecipe;
