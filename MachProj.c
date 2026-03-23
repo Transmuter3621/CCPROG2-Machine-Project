@@ -286,14 +286,14 @@ void SaveCalorie(ingredientType food_info[], int food_count, string filename)
 	Function 6: Load Calorie Info
 	This function loads a food item's calorie info
 	Precondition: 
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param filename - name of file that contains food-calorie info
 	@param calorie_info - struct that saves the food items
 	@param calorie_info_count - number of food items stored in the program (starting point of adding file calorie-info)
 */
-void LoadCalorie(ingredientType food_info, string filename, ingredientType calorie_info[], int calorie_info_count)
+void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_info_count)
 {
 	int c, unique_check = 0;
+	ingredientType food_info;
 	FILE *CalText;
 	char garbage;
 	if((CalText = fopen(filename, "r")) != NULL)
@@ -378,7 +378,6 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_co
 
 	printf("Class: ");
 	scanf("%[^\n]", aRecipe.class);
-	fgets(aRecipe.class, sizeof(aRecipe.class), stdin);
 	scanf("%c", &garbage);
 
 	printf("Servings: ");
@@ -600,11 +599,13 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	@param numRecipes - number of recipes (starting point of recipe adding)
 	@param filename - name of file user will load recipes from
 */
-void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename, recipeType recipe)
+void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a = 0, scan_check = 0, i, j, ingredient_scan, step_scan, unique_check;
+	int a = 0, scan_check = 0, i, j, ingredient_scan, step_scan, unique;
+	recipeType recipe;
 	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
+	char overwrite;
 	if((RecipeList = fopen(filename, "r")) != NULL)
 	{
 		do
@@ -614,7 +615,6 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename, recip
 					  word, &garbage, &recipe.numIngredients, &garbage) == 10)
 			{
 				scan_check++;
-				unique_check = 0;
 				ingredient_scan = 0;
 				for(i = 0; i < recipe.numIngredients; i++)
 				{
@@ -634,15 +634,37 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename, recip
 				if(step_scan == recipe.numSteps)
 					scan_check++;
 			}
-			for(a = 0; a < numRecipes; a++)
+			if(scan_check == 4)
 			{
-				if(strcmp(recipe.name, aRecipes[a].name) == 0)
-					unique_check++;
-			}
-			if(scan_check == 4 && unique_check == 0)
-			{
-				aRecipes[numRecipes] = recipe;
-				numRecipes++;
+				for(a = 0; a < numRecipes; a++)
+				{
+					unique = -1;
+					if(strcmp(recipe.name, aRecipes[a].name) == 0)
+						unique = a;
+				}
+				if(unique == -1)
+				{
+					aRecipes[numRecipes] = recipe;
+					numRecipes++;
+				}
+				else
+				{
+					printf("This recipe already exists. Overwrite saved recipe? Y/N ");
+					scanf(" %c", &overwrite);
+					scanf("%c", &garbage);
+					do
+					{
+						printf("Invalid input. Please try again.\n");
+						scanf(" %c", &overwrite);
+						scanf("%c", &garbage);
+					} while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n');
+					if(overwrite == 'Y' || overwrite == 'y')
+					{
+						
+					}
+					else if(overwrite != 'N' || overwrite != 'n')
+						printf("Recipe skipped.\n");
+				}
 			}
 			fscanf(RecipeList, "%c", &garbage);		// to get rid of \n between recipes
 		} while(scan_check != 0);

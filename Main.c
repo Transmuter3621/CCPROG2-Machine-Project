@@ -5,12 +5,12 @@ int main()
 	char main_option, displaynext;
 	char garbage;
 	int access_check, recipe_option, box_option;
-	int a, i = 0, calorie_info_count = 0;
+	int calorie_info_count = 0;		// to be updated whenever the user adds food items
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
-	int recipe_index, ingredient_index, step_insert, step_remove;
-	recipeType aRecipes[MAX], recipe, savedRecipes[MAX];
+	int a, recipe_index, ingredient_index, step_insert, step_remove;
+	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, recipeTitle, ingredient, filename;
-	ingredientType calorie_input, calorie_info[MAX], calorie_add[MAX];
+	ingredientType calorie_input, calorie_info[MAX];
 	float calorie_goal;
 	string_step step;
 	string username, password, current_username, current_password;
@@ -91,7 +91,7 @@ int main()
 						printf("******* Load Food-Calorie Info *******\n");
 						printf("Load data from what file? ");
 						scanf("%[^\n]", filename);
-						LoadCalorie(calorie_add[i], filename, calorie_info, calorie_info_count);
+						LoadCalorie(filename, calorie_info, calorie_info_count);
 						if(calorie_info_count == 0)
 							printf("File has no content.\n");
 					}
@@ -206,7 +206,7 @@ int main()
 						printf("********** Import Recipes **********\n");
 						printf("Load data from what file? ");
 						scanf("%[^\n]", filename);
-						ImportRecipes(aRecipes, numRecipes, filename, recipe);
+						ImportRecipes(aRecipes, numRecipes, filename);
 					}
 
 					else if(box_option == 13)
@@ -244,7 +244,7 @@ int main()
 					printf("********** Import Recipes **********\n");
 					printf("Load data to what file? ");
 					scanf("%[^\n]", filename);
-					ImportRecipes(aRecipes, numRecipes, filename, recipe);
+					ImportRecipes(aRecipes, numRecipes, filename);
 				}
 
 				else if(box_option == 2)

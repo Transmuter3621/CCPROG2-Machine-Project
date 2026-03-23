@@ -1,6 +1,33 @@
+Cauliflower
+100.00 grams 25.00
+
 Olive oil
-100.000000 grams 168.000000
+50.00 milliters 442.00
+
+Garlic powder
+100.00 grams 331.00
+
+Onion powder
+100.00 grams 342.00
+
+Lasagna sheets
+100.00 grams 360.00
+
+Tomato sauce
+100.00 grams 78.95
+
+Ground beef
+100.00 grams 332.00
+
+Ground pork
+100.00 grams 241.00
 
 Garlic
-50.000000 grams 75.000000
+6.00 grams 4.00
+
+Onion
+100.00 grams 38.00
+
+Mozzarella cheese
+100.00 grams 280.00
 
