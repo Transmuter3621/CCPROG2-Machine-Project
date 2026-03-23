@@ -289,37 +289,30 @@ void SaveCalorie(ingredientType food_info[], int food_count, string filename)
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param filename - name of file that contains food-calorie info
 	@param calorie_info - struct that saves the food items
-	@param calorie_info_count - number of food items in the file
+	@param calorie_info_count - number of food items stored in the program (starting point of adding file calorie-info)
 */
 void LoadCalorie(ingredientType food_info, string filename, ingredientType calorie_info[], int calorie_info_count)
 {
-	int c, f1, f2, f3, f4, unique_check = 0;
+	int c, unique_check = 0;
 	FILE *CalText;
 	char garbage;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
-		do
+		while(fscanf(CalText, "%[^\n]%c%f%c%s%c%f%c", food_info.food, &garbage, &food_info.quantity, &garbage, food_info.unit, &garbage, &food_info.calories, &garbage) == 8)
 		{
-			f1 = fscanf(CalText, "%[^\n]", food_info.food);
-			fscanf(CalText, "%c", &garbage);
-			f2 = fscanf(CalText, " %f", &food_info.quantity);
-			f3 = fscanf(CalText, "%s", food_info.unit);
-			f4 = fscanf(CalText, " %f", &food_info.calories);
-			if(f1 && f2 && f3 && f4)
+			unique_check = 0;
+			for(c = 0; c < calorie_info_count; c++)
 			{
-				unique_check = 0;
-				for(c = 0; c < calorie_info_count; c++)
-				{
-					if(strcmp(food_info.food, calorie_info[c].food) == 0)
-						unique_check++;
-				}
-				if(unique_check == 0)
-				{
-					calorie_info[calorie_info_count] = food_info;
-					calorie_info_count++;
-				}
+				if(strcmp(food_info.food, calorie_info[c].food) == 0)
+					unique_check++;
 			}
-		} while(f1 && f2 && f3 && f4);
+			if(unique_check == 0)
+			{
+				calorie_info[calorie_info_count] = food_info;
+				calorie_info_count++;
+			}
+			fscanf(CalText, "%c", &garbage);	// to get rid of \n between recipes
+		}
 		fclose(CalText);
 	}
 	else
@@ -604,36 +597,55 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	This function loads a list of recipes from the user's inputted text file (if it's found)
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
+	@param numRecipes - number of recipes (starting point of recipe adding)
 	@param filename - name of file user will load recipes from
 */
-void ImportRecipes(recipeType aRecipes[], string filename)
+void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename, recipeType recipe)
 {
 	FILE *RecipeList;
-	int a = 0, i, j;
+	int a = 0, scan_check = 0, i, j, ingredient_scan, step_scan, unique_check;
 	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
 	if((RecipeList = fopen(filename, "r")) != NULL)
 	{
 		do
 		{
-			fscanf(RecipeList, "%[^\n]", aRecipes[a].name);
-			fscanf(RecipeList, "%c", &garbage);
-			fscanf(RecipeList, "%d %s", &aRecipes[a].servings, aRecipes[a].class);
-			fscanf(RecipeList, "%c", &garbage);
-			fscanf(RecipeList, "%s %d", word, &aRecipes[a].numIngredients);
-			fscanf(RecipeList, "%c", &garbage);
-			for(i = 0; i < aRecipes[a].numIngredients; i++)
+			if(fscanf(RecipeList, "%[^\n]%c%d%c%s%c%s%c%d%c", recipe.name, &garbage, 
+					  &recipe.servings, &garbage, recipe.class, &garbage,
+					  word, &garbage, &recipe.numIngredients, &garbage) == 10)
 			{
-				fscanf(RecipeList, "%f %s %[^\n]", &aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
-				fscanf(RecipeList, "%c", &garbage);
+				scan_check++;
+				unique_check = 0;
+				ingredient_scan = 0;
+				for(i = 0; i < recipe.numIngredients; i++)
+				{
+					if(fscanf(RecipeList, "%f%c%s%c%[^\n]%c", &recipe.items[i].quantity, &garbage, 
+					   recipe.items[i].unit, &garbage, recipe.items[i].food, &garbage) == 6)
+						ingredient_scan++;
+				}
+				if(ingredient_scan == recipe.numIngredients)
+					scan_check++;
+				if(fscanf(RecipeList, "%s%c", word, &garbage) == 2)
+					scan_check++;
+				for(j = 0; j < recipe.numSteps; j++)
+				{
+					if(fscanf(RecipeList, "%[^\n]%c", recipe.steps[j], &garbage) == 2)
+						step_scan++;
+				}
+				if(step_scan == recipe.numSteps)
+					scan_check++;
 			}
-			fscanf(RecipeList, "%s", word);
-			for(j = 0; j < aRecipes[a].numSteps; j++)
+			for(a = 0; a < numRecipes; a++)
 			{
-				fscanf(RecipeList, "%[^\n]", aRecipes[a].steps[j]);
-				fscanf(RecipeList, "%c", &garbage);
+				if(strcmp(recipe.name, aRecipes[a].name) == 0)
+					unique_check++;
 			}
-			a++;
-		} while(a != 0);
+			if(scan_check == 4 && unique_check == 0)
+			{
+				aRecipes[numRecipes] = recipe;
+				numRecipes++;
+			}
+			fscanf(RecipeList, "%c", &garbage);		// to get rid of \n between recipes
+		} while(scan_check != 0);
 		fclose(RecipeList);
 	}
 	else
