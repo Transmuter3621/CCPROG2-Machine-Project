@@ -263,7 +263,7 @@ void ViewCalorie(ingredientType food_info[], int food_count)
 	@param numItems - number of ingredients
 	@param filename - name of file that will store food-calorie info
 */
-void SaveCalorie(ingredientType food_info[], int food_count, string filename)
+void SaveCalorie(string filename, ingredientType food_info[], int food_count)
 {
 	FILE *CalText;
 	int a;
@@ -292,13 +292,13 @@ void SaveCalorie(ingredientType food_info[], int food_count, string filename)
 */
 void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_info_count)
 {
-	int a = 0, b, c, unique = 0;
+	int a = 0, b, c, unique = -8, start_count = calorie_info_count;
 	ingredientType food_info;
 	FILE *CalText;
 	char garbage, overwrite;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
-		while(fscanf(CalText, "%[^\n]%c%f%c%s%c%f%c", food_info.food, &garbage, &food_info.quantity, &garbage, food_info.unit, &garbage, &food_info.calories, &garbage) == 8)
+		while((fscanf(CalText, "%[^\n] %f %s %f ", food_info.food, &food_info.quantity, food_info.unit, &food_info.calories) == 4))
 		{
 			unique = -1;
 			for(c = 0; c < calorie_info_count; c++)
@@ -347,6 +347,8 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_inf
 			fscanf(CalText, "%c", &garbage);	// to get rid of \n between recipes
 		}
 		fclose(CalText);
+		if(calorie_info_count == start_count && unique == -8)	// unique == -8 means the function never found appropriate content
+			printf("File lacks content.\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");
@@ -635,7 +637,7 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a = 0, scan_check = 0, i, j, ingredient_scan, step_scan, unique;
+	int a, scan_check = 0, i, j, ingredient_scan, step_scan, unique = -8, start_recipes = numRecipes;
 	recipeType recipe;
 	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
 	char overwrite;
@@ -643,25 +645,23 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	{
 		do
 		{
-			if(fscanf(RecipeList, "%[^\n]%c%d%c%s%c%s%c%d%c", recipe.name, &garbage, 
-					  &recipe.servings, &garbage, recipe.class, &garbage,
-					  word, &garbage, &recipe.numIngredients, &garbage) == 10)
+			if(fscanf(RecipeList, "%[^\n] %d %s %s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
 			{
 				scan_check++;
 				ingredient_scan = 0;
 				for(i = 0; i < recipe.numIngredients; i++)
 				{
-					if(fscanf(RecipeList, "%f%c%s%c%[^\n]%c", &recipe.items[i].quantity, &garbage, 
-					   recipe.items[i].unit, &garbage, recipe.items[i].food, &garbage) == 6)
+					if(fscanf(RecipeList, " %f %s %[^\n]", &recipe.items[i].quantity, recipe.items[i].unit, recipe.items[i].food) == 3)
 						ingredient_scan++;
 				}
 				if(ingredient_scan == recipe.numIngredients)
 					scan_check++;
-				if(fscanf(RecipeList, "%s%c", word, &garbage) == 2)
+				if(fscanf(RecipeList, " %s %d", word, &recipe.numSteps) == 2)
 					scan_check++;
+				step_scan = 0;
 				for(j = 0; j < recipe.numSteps; j++)
 				{
-					if(fscanf(RecipeList, "%[^\n]%c", recipe.steps[j], &garbage) == 2)
+					if(fscanf(RecipeList, " %[^\n]", recipe.steps[j]) == 1)
 						step_scan++;
 				}
 				if(step_scan == recipe.numSteps)
@@ -704,6 +704,8 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 			fscanf(RecipeList, "%c", &garbage);		// to get rid of \n between recipes
 		} while(scan_check != 0);
 		fclose(RecipeList);
+		if(numRecipes == start_recipes && unique == -8)		// unique == -8 means the function never found appropriate content
+			printf("File lacks content.\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");

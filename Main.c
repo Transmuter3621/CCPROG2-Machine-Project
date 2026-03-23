@@ -83,7 +83,7 @@ int main()
 						printf("******* Save Food-Calorie Info *******\n");
 						printf("Save data to what file? ");
 						scanf("%[^\n]", filename);
-						SaveCalorie(calorie_info, calorie_info_count, filename);
+						SaveCalorie(filename, calorie_info, calorie_info_count);
 					}
 
 					else if(box_option == 4)
@@ -92,8 +92,6 @@ int main()
 						printf("Load data from what file? ");
 						scanf("%[^\n]", filename);
 						LoadCalorie(filename, calorie_info, calorie_info_count);
-						if(calorie_info_count == 0)
-							printf("File has no content.\n");
 					}
 
 					else if(box_option == 5)
@@ -237,6 +235,7 @@ int main()
 				printf("[6] Recommend menu\n");
 				printf("Choose an access option from 0-6: ");
 				scanf(" %d", &box_option);
+				scanf("%c", &garbage);
 				printf("\n");
 				
 				if(box_option == 1)
