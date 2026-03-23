@@ -57,14 +57,14 @@ typedef struct recipeTag recipeType;
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 */
-void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
+void AlphabeticalSort(recipeType aRecipes[], int *numRecipes)
 {
 	int i, j, min;
 	recipeType temp;
-	for(i = 0; i < numRecipes; i++)
+	for(i = 0; i < *numRecipes; i++)
 	{
 		min = i;
-		for(j = i; j < numRecipes; j++)
+		for(j = i; j < *numRecipes; j++)
 		{
 			if(strcmp(aRecipes[min].name, aRecipes[j].name) > 0)
 				min = j;
@@ -87,10 +87,10 @@ void AlphabeticalSort(recipeType aRecipes[], int numRecipes)
 	@param numRecipes - number of recipes
 	@return index of recipe array where recipe was found or -1 if not found
 */
-int SearchName(recipeType aRecipes[], int numRecipes, string recipeTitle)
+int SearchName(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
 	int i, index = -1;
-	for(i = 0; i < numRecipes; i++)
+	for(i = 0; i < *numRecipes; i++)
 	{
 		if(strcmp(aRecipes[i].name, recipeTitle) == 0)
 			index = i;
@@ -228,17 +228,17 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
 */
-void ViewCalorie(ingredientType food_info[], int food_count)
+void ViewCalorie(ingredientType food_info[], int *food_count)
 {
 	int i = 0;
 	char option;
-	printf("		Food			Quantity	Unit	Calories\n");
-	while(i < food_count && i < 10)
+	printf("		Food			Quantity		Unit		Calories\n");
+	while(i < *food_count && i < 10)
 	{
 		printf("%s	%.2f	%s	%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
-	if(food_count > 10)
+	if(*food_count > 10)
 	{
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
 		scanf(" %c", &option);
@@ -263,13 +263,13 @@ void ViewCalorie(ingredientType food_info[], int food_count)
 	@param numItems - number of ingredients
 	@param filename - name of file that will store food-calorie info
 */
-void SaveCalorie(string filename, ingredientType food_info[], int food_count)
+void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 {
 	FILE *CalText;
 	int a;
 	if((CalText = fopen(filename, "w")) != NULL)
 	{
-		for(a = 0; a < food_count; a++)
+		for(a = 0; a < *food_count; a++)
 		{
 			fprintf(CalText, "%s\n", food_info[a].food);
 			fprintf(CalText, "%f ", food_info[a].quantity);
@@ -290,26 +290,26 @@ void SaveCalorie(string filename, ingredientType food_info[], int food_count)
 	@param calorie_info - struct that saves the food items
 	@param calorie_info_count - number of food items stored in the program (starting point of adding file calorie-info)
 */
-void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_info_count)
+void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_info_count)
 {
-	int a = 0, b, c, unique = -8, start_count = calorie_info_count;
+	int c, unique = -8, start_count = *calorie_info_count;
 	ingredientType food_info;
 	FILE *CalText;
 	char garbage, overwrite;
 	if((CalText = fopen(filename, "r")) != NULL)
 	{
-		while((fscanf(CalText, "%[^\n] %f %s %f ", food_info.food, &food_info.quantity, food_info.unit, &food_info.calories) == 4))
+		while((fscanf(CalText, " %[^\n] %f %s %f ", food_info.food, &food_info.quantity, food_info.unit, &food_info.calories) == 4))
 		{
 			unique = -1;
-			for(c = 0; c < calorie_info_count; c++)
+			for(c = 0; c < *calorie_info_count; c++)
 			{
 				if(strcmp(food_info.food, calorie_info[c].food) == 0)
 					unique = c;
 			}
 			if(unique == -1)
 			{
-				calorie_info[calorie_info_count] = food_info;
-				calorie_info_count++;
+				calorie_info[*calorie_info_count] = food_info;
+				(*calorie_info_count)++;
 			}
 			else
 			{
@@ -323,31 +323,13 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_inf
 					scanf("%c", &garbage);
 				}
 				if(overwrite == 'Y' || overwrite == 'y')
-				{
-					calorie_info[calorie_info_count] = food_info;
-					calorie_info_count++;
-					while(a < calorie_info_count)
-					{
-						if(strcmp(calorie_info[a].food, calorie_info[unique].food) == 0)
-						{
-							if(a < calorie_info_count - 1)
-							{
-								for(b = a; b < calorie_info_count - 1; b++)
-									calorie_info[b] = calorie_info[b + 1];
-							}
-							calorie_info_count--;
-						}
-						else
-							a++;
-					}
-				}
-				else if(overwrite != 'N' || overwrite != 'n')
+					calorie_info[unique] = food_info;
+				else if(overwrite == 'N' || overwrite == 'n')
 					printf("%s skipped.\n", food_info.food);
 			}
-			fscanf(CalText, "%c", &garbage);	// to get rid of \n between recipes
 		}
 		fclose(CalText);
-		if(calorie_info_count == start_count && unique == -8)	// unique == -8 means the function never found appropriate content
+		if(*calorie_info_count == start_count && unique == -8)	// unique == -8 means the function never found appropriate content
 			printf("File lacks content.\n");
 	}
 	else
@@ -363,7 +345,7 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int calorie_inf
 	@param food_count - number of existing food items
 	@return ingredient which has the ingredient name,  quantity, and unit
 */
-ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int food_count)
+ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int *food_count)
 {
 	char garbage;
 	int i;
@@ -381,7 +363,7 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	scanf("%c", &garbage);
 
 	ingredient.calories = 0;
-	for(i = 0; i < food_count; i++)
+	for(i = 0; i < *food_count; i++)
 	{
 		if(strcmp(ingredient.food, food_info[i].food) == 0)
 			ingredient.calories = food_info[i].calories / food_info[i].quantity * ingredient.quantity;
@@ -401,7 +383,7 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	@param food_count - number of existing food items
 	@return aRecipe
 */
-recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int food_count)
+recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_count)
 {
 	char garbage;
 	int i = 0, j = 0;
@@ -536,7 +518,7 @@ void DeleteStep(recipeType aRecipe, int step_remove)
 	@param recipeTitle - name of recipe to be deleted
 	@param numRecipes - number of recipes
 */
-void DeleteRecipe(recipeType aRecipes[], int numRecipes, string recipeTitle)
+void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
 	int a = 0, i;
 	int delete = SearchName(aRecipes, numRecipes, recipeTitle);
@@ -544,16 +526,16 @@ void DeleteRecipe(recipeType aRecipes[], int numRecipes, string recipeTitle)
 		printf("Recipe not found. ");
 	else
 	{
-		while(a < numRecipes)
+		while(a < *numRecipes)
 		{
 			if(strcmp(aRecipes[a].name, aRecipes[delete].name) == 0)
 			{
-				if(a < numRecipes - 1)
+				if(a < *numRecipes - 1)
 				{
-					for(i = a; i < numRecipes - 1; i++)
+					for(i = a; i < *numRecipes - 1; i++)
 						aRecipes[i] = aRecipes[i + 1];
 				}
-				numRecipes--;
+				(*numRecipes)--;
 			}
 			else
 				a++;
@@ -568,11 +550,11 @@ void DeleteRecipe(recipeType aRecipes[], int numRecipes, string recipeTitle)
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
 */
-void DisplayRecipeTitles(recipeType aRecipes[], int numRecipes)
+void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 {
 	int i;
 	AlphabeticalSort(aRecipes, numRecipes);
-	for(i = 0; i < numRecipes; i++)
+	for(i = 0; i < *numRecipes; i++)
 		printf("%s\n", aRecipes[i].name);
 }
 
@@ -582,9 +564,9 @@ void DisplayRecipeTitles(recipeType aRecipes[], int numRecipes)
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
 	@param recipeTitle - recipe the user is trying to find
-	@param n - number of recipes
+	@param numRecipes - number of recipes
 */
-void SearchByTitle(recipeType aRecipes[], int numRecipes, string recipeTitle)
+void SearchByTitle(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
 	DisplayRecipeTitles(aRecipes, numRecipes);
 	int index = SearchName(aRecipes, numRecipes, recipeTitle);
@@ -602,13 +584,13 @@ void SearchByTitle(recipeType aRecipes[], int numRecipes, string recipeTitle)
 	@param numRecipes - number of recipes
 	@param filename - name of file that will contain all recipes made at the time
 */
-void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
+void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 {
 	FILE *RecipeList;
 	int a, i, j;
 	if((RecipeList = fopen(filename, "w")) != NULL)
 	{
-		for(a = 0; a < numRecipes; a++)
+		for(a = 0; a < *numRecipes; a++)
 		{
 			fprintf(RecipeList, "%s\n", aRecipes[a].name);
 			fprintf(RecipeList, "%d %s\n", aRecipes[a].servings, aRecipes[a].class);
@@ -634,10 +616,10 @@ void ExportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	@param numRecipes - number of recipes (starting point of recipe adding)
 	@param filename - name of file user will load recipes from
 */
-void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
+void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a, scan_check = 0, i, j, ingredient_scan, step_scan, unique = -8, start_recipes = numRecipes;
+	int a, scan_check = 0, i, j, ingredient_scan, step_scan, unique = -8, start_recipes = *numRecipes;
 	recipeType recipe;
 	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
 	char overwrite;
@@ -645,7 +627,7 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	{
 		do
 		{
-			if(fscanf(RecipeList, "%[^\n] %d %s %s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
+			if(fscanf(RecipeList, " %[^\n] %d %s %s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
 			{
 				scan_check++;
 				ingredient_scan = 0;
@@ -669,16 +651,17 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 			}
 			if(scan_check == 4)
 			{
-				for(a = 0; a < numRecipes; a++)
+				unique = -1;
+				for(a = 0; a < *numRecipes; a++)
 				{
-					unique = -1;
 					if(strcmp(recipe.name, aRecipes[a].name) == 0)
 						unique = a;		// duplicate recipe index is saved to unique
 				}
+				printf("Unique: %d\n", unique);
 				if(unique == -1)
 				{
-					aRecipes[numRecipes] = recipe;
-					numRecipes++;
+					aRecipes[*numRecipes] = recipe;
+					(*numRecipes)++;
 				}
 				else	// a recipe is found to have the same name
 				{
@@ -692,19 +675,15 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 						scanf("%c", &garbage);
 					}
 					if(overwrite == 'Y' || overwrite == 'y')
-					{
-						aRecipes[numRecipes] = recipe;
-						numRecipes++;
-						DeleteRecipe(aRecipes, numRecipes, aRecipes[unique].name);
-					}
-					else if(overwrite != 'N' || overwrite != 'n')
+						aRecipes[unique] = recipe;
+					else if(overwrite == 'N' || overwrite == 'n')
 						printf("Recipe %s skipped.\n", recipe.name);
 				}
 			}
 			fscanf(RecipeList, "%c", &garbage);		// to get rid of \n between recipes
 		} while(scan_check != 0);
 		fclose(RecipeList);
-		if(numRecipes == start_recipes && unique == -8)		// unique == -8 means the function never found appropriate content
+		if(*numRecipes == start_recipes && unique == -8)		// unique == -8 means the function never found appropriate content
 			printf("File lacks content.\n");
 	}
 	else
@@ -720,10 +699,10 @@ void ImportRecipes(recipeType aRecipes[], int numRecipes, string filename)
 	@param fooditem - user-inputted ingredient
 	@param savedRecipes[] - list of recipes that have searched ingredient
 */
-void ScanByIngredient(recipeType aRecipes[], int numRecipes, string fooditem, recipeType savedRecipes[])
+void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, recipeType savedRecipes[])
 {
 	int a, i, found, save = 0;
-	for(a = 0; a < numRecipes; a++)
+	for(a = 0; a < *numRecipes; a++)
 	{
 		found = 0;
 		for(i = 0; i < aRecipes[a].numIngredients; i++)
@@ -746,7 +725,7 @@ void ScanByIngredient(recipeType aRecipes[], int numRecipes, string fooditem, re
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 */
-void ShoppingList(recipeType aRecipes[], int numRecipes)
+void ShoppingList(recipeType aRecipes[], int *numRecipes)
 {
 	int i, index, num;
 	string recipe;
@@ -769,11 +748,11 @@ void ShoppingList(recipeType aRecipes[], int numRecipes)
 	@param numRecipes - number of recipes
 	@param calorie_goal - amount of calories the user aims to gain
 */
-void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
+void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
 	int a, b, c, closest = 0, counter = 0, i, saved_menu = 0;
 	recipeType recommend[3];
-	for(a = 0; a < numRecipes; a++)
+	for(a = 0; a < *numRecipes; a++)
 	{
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
@@ -791,7 +770,7 @@ void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
 	closest = 0;
 	if(counter == 0)
 	{
-		for(b = 0; b < numRecipes; b++)
+		for(b = 0; b < *numRecipes; b++)
 		{
 			if(strcmp(aRecipes[b].class, "starter") == 0)
 			{
@@ -810,7 +789,7 @@ void RecommendMenu(recipeType aRecipes[], int numRecipes, float calorie_goal)
 	closest = 0;
 	if(counter == 0)
 	{
-		for(c = 0; c < numRecipes; c++)
+		for(c = 0; c < *numRecipes; c++)
 		{
 			if(strcmp(aRecipes[c].class, "dessert") == 0)
 			{
