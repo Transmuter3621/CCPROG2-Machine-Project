@@ -153,6 +153,9 @@ int main()
 					else if(box_option == 7)
 					{
 						printf("*********** Delete Recipe ***********\n");
+						printf("Enter recipe to delete: ");
+						scanf("%[^\n]", recipeTitle);
+						scanf("%c", &garbage);
 						DeleteRecipe(aRecipes, &numRecipes, recipeTitle);
 					}
 
@@ -172,11 +175,13 @@ int main()
 							DisplayRecipe(aRecipes[a]);
 							a++;
 							printf("Display next recipe? Press N for next or X for exit. ");
-							scanf("%c", &displaynext);
-							while(displaynext != 'N')
+							scanf(" %c", &displaynext);
+							scanf("%c", &garbage);
+							while(displaynext != 'N' && displaynext != 'X')
 							{
 								printf("Invalid input, please try again. ");
-								scanf("%c", &displaynext);
+								scanf(" %c", &displaynext);
+								scanf("%c", &garbage);
 							}
 						}while(displaynext != 'X');
 					}

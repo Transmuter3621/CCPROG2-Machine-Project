@@ -99,24 +99,6 @@ int SearchName(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 }
 
 /*
-	Helper Function 3: Display Recipe
-	This function displays one recipe's details
-	Precondition: 
-	@param aRecipe - recipe struct
-*/
-void DisplayRecipe(recipeType aRecipe)
-{
-	int i, j;
-	printf("%s		%d		%f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
-	printf("Ingredients:\n");
-	for(i = 0; i < aRecipe.numIngredients; i++)
-		printf("%f %s %s		%f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
-	printf("Procedure:\n");
-	for(j = 0; j < aRecipe.numSteps; j++)
-		printf("%s\n", aRecipe.steps[j]);
-}
-
-/*
 	Function 1: Username and Password Changer
 	This function changes the user's username and/or password
 	Precondition: username and password can only be 20 characters max
@@ -230,8 +212,24 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 */
 void ViewCalorie(ingredientType food_info[], int *food_count)
 {
-	int i = 0;
+	int a, b, i = 0, min;
+	ingredientType temp;
 	char option;
+	for(a = 0; a < *food_count; a++)
+	{
+		min = a;
+		for(b = i; b < *food_count; b++)
+		{
+			if(strcmp(food_info[min].food, food_info[b].food) > 0)
+				min = b;
+		}
+		if(a != min)
+		{
+			temp = food_info[a];
+			food_info[a] = food_info[min];
+			food_info[min] = temp;
+		}
+	}
 	printf("		Food			Quantity		Unit		Calories\n");
 	while(i < *food_count && i < 10)
 	{
@@ -240,7 +238,7 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 	}
 	if(*food_count > 10)
 	{
-		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit.\n");
+		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit. ");
 		scanf(" %c", &option);
 		while(option != 'X')
 		{
@@ -249,7 +247,7 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 				printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
 			} while(i % 10 != 0);
-			printf("View next 10 items? Press 'N' to proceed or 'X' to exit.\n");
+			printf("View next 10 items? Press 'N' to proceed or 'X' to exit. ");
 			scanf(" %c", &option);
 		}
 	}
@@ -367,6 +365,8 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	{
 		if(strcmp(ingredient.food, food_info[i].food) == 0)
 			ingredient.calories = food_info[i].calories / food_info[i].quantity * ingredient.quantity;
+		else
+			ingredient.calories = 0;
 	}
 
 	return ingredient;
@@ -567,7 +567,25 @@ void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 }
 
 /*
-	Function 14: Search Recipe by Title
+	Function 14: Display Recipe
+	This function displays one recipe's details
+	Precondition: 
+	@param aRecipe - recipe struct
+*/
+void DisplayRecipe(recipeType aRecipe)
+{
+	int i, j;
+	printf("%s		%d		%.2f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
+	printf("Ingredients:\n");
+	for(i = 0; i < aRecipe.numIngredients; i++)
+		printf("%.2f %s %s		%.2f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
+	printf("Procedure:\n");
+	for(j = 0; j < aRecipe.numSteps; j++)
+		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
+}
+
+/*
+	Function 15: Search Recipe by Title
 	This function searches a recipe by its title
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
@@ -585,7 +603,7 @@ void SearchByTitle(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 }
 
 /*
-	Function 15: Export Recipes
+	Function 16: Export Recipes
 	This function saves the current list of recipes in the user's text file of choice (if it's found)
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
@@ -617,7 +635,7 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 }
 
 /*
-	Function 16: Import Recipes
+	Function 17: Import Recipes
 	This function loads a list of recipes from the user's inputted text file (if it's found)
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
@@ -627,7 +645,7 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 {
 	FILE *RecipeList;
-	int a, scan_check = 0, i, j, ingredient_scan, step_scan, unique = -8, start_recipes = *numRecipes;
+	int a, scan_check, i, j, ingredient_scan, step_scan, unique = -8, start_recipes = *numRecipes;
 	recipeType recipe;
 	char garbage, word[12];		// to scan leftover \n, "Ingredients", and "Steps"
 	char overwrite;
@@ -635,6 +653,7 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 	{
 		do
 		{
+			scan_check = 0;
 			if(fscanf(RecipeList, " %[^\n] %d %s %s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
 			{
 				scan_check++;
@@ -665,7 +684,6 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 					if(strcmp(recipe.name, aRecipes[a].name) == 0)
 						unique = a;		// duplicate recipe index is saved to unique
 				}
-				printf("Unique: %d\n", unique);
 				if(unique == -1)
 				{
 					aRecipes[*numRecipes] = recipe;
@@ -699,7 +717,7 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 }
 
 /*
-	Function 17: Search Recipe by Ingredient
+	Function 18: Search Recipe by Ingredient
 	This function searches a recipe according to its ingredient
 	Precondition: 
 	@param aRecipes[] - list of recipes
@@ -727,7 +745,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 }
 
 /*
-	Function 18: Generate Shopping List
+	Function 19: Generate Shopping List
 	This function randomizes a shopping list for the user
 	Precondition: option must be a single character
 	@param aRecipes[] - list of recipes
@@ -745,11 +763,11 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	scanf(" %d", &num);
 	printf("List of ingredients for %s:\n", aRecipes[index].name);
 	for(i = 0; i < aRecipes[index].numIngredients; i++)
-		printf("%f %s %s\n", aRecipes[index].items[i].quantity * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
+		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
 /*
-	Function 19: Recommend Menu
+	Function 20: Recommend Menu
 	This function searches a recipe according to its ingredient
 	Precondition: 
 	@param aRecipes[] - list of recipes
