@@ -71,7 +71,7 @@ int main()
 
 					else if(box_option == 2)
 					{
-						printf("******** Food-Calorie Chart ********\n");
+						printf("********** Food-Calorie Chart **********\n");
 						if(calorie_info_count == 0)
 							printf("No data to view.\n");
 						else
@@ -172,18 +172,21 @@ int main()
 						printf("*********** Scan Recipes ***********\n");
 						do
 						{
-							DisplayRecipe(aRecipes[a]);
-							a++;
-							printf("Display next recipe? Press N for next or X for exit. ");
-							scanf(" %c", &displaynext);
-							scanf("%c", &garbage);
-							while(displaynext != 'N' && displaynext != 'X')
+							if(a < numRecipes)
 							{
-								printf("Invalid input, please try again. ");
+								DisplayRecipe(aRecipes[a]);
+								a++;
+								printf("Display next recipe? Press N for next or X for exit. ");
 								scanf(" %c", &displaynext);
 								scanf("%c", &garbage);
+								while(displaynext != 'N' && displaynext != 'X')
+								{
+									printf("Invalid input, please try again. ");
+									scanf(" %c", &displaynext);
+									scanf("%c", &garbage);
+								}
 							}
-						}while(displaynext != 'X');
+						}while(a < numRecipes && displaynext != 'X');
 					}
 
 					else if(box_option == 10)

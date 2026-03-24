@@ -119,9 +119,11 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 			for(f = 0; f < *food_count; f++)
 			{
 				if(strcmp(aRecipes[a].items[i].food, food_info[f].food) == 0)
+				{
 					aRecipes[a].items[i].calories = food_info[f].calories / food_info[f].quantity * aRecipes[a].items[i].quantity;
+					aRecipes[a].calorie_total += aRecipes[a].items[i].calories;
+				}
 			}
-			aRecipes[a].calorie_total += aRecipes[a].items[i].calories;
 		}
 	}
 }
@@ -256,24 +258,28 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 			food_info[min] = temp;
 		}
 	}
-	printf("        Food              Quantity          Unit      Calories\n");
+	printf("+--------------------+----------+----------------+------------+\n");
+	printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
 	while(i < *food_count && i < 10)
 	{
-		printf("%s		%.2f	%s	%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+		printf("|%-20s|%-10.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
+	printf("+--------------------+----------+----------------+------------+\n");
 	if(i < *food_count && *food_count > 10)
 	{
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit. ");
 		scanf(" %c", &option);
 		while(i < *food_count && option != 'X')
 		{
+			printf("+--------------------+----------+----------------+------------+\n");
 			do
 			{
-				printf("        Food              Quantity          Unit      Calories\n");
-				printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+				printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
+				printf("|%-20s|%-10.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
 			} while(i < *food_count && i % 10 != 0);
+			printf("+--------------------+----------+----------------+------------+\n");
 			if(i < *food_count)
 			{
 				printf("View next 10 items? Press 'N' to proceed or 'X' to exit. ");
