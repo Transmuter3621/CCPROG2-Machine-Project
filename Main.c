@@ -168,6 +168,7 @@ int main()
 					else if(box_option == 9)
 					{
 						AlphabeticalSort(aRecipes, &numRecipes);
+						CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 						a = 0;
 						printf("*********** Scan Recipes ***********\n");
 						do
@@ -217,6 +218,7 @@ int main()
 						printf("********** Change Username or Password **********\n");
 						AccessModifier(current_username, current_password);
 					}
+					CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 				} while(box_option != 0);
 			}
 			else if(access_check == 2)
@@ -249,6 +251,7 @@ int main()
 					printf("Load data from what file? ");
 					scanf("%[^\n]", filename);
 					ImportRecipes(aRecipes, &numRecipes, filename);
+					CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 				}
 
 				else if(box_option == 2)
@@ -311,6 +314,7 @@ int main()
 					scanf("%f", &calorie_goal);
 					RecommendMenu(aRecipes, &numRecipes, calorie_goal);
 				}
+				CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 			}while(box_option != 0);
 		}
 		else if(main_option != 'U' && main_option != 'A' && main_option != 'E')

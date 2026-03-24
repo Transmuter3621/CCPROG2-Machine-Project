@@ -99,6 +99,32 @@ int SearchName(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 }
 
 /*
+	Helper Function 3: Calorie matcher
+	This function matches the amount of calories of the ingredients in a recipe
+	Precondition: all entries in aRecipes and food_info are complete
+	@param aRecipes[] - list of recipes
+	@param numRecipes - number of recipes
+	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param food_count - number of existing food items
+*/
+void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_info[], int *food_count)
+{
+	int a, i, f;
+	for(a = 0; a < *numRecipes; a++)
+	{
+		for(i = 0; i < aRecipes[a].numIngredients; i++)
+		{
+			aRecipes[a].items[i].calories = 0;
+			for(f = 0; f < *food_count; f++)
+			{
+				if(strcmp(aRecipes[a].items[i].food, food_info[f].food) == 0)
+					aRecipes[a].items[i].calories = food_info[f].calories / food_info[f].quantity * aRecipes[a].items[i].quantity;
+			}
+		}
+	}
+}
+
+/*
 	Function 1: Username and Password Changer
 	This function changes the user's username and/or password
 	Precondition: username and password can only be 20 characters max
@@ -176,7 +202,8 @@ int PassCheck(string username, string current_username, string password, string 
 /*
 	Function 3: Add food-calorie info
 	This function adds the info of a certain food item
-	Precondition: 
+	Precondition: quantity can only be a non-negative float
+				  quantity and unit are to be inputted with a space between
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@return food_info
 */
@@ -188,12 +215,8 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	scanf("%[^\n]", food_info.food);
 	scanf("%c", &garbage);
 
-	printf("Quantity: ");
-	scanf(" %f", &food_info.quantity);
-	scanf("%c", &garbage);
-
-	printf("Unit: ");
-	scanf("%[^\n]", food_info.unit);
+	printf("Quantity and Unit: ");
+	scanf(" %f %s", &food_info.quantity, food_info.unit);
 	scanf("%c", &garbage);
 
 	printf("Calorie amount: ");
@@ -215,10 +238,11 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 	int a, b, i = 0, min;
 	ingredientType temp;
 	char option;
+	// Alphabetical sort for food items
 	for(a = 0; a < *food_count; a++)
 	{
 		min = a;
-		for(b = i; b < *food_count; b++)
+		for(b = a; b < *food_count; b++)
 		{
 			if(strcmp(food_info[min].food, food_info[b].food) > 0)
 				min = b;
@@ -230,25 +254,29 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 			food_info[min] = temp;
 		}
 	}
-	printf("		Food			Quantity		Unit		Calories\n");
+	printf("        Food              Quantity          Unit      Calories\n");
 	while(i < *food_count && i < 10)
 	{
-		printf("%s	%.2f	%s	%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+		printf("%s		%.2f	%s	%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
-	if(*food_count > 10)
+	if(i < *food_count && *food_count > 10)
 	{
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit. ");
 		scanf(" %c", &option);
-		while(option != 'X')
+		while(i < *food_count && option != 'X')
 		{
 			do
 			{
+				printf("        Food              Quantity          Unit      Calories\n");
 				printf("%s		%.2f		%s		%.2f\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
-			} while(i % 10 != 0);
-			printf("View next 10 items? Press 'N' to proceed or 'X' to exit. ");
-			scanf(" %c", &option);
+			} while(i < *food_count && i % 10 != 0);
+			if(i < *food_count)
+			{
+				printf("View next 10 items? Press 'N' to proceed or 'X' to exit. ");
+				scanf(" %c", &option);
+			}
 		}
 	}
 }
@@ -270,8 +298,7 @@ void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 		for(a = 0; a < *food_count; a++)
 		{
 			fprintf(CalText, "%s\n", food_info[a].food);
-			fprintf(CalText, "%f ", food_info[a].quantity);
-			fprintf(CalText, "%s ", food_info[a].unit);
+			fprintf(CalText, "%f %s ", food_info[a].quantity, food_info[a].unit);
 			fprintf(CalText, "%f\n\n", food_info[a].calories);
 		}
 		fclose(CalText);
@@ -337,7 +364,8 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 /*
 	Function 7: Add ingredient
 	This function gets the input of an ingredient and its quantity
-	Precondition: 
+	Precondition: quantity can only be a non-negative float
+				  quantity and unit are to be inputted with a space between
 	@param ingredient - struct that holds an ingredient's name and quantity in certain units
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
@@ -352,12 +380,8 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	scanf("%[^\n]", ingredient.food);
 	scanf("%c", &garbage);
 
-	printf("Quantity: ");
-	scanf(" %f", &ingredient.quantity);
-	scanf("%c", &garbage);
-
-	printf("Unit: ");
-	scanf("%[^\n]", ingredient.unit);
+	printf("Quantity with unit: ");
+	scanf("%f %s", &ingredient.quantity, ingredient.unit);
 	scanf("%c", &garbage);
 
 	ingredient.calories = 0;
