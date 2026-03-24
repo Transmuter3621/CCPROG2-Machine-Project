@@ -168,7 +168,6 @@ int main()
 					else if(box_option == 9)
 					{
 						AlphabeticalSort(aRecipes, &numRecipes);
-						CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 						a = 0;
 						printf("*********** Scan Recipes ***********\n");
 						do

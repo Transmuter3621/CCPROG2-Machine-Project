@@ -45,7 +45,7 @@ struct recipeTag
 	float calorie_total;
 	ingredientType items[MAX_INGREDIENTS];
 	int numIngredients;
-	string steps[MAX_STEPS];
+	string_step steps[MAX_STEPS];
 	int numSteps;
 };
 typedef struct recipeTag recipeType;
@@ -112,6 +112,7 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 	int a, i, f;
 	for(a = 0; a < *numRecipes; a++)
 	{
+		aRecipes[a].calorie_total = 0;
 		for(i = 0; i < aRecipes[a].numIngredients; i++)
 		{
 			aRecipes[a].items[i].calories = 0;
@@ -120,6 +121,7 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 				if(strcmp(aRecipes[a].items[i].food, food_info[f].food) == 0)
 					aRecipes[a].items[i].calories = food_info[f].calories / food_info[f].quantity * aRecipes[a].items[i].quantity;
 			}
+			aRecipes[a].calorie_total += aRecipes[a].items[i].calories;
 		}
 	}
 }
@@ -434,10 +436,10 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_c
 		i++;
 		printf("Continue adding ingredients? Y/N ");
 		scanf(" %c", &option);
-		scanf("%c", &garbage);
 	} while(option == 'Y' || option == 'y');
 	aRecipe.numIngredients = i;
 
+	printf("Steps:\n");
 	do
 	{
 		scanf("%[^\n]", aRecipe.steps[j]);
@@ -445,7 +447,6 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_c
 		j++;
 		printf("Continue adding steps? Y/N ");
 		scanf(" %c", &option);
-		scanf("%c", &garbage);
 	} while(option == 'Y' || option == 'y');
 	aRecipe.numSteps = j;
 
