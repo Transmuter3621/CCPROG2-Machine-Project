@@ -816,21 +816,10 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, higher = 0, closest = 0, counter = 0, i, saved_menu = 0;
+	int a, b, c, d;
+	int closest = 0, counter = 0, i, min = 0, saved_menu = 0;
 	char option, garbage;
 	recipeType recommend[3];
-	for(a = 0; a < *numRecipes; a++)
-	{
-		if(aRecipes[a].calorie_total > calorie_goal)
-			higher++;
-	}
-	if(higher == *numRecipes)
-	{
-		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Y/N");
-		scanf(" %c", &option);
-		scanf("%c", &garbage);
-		DisplayRecipe(aRecipes[a]);
-	}
 	for(a = 0; a < *numRecipes; a++)
 	{
 		if(strcmp(aRecipes[a].class, "main") == 0)
@@ -881,6 +870,24 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			}
 		}
 	}
-	for(i = 0; i < saved_menu; i++)
-		DisplayRecipe(recommend[i]);
+	if(saved_menu == 0)
+	{
+		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Press Y to show");
+		scanf(" %c", &option);
+		scanf("%c", &garbage);
+		if(option == 'Y' || option == 'y')
+		{
+			for(d = 0; d < *numRecipes; d++)
+			{
+				if(aRecipes[d].calorie_total < aRecipes[min].calorie_total)
+					min = d;
+			}
+			DisplayRecipe(aRecipes[min]);
+		}
+	}
+	else
+	{
+		for(i = 0; i < saved_menu; i++)
+			DisplayRecipe(recommend[i]);
+	}
 }
