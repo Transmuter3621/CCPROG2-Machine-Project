@@ -816,14 +816,38 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d;
+	int a, b, c, d = 0, m = 0, s = 0;
 	int closest = 0, counter = 0, i, min = 0, saved_menu = 0;
 	char option, garbage;
-	recipeType recommend[3];
+	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[3];
+
 	for(a = 0; a < *numRecipes; a++)
 	{
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
+			aMain[m] = aRecipes[a];
+			m++;
+		}
+		else if(strcmp(aRecipes[a].class, "starter") == 0)
+		{
+			aStarter[s] = aRecipes[a];
+			s++;
+		}
+		else if(strcmp(aRecipes[a].class, "dessert") == 0)
+		{
+			aDessert[d] = aRecipes[a];
+			d++;
+		}
+	}
+
+	for(a = 0; a < m; a++)
+	{
+		for(b = 0; b < s; b++)
+		{
+			for(c = 0; c < d; c++)
+			{
+
+			}
 			if(aRecipes[a].calorie_total > aRecipes[closest].calorie_total && aRecipes[a].calorie_total <= calorie_goal)
 			{
 				closest = a;
