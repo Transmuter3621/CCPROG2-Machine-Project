@@ -806,6 +806,14 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
+struct recipesetTag
+{
+	recipeType main_recipe,
+			   starter_recipe,
+			   dessert_recipe;
+	float calorieTotal;
+} recipeSet;
+
 /*
 	Function 20: Recommend Menu
 	This function searches a recipe according to its ingredient
@@ -816,8 +824,9 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d = 0, m = 0, s = 0;
-	int closest = 0, counter = 0, i, min = 0, saved_menu = 0;
+	int a, b, c, x, y, z;
+	int main_count = 0, starter_count = 0, dessert_count = 0;
+	int closest = 0, found = 0, i, min = 0, saved_menu = 0;
 	char option, garbage;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[3];
 
@@ -825,61 +834,74 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	{
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
-			aMain[m] = aRecipes[a];
-			m++;
+			aMain[main_count] = aRecipes[a];
+			main_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "starter") == 0)
 		{
-			aStarter[s] = aRecipes[a];
-			s++;
+			aStarter[starter_count] = aRecipes[a];
+			starter_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "dessert") == 0)
 		{
-			aDessert[d] = aRecipes[a];
-			d++;
+			aDessert[dessert_count] = aRecipes[a];
+			dessert_count++;
 		}
 	}
 
-	for(a = 0; a < m; a++)
+	for(a = 0; a < main_count; a++)
 	{
-		for(b = 0; b < s; b++)
+		if(aRecipes[a].calorie_total == calorie_goal)
 		{
-			for(c = 0; c < d; c++)
-			{
+			recommend[saved_menu] = aRecipes[a];
+			saved_menu++;
+			found++;	// to signal that a perfect match has been found
+		}
+	}
 
-			}
-			if(aRecipes[a].calorie_total > aRecipes[closest].calorie_total && aRecipes[a].calorie_total <= calorie_goal)
+	if(found == 0)
+	{
+		for(b = 0; b < starter_count; b++)
+		{
+			if(aRecipes[b].calorie_total == calorie_goal)
 			{
-				closest = a;
+				recommend[saved_menu] = aRecipes[b];
+				saved_menu++;
+				found++;	// to signal that a perfect match has been found
+			}
+		}
+	}
+
+	if(found == 0)
+	{
+		for(c = 0; c < dessert_count; c++)
+		{
+			if(aRecipes[c].calorie_total == calorie_goal)
+			{
+				recommend[saved_menu] = aRecipes[c];
+				saved_menu++;
+				found++;	// to signal that a perfect match has been found
+			}
+		}
+	}
+
+	if(found == 0)
+	{
+		for(b = 0; b < *numRecipes; b++)
+		{
+			if(aRecipes[b].calorie_total > aRecipes[closest].calorie_total && aRecipes[b].calorie_total <= calorie_goal)
+			{
+				closest = b;
 				recommend[saved_menu] = aRecipes[closest];
 				saved_menu++;
 			}
 			if(aRecipes[closest].calorie_total == calorie_goal)
-				counter++;
+				found++;
 			calorie_goal -= aRecipes[closest].calorie_total;
 		}
 	}
 	closest = 0;
-	if(counter == 0)
-	{
-		for(b = 0; b < *numRecipes; b++)
-		{
-			if(strcmp(aRecipes[b].class, "starter") == 0)
-			{
-				if(aRecipes[b].calorie_total > aRecipes[closest].calorie_total && aRecipes[b].calorie_total <= calorie_goal)
-				{
-					closest = b;
-					recommend[saved_menu] = aRecipes[closest];
-					saved_menu++;
-				}
-				if(aRecipes[closest].calorie_total == calorie_goal)
-					counter++;
-				calorie_goal -= aRecipes[closest].calorie_total;
-			}
-		}
-	}
-	closest = 0;
-	if(counter == 0)
+	if(found == 0)
 	{
 		for(c = 0; c < *numRecipes; c++)
 		{
@@ -901,10 +923,10 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		scanf("%c", &garbage);
 		if(option == 'Y' || option == 'y')
 		{
-			for(d = 0; d < *numRecipes; d++)
+			for(z = 0; z < *numRecipes; z++)
 			{
-				if(aRecipes[d].calorie_total < aRecipes[min].calorie_total)
-					min = d;
+				if(aRecipes[z].calorie_total < aRecipes[min].calorie_total)
+					min = z;
 			}
 			DisplayRecipe(aRecipes[min]);
 		}
