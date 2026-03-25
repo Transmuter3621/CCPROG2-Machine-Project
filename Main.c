@@ -236,18 +236,27 @@ int main()
 			{
 				printf("\n************** Access Recipe Box **************\n");
 				printf("[0] Return to main menu\n");
-				printf("[1] Import recipes\n");
-				printf("[2] List recipe titles\n");
-				printf("[3] Display recipes\n");
-				printf("[4] Scan recipes by ingredient\n");
-				printf("[5] Generate shopping list\n");
-				printf("[6] Recommend menu\n");
-				printf("Choose an access option from 0-6: ");
+				printf("[1] Load calorie info\n");
+				printf("[2] Import recipes\n");
+				printf("[3] List recipe titles\n");
+				printf("[4] Display recipes\n");
+				printf("[5] Scan recipes by ingredient\n");
+				printf("[6] Generate shopping list\n");
+				printf("[7] Recommend menu\n");
+				printf("Choose an access option from 0-7: ");
 				scanf(" %d", &box_option);
 				scanf("%c", &garbage);
 				printf("\n");
 				
 				if(box_option == 1)
+				{
+					printf("******* Load Food-Calorie Info *******\n");
+					printf("Load data from what file? ");
+					scanf("%[^\n]", filename);
+					LoadCalorie(filename, calorie_info, &calorie_info_count);
+				}
+
+				else if(box_option == 2)
 				{
 					printf("********** Import Recipes **********\n");
 					printf("Load data from what file? ");
@@ -256,13 +265,13 @@ int main()
 					CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 				}
 
-				else if(box_option == 2)
+				else if(box_option == 3)
 				{
 					printf("********* List of Recipes *********\n");
 					DisplayRecipeTitles(aRecipes, &numRecipes);
 				}
 
-				else if(box_option == 3)
+				else if(box_option == 4)
 				{
 					AlphabeticalSort(aRecipes, &numRecipes);
 					a = 0;
@@ -281,7 +290,7 @@ int main()
 					}while(displaynext != 'X');
 				}
 
-				else if(box_option == 4)
+				else if(box_option == 5)
 				{
 					printf("******** Scan Recipes By Ingredient ********\n");
 					AlphabeticalSort(aRecipes, &numRecipes);
@@ -303,13 +312,13 @@ int main()
 					}while(displaynext != 'X');
 				}
 
-				else if(box_option == 5)
+				else if(box_option == 6)
 				{
 					printf("********* Generate Shopping List *********\n");
 					ShoppingList(aRecipes, &numRecipes);
 				}
 				
-				else if(box_option == 6)
+				else if(box_option == 7)
 				{
 					printf("******* Menu Recommendation *******\n");
 					printf("Enter calorie goal: ");
