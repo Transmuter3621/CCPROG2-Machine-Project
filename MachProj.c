@@ -806,13 +806,25 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
-struct recipesetTag
+struct twoRecipes
 {
 	recipeType main_recipe,
 			   starter_recipe,
 			   dessert_recipe;
 	float calorieTotal;
-} recipeSet;
+};
+
+typedef struct twoRecipes recipeSet2;
+
+struct threeRecipes
+{
+	recipeType main_recipe,
+			   starter_recipe,
+			   dessert_recipe;
+	float calorieTotal;
+};
+
+typedef struct threeRecipes recipeSet3;
 
 /*
 	Function 20: Recommend Menu
@@ -824,9 +836,11 @@ struct recipesetTag
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, x, y, z;
+	int a, b, c, d, e, f, g, h = 0, i, j, k, l = 0, x, y, z;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int closest = 0, found = 0, i, min = 0, saved_menu = 0;
+	recipeSet2 recipeDuo[MAX * MAX];
+	recipeSet3 recipeTrio[MAX * MAX * MAX];
 	char option, garbage;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[3];
 
@@ -849,73 +863,77 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		}
 	}
 
-	for(a = 0; a < main_count; a++)
+	for(b = 0; b < main_count; b++)
 	{
-		if(aRecipes[a].calorie_total == calorie_goal)
+		if(aMain[b].calorie_total == calorie_goal)
 		{
-			recommend[saved_menu] = aRecipes[a];
+			recommend[saved_menu] = aMain[b];
 			saved_menu++;
-			found++;	// to signal that a perfect match has been found
 		}
 	}
 
-	if(found == 0)
+	for(c = 0; c < starter_count; c++)
 	{
-		for(b = 0; b < starter_count; b++)
+		if(aStarter[c].calorie_total == calorie_goal)
 		{
-			if(aRecipes[b].calorie_total == calorie_goal)
+			recommend[saved_menu] = aRecipes[c];
+			saved_menu++;
+		}
+	}
+
+	for(d = 0; d < dessert_count; d++)
+	{
+		if(aDessert[d].calorie_total == calorie_goal)
+		{
+			recommend[saved_menu] = aRecipes[d];
+			saved_menu++;
+		}
+	}
+
+	for(e = 0; e < main_count; e++)
+	{
+		for(f = 0; f < starter_count; f++)
+		{
+			recipeDuo[h].main_recipe = aRecipes[e];
+			recipeDuo[h].starter_recipe = aRecipes[f];
+			recipeDuo[h].calorieTotal = recipeDuo[h].main_recipe.calorie_total + recipeDuo[h].starter_recipe.calorie_total;
+			h++;
+		}
+		for(g = 0; g < dessert_count; g++)
+		{
+			recipeDuo[h].main_recipe = aRecipes[e];
+			recipeDuo[h].dessert_recipe = aRecipes[g];
+			recipeDuo[h].calorieTotal = recipeDuo[h].main_recipe.calorie_total + recipeDuo[h].dessert_recipe.calorie_total;
+			h++;
+		}
+	}
+
+	for(f = 0; f < starter_count; f++)
+	{
+		for(g = 0; g < dessert_count; g++)
+		{
+			recipeDuo[h].starter_recipe = aRecipes[f];
+			recipeDuo[h].dessert_recipe = aRecipes[g];
+			recipeDuo[h].calorieTotal = recipeDuo[h].starter_recipe.calorie_total + recipeDuo[h].dessert_recipe.calorie_total;
+			h++;
+		}
+	}
+
+	for(i = 0; i < main_count; i++)
+	{
+		for(j = 0; j < starter_count; j++)
+		{
+			for(k = 0; k < dessert_count; k++)
 			{
-				recommend[saved_menu] = aRecipes[b];
-				saved_menu++;
-				found++;	// to signal that a perfect match has been found
+				recipeTrio[l].main_recipe = aRecipes[i];
+				recipeTrio[l].starter_recipe = aRecipes[j];
+				recipeTrio[l].dessert_recipe = aRecipes[k];
+				recipeTrio[l].calorieTotal = recipeTrio[l].main_recipe.calorie_total + recipeTrio[l].starter_recipe.calorie_total + recipeTrio[l].dessert_recipe.calorie_total;
+				l++;
 			}
 		}
 	}
 
-	if(found == 0)
-	{
-		for(c = 0; c < dessert_count; c++)
-		{
-			if(aRecipes[c].calorie_total == calorie_goal)
-			{
-				recommend[saved_menu] = aRecipes[c];
-				saved_menu++;
-				found++;	// to signal that a perfect match has been found
-			}
-		}
-	}
-
-	if(found == 0)
-	{
-		for(b = 0; b < *numRecipes; b++)
-		{
-			if(aRecipes[b].calorie_total > aRecipes[closest].calorie_total && aRecipes[b].calorie_total <= calorie_goal)
-			{
-				closest = b;
-				recommend[saved_menu] = aRecipes[closest];
-				saved_menu++;
-			}
-			if(aRecipes[closest].calorie_total == calorie_goal)
-				found++;
-			calorie_goal -= aRecipes[closest].calorie_total;
-		}
-	}
-	closest = 0;
-	if(found == 0)
-	{
-		for(c = 0; c < *numRecipes; c++)
-		{
-			if(strcmp(aRecipes[c].class, "dessert") == 0)
-			{
-				if(aRecipes[c].calorie_total > aRecipes[closest].calorie_total && aRecipes[c].calorie_total <= calorie_goal)
-				{
-					closest = c;
-					recommend[saved_menu] = aRecipes[closest];
-					saved_menu++;
-				}
-			}
-		}
-	}
 	if(saved_menu == 0)
 	{
 		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Press Y to show");
