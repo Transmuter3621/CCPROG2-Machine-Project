@@ -102,27 +102,23 @@ int SearchName(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 	Helper Function 3: Calorie matcher
 	This function matches the amount of calories of the ingredients in a recipe
 	Precondition: all entries in aRecipes and food_info are complete
-	@param aRecipes[] - list of recipes
-	@param numRecipes - number of recipes
+	@param aRecipe - recipe struct
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
 */
-void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_info[], int *food_count)
+void CalorieMatcher(recipeType aRecipe, ingredientType food_info[], int *food_count)
 {
-	int a, i, f;
-	for(a = 0; a < *numRecipes; a++)
+	int i, j;
+	aRecipe.calorie_total = 0;
+	for(i = 0; i < aRecipe.numIngredients; i++)
 	{
-		aRecipes[a].calorie_total = 0;
-		for(i = 0; i < aRecipes[a].numIngredients; i++)
+		aRecipe.items[i].calories = 0;
+		for(j = 0; j < *food_count; j++)
 		{
-			aRecipes[a].items[i].calories = 0;
-			for(f = 0; f < *food_count; f++)
+			if(strcmp(aRecipe.items[i].food, food_info[j].food) == 0)
 			{
-				if(strcmp(aRecipes[a].items[i].food, food_info[f].food) == 0)
-				{
-					aRecipes[a].items[i].calories = food_info[f].calories / food_info[f].quantity * aRecipes[a].items[i].quantity;
-					aRecipes[a].calorie_total += aRecipes[a].items[i].calories;
-				}
+				aRecipe.items[i].calories = food_info[j].calories / food_info[j].quantity * aRecipe.items[i].quantity;
+				aRecipe.calorie_total += aRecipe.items[i].calories;
 			}
 		}
 	}
@@ -375,11 +371,9 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
 	@param ingredient - struct that holds an ingredient's name and quantity in certain units
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
-	@param food_count - number of existing food items
 	@return ingredient which has the ingredient name,  quantity, and unit
 */
-ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int *food_count)
+ingredientType AddIngredient(ingredientType ingredient)
 {
 	char garbage;
 	int i;
@@ -391,15 +385,6 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	printf("Quantity with unit: ");
 	scanf("%f %s", &ingredient.quantity, ingredient.unit);
 	scanf("%c", &garbage);
-
-	ingredient.calories = 0;
-	for(i = 0; i < *food_count; i++)
-	{
-		if(strcmp(ingredient.food, food_info[i].food) == 0)
-			ingredient.calories = food_info[i].calories / food_info[i].quantity * ingredient.quantity;
-		else
-			ingredient.calories = 0;
-	}
 
 	return ingredient;
 }
@@ -436,7 +421,8 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_c
 	printf("Ingredients:\n");
 	do
 	{
-		aRecipe.items[i] = AddIngredient(aRecipe.items[i], food_info, food_count);
+		aRecipe.items[i] = AddIngredient(aRecipe.items[i]);
+		CalorieMatcher(aRecipe, food_info, food_count);
 		if(aRecipe.items[i].calories != 0)
 			aRecipe.calorie_total += aRecipe.items[i].calories;
 		i++;
