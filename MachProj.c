@@ -375,14 +375,11 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
 	@param ingredient - struct that holds an ingredient's name and quantity in certain units
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
-	@param food_count - number of existing food items
 	@return ingredient which has the ingredient name,  quantity, and unit
 */
-ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info[], int *food_count)
+ingredientType AddIngredient(ingredientType ingredient)
 {
 	char garbage;
-	int i;
 
 	printf("Food item: ");
 	scanf("%[^\n]", ingredient.food);
@@ -391,15 +388,6 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 	printf("Quantity with unit: ");
 	scanf("%f %s", &ingredient.quantity, ingredient.unit);
 	scanf("%c", &garbage);
-
-	ingredient.calories = 0;
-	for(i = 0; i < *food_count; i++)
-	{
-		if(strcmp(ingredient.food, food_info[i].food) == 0)
-			ingredient.calories = food_info[i].calories / food_info[i].quantity * ingredient.quantity;
-		else
-			ingredient.calories = 0;
-	}
 
 	return ingredient;
 }
@@ -411,11 +399,9 @@ ingredientType AddIngredient(ingredientType ingredient, ingredientType food_info
 				  class can only be starter, main, or dessert
 				  servings must be a positive integer
 	@param aRecipe - recipe struct
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
-	@param food_count - number of existing food items
 	@return aRecipe
 */
-recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_count)
+recipeType AddRecipe(recipeType aRecipe)
 {
 	char garbage, option;
 	int i = 0, j = 0;
@@ -436,9 +422,7 @@ recipeType AddRecipe(recipeType aRecipe, ingredientType food_info[], int *food_c
 	printf("Ingredients:\n");
 	do
 	{
-		aRecipe.items[i] = AddIngredient(aRecipe.items[i], food_info, food_count);
-		if(aRecipe.items[i].calories != 0)
-			aRecipe.calorie_total += aRecipe.items[i].calories;
+		aRecipe.items[i] = AddIngredient(aRecipe.items[i]);
 		i++;
 		printf("Continue adding ingredients? Y/N ");
 		scanf(" %c", &option);
@@ -609,10 +593,11 @@ void DisplayRecipe(recipeType aRecipe)
 	printf("%s		%d		%.2f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
 	printf("Ingredients:\n");
 	for(i = 0; i < aRecipe.numIngredients; i++)
-		printf("%.2f %s %s		%.2f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
-	printf("Procedure:\n");
+		printf("%.2f\t%s\t%s\t%.2f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
+	printf("\nProcedure:\n");
 	for(j = 0; j < aRecipe.numSteps; j++)
 		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
+	printf("\n");
 }
 
 /*
@@ -758,7 +743,8 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 */
 void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, recipeType savedRecipes[])
 {
-	int a, i, found, save = 0;
+	int a, i, found, save = 0, s;
+	char displaynext;
 	for(a = 0; a < *numRecipes; a++)
 	{
 		found = 0;
@@ -773,6 +759,29 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 			save++;
 		}
 	}
+	if(found > 0)
+	{
+		AlphabeticalSort(savedRecipes, &save);
+		s = 0;
+		do
+		{
+			DisplayRecipe(savedRecipes[s]);
+			s++;
+			if(s < save)
+			{
+				printf("Display next recipe? Press N for next or X for exit. ");
+				scanf(" %c", &displaynext);
+				while(displaynext != 'N' && displaynext != 'X')
+				{
+					printf("Invalid input, please try again. ");
+					scanf(" %c", &displaynext);
+				}
+			}
+		} while(s < save && displaynext != 'X');
+	}
+	else
+		printf("No recipes matching ingredient.\n");
+	
 }
 
 /*
@@ -794,7 +803,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	scanf(" %d", &num);
 	printf("List of ingredients for %s:\n", aRecipes[index].name);
 	for(i = 0; i < aRecipes[index].numIngredients; i++)
-		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
+		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
 /*

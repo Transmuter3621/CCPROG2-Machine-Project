@@ -97,7 +97,7 @@ int main()
 					else if(box_option == 5)
 					{
 						printf("******* Add Recipe *******\n");
-						aRecipes[numRecipes] = AddRecipe(aRecipes[numRecipes], calorie_info, &calorie_info_count);
+						aRecipes[numRecipes] = AddRecipe(aRecipes[numRecipes]);
 						numRecipes++;
 					}
 
@@ -120,7 +120,7 @@ int main()
 							{
 								printf("********** Add Ingredient **********\n");
 								ingredient_index = aRecipes[recipe_index].numIngredients;
-								aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index], calorie_info, &calorie_info_count);
+								aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index]);
 								aRecipes[recipe_index].numIngredients++;
 							}
 							else if(recipe_option == 2)
@@ -172,10 +172,10 @@ int main()
 						printf("*********** Scan Recipes ***********\n");
 						do
 						{
+							DisplayRecipe(aRecipes[a]);
+							a++;
 							if(a < numRecipes)
 							{
-								DisplayRecipe(aRecipes[a]);
-								a++;
 								printf("Display next recipe? Press N for next or X for exit. ");
 								scanf(" %c", &displaynext);
 								scanf("%c", &garbage);
@@ -220,6 +220,7 @@ int main()
 						printf("********** Change Username or Password **********\n");
 						AccessModifier(current_username, current_password);
 					}
+
 					CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 				} while(box_option != 0);
 			}
@@ -262,7 +263,6 @@ int main()
 					printf("Load data from what file? ");
 					scanf("%[^\n]", filename);
 					ImportRecipes(aRecipes, &numRecipes, filename);
-					CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 				}
 
 				else if(box_option == 3)
@@ -280,36 +280,28 @@ int main()
 					{
 						DisplayRecipe(aRecipes[a]);
 						a++;
-						printf("Display next recipe? Press N for next or X for exit. ");
-						scanf(" %c", &displaynext);
-						while(displaynext != 'N')
+						if(a < numRecipes)
 						{
-							printf("Invalid input, please try again. ");
+							printf("Display next recipe? Press N for next or X for exit. ");
 							scanf(" %c", &displaynext);
+							scanf("%c", &garbage);
+							while(displaynext != 'N' && displaynext != 'X')
+							{
+								printf("Invalid input, please try again. ");
+								scanf(" %c", &displaynext);
+								scanf("%c", &garbage);
+							}
 						}
-					}while(displaynext != 'X');
+					}while(a < numRecipes && displaynext != 'X');
 				}
 
 				else if(box_option == 5)
 				{
 					printf("******** Scan Recipes By Ingredient ********\n");
-					AlphabeticalSort(aRecipes, &numRecipes);
-					a = 0;
 					printf("Enter ingredient: ");
 					scanf("%[^\n]", ingredient);
 					scanf("%c", &garbage);
-					do
-					{
-						ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
-						a++;
-						printf("Display next recipe? Press N for next or X for exit. ");
-						scanf(" %c", &displaynext);
-						while(displaynext != 'N')
-						{
-							printf("Invalid input, please try again. ");
-							scanf(" %c", &displaynext);
-						}
-					}while(displaynext != 'X');
+					ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
 				}
 
 				else if(box_option == 6)
@@ -325,6 +317,7 @@ int main()
 					scanf("%f", &calorie_goal);
 					RecommendMenu(aRecipes, &numRecipes, calorie_goal);
 				}
+
 				CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 			}while(box_option != 0);
 		}
