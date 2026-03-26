@@ -267,28 +267,28 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 			food_info[min] = temp;
 		}
 	}
-	printf("+--------------------+----------+----------------+------------+\n");
-	printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
+	printf("+--------------------+------------+----------------+------------+\n");
+	printf("|        Food        |  Quantity  |      Unit      |  Calories  |\n");
 	while(i < *food_count && i < 10)
 	{
-		printf("|%-20s|%-10.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+		printf("|%-20s|%-12.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 		i++;
 	}
-	printf("+--------------------+----------+----------------+------------+\n");
+	printf("+--------------------+------------+----------------+------------+\n");
 	if(i < *food_count && *food_count > 10)
 	{
 		printf("View next 10 items? Press 'N' to proceed; press 'X' to exit. ");
 		scanf(" %c", &option);
 		while(i < *food_count && option != 'X')
 		{
-			printf("+--------------------+----------+----------------+------------+\n");
-			printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
+			printf("+--------------------+------------+----------------+------------+\n");
+			printf("|        Food        |  Quantity  |      Unit      |  Calories  |\n");
 			do
 			{
-				printf("|%-20s|%-10.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
+				printf("|%-20s|%-12.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
 			} while(i < *food_count && i % 10 != 0);
-			printf("+--------------------+----------+----------------+------------+\n");
+			printf("+--------------------+------------+----------------+------------+\n");
 			if(i < *food_count)
 			{
 				printf("View next 10 items? Press 'N' to proceed or 'X' to exit. ");
@@ -315,8 +315,8 @@ void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 		for(a = 0; a < *food_count; a++)
 		{
 			fprintf(CalText, "%s\n", food_info[a].food);
-			fprintf(CalText, "%f %s ", food_info[a].quantity, food_info[a].unit);
-			fprintf(CalText, "%f\n\n", food_info[a].calories);
+			fprintf(CalText, "%.3f %s ", food_info[a].quantity, food_info[a].unit);
+			fprintf(CalText, "%.3f\n\n", food_info[a].calories);
 		}
 		fclose(CalText);
 	}
@@ -410,46 +410,47 @@ ingredientType AddIngredient(ingredientType ingredient)
 	@param aRecipe - recipe struct
 	@return aRecipe
 */
-recipeType AddRecipe(recipeType aRecipe)
+recipeType AddRecipe(recipeType *aRecipe)
 {
 	char garbage, option;
 	int i = 0, j = 0;
-	aRecipe.calorie_total = 0;
+	aRecipe->calorie_total = 0;
 
 	printf("Recipe: ");
-	scanf("%[^\n]", aRecipe.name);
+	scanf("%[^\n]", aRecipe->name);
 	scanf("%c", &garbage);
 
 	printf("Class: ");
-	scanf("%[^\n]", aRecipe.class);
+	scanf("%[^\n]", aRecipe->class);
 	scanf("%c", &garbage);
 
 	printf("Servings: ");
-	scanf(" %d", &aRecipe.servings);
+	scanf(" %d", &aRecipe->servings);
 	scanf("%c", &garbage);
 
 	printf("Ingredients:\n");
 	do
 	{
-		aRecipe.items[i] = AddIngredient(aRecipe.items[i]);
+		aRecipe->items[i] = AddIngredient(aRecipe->items[i]);
 		i++;
 		printf("Continue adding ingredients? Y/N ");
 		scanf(" %c", &option);
+		scanf("%c", &garbage);
 	} while(option == 'Y' || option == 'y');
-	aRecipe.numIngredients = i;
+	aRecipe->numIngredients = i;
 
 	printf("Steps:\n");
 	do
 	{
-		scanf("%[^\n]", aRecipe.steps[j]);
+		scanf("%[^\n]", aRecipe->steps[j]);
 		scanf("%c", &garbage);
 		j++;
 		printf("Continue adding steps? Y/N ");
 		scanf(" %c", &option);
 	} while(option == 'Y' || option == 'y');
-	aRecipe.numSteps = j;
+	aRecipe->numSteps = j;
 
-	return aRecipe;
+	return (*aRecipe);
 }
 
 /*
@@ -459,32 +460,32 @@ recipeType AddRecipe(recipeType aRecipe)
 	@param aRecipe - recipe struct
 	@param ingredient - ingredient to be deleted
 */
-void DeleteIngredient(recipeType aRecipe, string ingredient)
+void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
 	int a = 0, i;
 	string delete;
-	if(aRecipe.numIngredients <= 1)
+	if(aRecipe->numIngredients <= 1)
 		printf("Cannot delete any more ingredients.\n");
 	else
 	{
-		for(i = 0; i < aRecipe.numIngredients; i++)
+		for(i = 0; i < aRecipe->numIngredients; i++)
 		{
-			if(strcmp(aRecipe.items[i].food, ingredient) == 0)
+			if(strcmp(aRecipe->items[i].food, ingredient) == 0)
 			{
-				strcpy(delete, aRecipe.items[i].food);
-				aRecipe.calorie_total -= aRecipe.items[i].calories;
+				strcpy(delete, aRecipe->items[i].food);
+				aRecipe->calorie_total -= aRecipe->items[i].calories;
 			}
 		}
-		while(a < aRecipe.numIngredients)
+		while(a < aRecipe->numIngredients)
 		{
-			if(strcmp(aRecipe.items[a].food, delete) == 0)
+			if(strcmp(aRecipe->items[a].food, delete) == 0)
 			{
-				if(a < aRecipe.numIngredients - 1)
+				if(a < aRecipe->numIngredients - 1)
 				{
-					for(i = a; i < aRecipe.numIngredients - 1; i++)
-						aRecipe.items[i] = aRecipe.items[i + 1];
+					for(i = a; i < aRecipe->numIngredients - 1; i++)
+						aRecipe->items[i] = aRecipe->items[i + 1];
 				}
-				(aRecipe.numIngredients)--;
+				(aRecipe->numIngredients)--;
 			}
 			else
 				a++;
@@ -500,14 +501,14 @@ void DeleteIngredient(recipeType aRecipe, string ingredient)
 	@param step_insert - step number (not index) where new step will be inserted
 	@param step - step to be added
 */
-void AddStep(recipeType aRecipe, int step_insert, string_step step)
+void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 {
 	int a;
-	aRecipe.numSteps++;
-	for(a = step_insert; a < aRecipe.numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
-		strcpy(aRecipe.steps[a], aRecipe.steps[a + 1]);
+	aRecipe->numSteps++;
+	for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
+		strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
 	step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
-	strcpy(aRecipe.steps[step_insert], step);
+	strcpy(aRecipe->steps[step_insert], step);
 }
 
 /*
@@ -517,27 +518,32 @@ void AddStep(recipeType aRecipe, int step_insert, string_step step)
 	@param aRecipe - recipe struct
 	@param step_remove - step number (not index) to be deleted
 */
-void DeleteStep(recipeType aRecipe, int step_remove)
+void DeleteStep(recipeType *aRecipe, int step_remove)
 {
 	int a = 0, i;
-	step_remove--;
-	if(aRecipe.numSteps <= 1)
+	if(aRecipe->numSteps == 1)
 		printf("Cannot delete any more steps.\n");
 	else
 	{
-		while(a < aRecipe.numSteps)
+		if(step_remove > aRecipe->numSteps || step_remove < 1)
+			printf("Invalid step number.\n");
+		else
 		{
-			if(a == step_remove)
+			step_remove--;
+			while(a < aRecipe->numSteps)
 			{
-				if(a < aRecipe.numSteps - 1)
+				if(a == step_remove)
 				{
-					for(i = a; i < aRecipe.numSteps - 1; i++)
-						strcpy(aRecipe.steps[i], aRecipe.steps[i + 1]);
+					if(a < aRecipe->numSteps - 1)
+					{
+						for(i = a; i < aRecipe->numSteps - 1; i++)
+							strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
+					}
+					(aRecipe->numSteps)--;
 				}
-				(aRecipe.numSteps)--;
+				else
+					a++;
 			}
-			else
-				a++;
 		}
 	}
 }
@@ -599,10 +605,10 @@ void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 void DisplayRecipe(recipeType aRecipe)
 {
 	int i, j;
-	printf("%s		%d		%.2f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
+	printf("%-20s\t\t%-8d\t\t%.2f\n", aRecipe.name, aRecipe.servings, aRecipe.calorie_total);
 	printf("Ingredients:\n");
 	for(i = 0; i < aRecipe.numIngredients; i++)
-		printf("%.2f\t%s\t%s\t%.2f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
+		printf("%-12.2f %-15s %-20s %.2f\n", aRecipe.items[i].quantity, aRecipe.items[i].unit, aRecipe.items[i].food, aRecipe.items[i].calories);
 	printf("\nProcedure:\n");
 	for(j = 0; j < aRecipe.numSteps; j++)
 		printf("%d. %s\n", j + 1, aRecipe.steps[j]);
@@ -823,7 +829,6 @@ struct threeRecipes
 	int main, starter, dessert;		// signal that there's a main, starter, or dessert
 	float calorieTotal;
 };
-
 typedef struct threeRecipes recipe3;
 
 /*
@@ -837,7 +842,7 @@ typedef struct threeRecipes recipe3;
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
 	int a, b, c, d, e, f, g, h, i, j, k, l;
-	int num;	// number of total recipeSets
+	int num = 0;	// number of total recipeSets
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int saved_menu = 0, closest = 0, random;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes];

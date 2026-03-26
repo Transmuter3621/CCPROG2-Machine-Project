@@ -1,33 +1,36 @@
+basil
+100.000 grams 23.000
+
 cauliflower
-100.00 grams 25.00
-
-olive oil
-50.00 milliters 442.00
-
-garlic powder
-100.00 grams 331.00
-
-onion powder
-100.00 grams 342.00
-
-lasagna sheets
-100.00 grams 360.00
-
-tomato sauce
-100.00 grams 78.95
-
-ground beef
-100.00 grams 332.00
-
-ground pork
-100.00 grams 241.00
+100.000 grams 25.000
 
 garlic
-6.00 grams 4.00
+6.000 grams 4.000
 
-onion
-100.00 grams 38.00
+garlic powder
+100.000 grams 331.000
+
+ground beef
+100.000 grams 332.000
+
+ground pork
+100.000 grams 241.000
+
+lasagna sheets
+100.000 grams 360.000
 
 mozzarella cheese
-100.00 grams 280.00
+100.000 grams 280.000
+
+olive oil
+50.000 milliters 442.000
+
+onion
+100.000 grams 38.000
+
+onion powder
+100.000 grams 342.000
+
+tomato sauce
+100.000 grams 78.947
 
