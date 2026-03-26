@@ -282,9 +282,9 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 		while(i < *food_count && option != 'X')
 		{
 			printf("+--------------------+----------+----------------+------------+\n");
+			printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
 			do
 			{
-				printf("|        Food        | Quantity |      Unit      |  Calories  |\n");
 				printf("|%-20s|%-10.2f|%-16s|%-12.2f|\n", food_info[i].food, food_info[i].quantity, food_info[i].unit, food_info[i].calories);
 				i++;
 			} while(i < *food_count && i % 10 != 0);
@@ -953,14 +953,20 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 
 	for(k = 0; k < num; k++)
 	{
-		if(recipeSet[k].calorieTotal <= calorie_goal && recipeSet[k].calorieTotal > recipeSet[closest].calorieTotal)
+		if(recipeSet[k].calorieTotal <= calorie_goal)
 		{
 			if(recipeSet[k].calorieTotal == recipeSet[closest].calorieTotal)
 			{
 				recommend[saved_menu] = recipeSet[k];
 				saved_menu++;
 			}
-			closest = k;
+			if(recipeSet[k].calorieTotal > recipeSet[closest].calorieTotal)
+			{
+				saved_menu = 0;
+				recommend[saved_menu] = recipeSet[k];
+				saved_menu++;
+				closest = k;
+			}
 		}
 	}
 
