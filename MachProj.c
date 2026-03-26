@@ -504,11 +504,18 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 {
 	int a;
-	aRecipe->numSteps++;
-	for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
-		strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
-	step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
-	strcpy(aRecipe->steps[step_insert], step);
+	if(step_insert > MAX_STEPS)
+		printf("Step count has exceeded limit.\n");
+	else
+	{
+		while(step_insert > aRecipe->numSteps)
+			printf("Invalid placement. Please try again: ");
+		aRecipe->numSteps++;
+		for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
+			strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
+		step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
+		strcpy(aRecipe->steps[step_insert], step);
+	}
 }
 
 /*
@@ -525,25 +532,22 @@ void DeleteStep(recipeType *aRecipe, int step_remove)
 		printf("Cannot delete any more steps.\n");
 	else
 	{
-		if(step_remove > aRecipe->numSteps || step_remove < 1)
+		while(step_remove > aRecipe->numSteps || step_remove < 1)
 			printf("Invalid step number.\n");
-		else
+		step_remove--;
+		while(a < aRecipe->numSteps)
 		{
-			step_remove--;
-			while(a < aRecipe->numSteps)
+			if(a == step_remove)
 			{
-				if(a == step_remove)
+				if(a < aRecipe->numSteps - 1)
 				{
-					if(a < aRecipe->numSteps - 1)
-					{
-						for(i = a; i < aRecipe->numSteps - 1; i++)
-							strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
-					}
-					(aRecipe->numSteps)--;
+					for(i = a; i < aRecipe->numSteps - 1; i++)
+						strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
 				}
-				else
-					a++;
+				(aRecipe->numSteps)--;
 			}
+			else
+				a++;
 		}
 	}
 }
@@ -850,12 +854,11 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	recipe3 recommend[4624];
 	char option, garbage;
 
-	recommend[saved_menu].main = 0;
-	recommend[saved_menu].starter = 0;
-	recommend[saved_menu].dessert = 0;
-
 	for(a = 0; a < *numRecipes; a++)
 	{
+		recommend[num].main = 0;
+		recommend[num].starter = 0;
+		recommend[num].dessert = 0;
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
 			aMain[main_count] = aRecipes[a];
@@ -869,7 +872,6 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].main_recipe = aMain[main_count];
 			recipeSet[num].main = 1;
 			main_count++;
-			num++;
 		}
 		else if(strcmp(aRecipes[a].class, "starter") == 0)
 		{
@@ -884,7 +886,6 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].starter_recipe = aStarter[starter_count];
 			recipeSet[num].starter = 1;
 			starter_count++;
-			num++;
 		}
 		else if(strcmp(aRecipes[a].class, "dessert") == 0)
 		{
@@ -899,8 +900,9 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].dessert_recipe = aDessert[dessert_count];
 			recipeSet[num].dessert = 1;
 			dessert_count++;
-			num++;
 		}
+		recipeSet[num].calorieTotal = aRecipes[a].calorie_total / aRecipes[a].servings;
+		num++;
 	}
 
 	for(e = 0; e < main_count; e++)
@@ -912,6 +914,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].calorieTotal = recipeSet[num].main_recipe.calorie_total + recipeSet[num].starter_recipe.calorie_total;
 			recipeSet[num].main = 1;
 			recipeSet[num].starter = 1;
+			recipeSet[num].dessert = 0;
 			num++;
 		}
 		for(g = 0; g < dessert_count; g++)
@@ -920,6 +923,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].dessert_recipe = aDessert[g];
 			recipeSet[num].calorieTotal = recipeSet[num].main_recipe.calorie_total + recipeSet[num].dessert_recipe.calorie_total;
 			recipeSet[num].main = 1;
+			recipeSet[num].starter = 0;
 			recipeSet[num].dessert = 1;
 			num++;
 		}
@@ -932,6 +936,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			recipeSet[num].starter_recipe = aStarter[f];
 			recipeSet[num].dessert_recipe = aDessert[g];
 			recipeSet[num].calorieTotal = recipeSet[num].starter_recipe.calorie_total + recipeSet[num].dessert_recipe.calorie_total;
+			recommend[num].main = 0;
 			recipeSet[num].starter = 1;
 			recipeSet[num].dessert = 1;
 			num++;
@@ -975,6 +980,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		}
 	}
 
+	// if all recipes are above calorie goal, find the one with the lowest calories since that would be closest to goal
 	if(saved_menu == 0)
 	{
 		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Press Y to show. ");
@@ -993,7 +999,6 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	}
 	else
 	{
-		srand(time(NULL));
 		random = rand() % saved_menu;
 		if(recommend[random].main)
 			DisplayRecipe(recommend[random].main_recipe);

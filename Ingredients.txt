@@ -1,6 +1,9 @@
 basil
 100.000 grams 23.000
 
+broccoli
+100.000 grams 31.000
+
 cauliflower
 100.000 grams 25.000
 

@@ -19,6 +19,7 @@ int main()
 	
 	aRecipes[MAX_INGREDIENTS].numIngredients = 0;
 	aRecipes[MAX_STEPS].numSteps = 0;
+	srand(time(NULL));
 
 	printf("******************** Main Menu ********************\n");
 	printf("[U] Update recipe box\n");
@@ -158,6 +159,7 @@ int main()
 									DeleteStep(&aRecipes[recipe_index], step_remove);
 								}
 							}
+							printf("\n");
 						} while(recipe_option != 0);
 					}
 
