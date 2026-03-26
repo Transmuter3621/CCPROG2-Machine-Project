@@ -836,7 +836,7 @@ typedef struct threeRecipes recipeSet3;
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d, e, f, g, h = 0, i, j, k, l = 0, x, y, z;
+	int a, b, c, d, e, f, g, h = 0, i, j, k, l = 0, m, n, o, x, y, z;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int closest = 0, found = 0, i, min = 0, saved_menu = 0;
 	recipeSet2 recipeDuo[MAX * MAX];
@@ -849,16 +849,25 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
 			aMain[main_count] = aRecipes[a];
+			for(m = 0; m < aRecipes[a].numIngredients; m++)
+				aMain[main_count].items[m].calories = aRecipes[a].items[m].calories / aRecipes[a].servings;
+			aMain[main_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
 			main_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "starter") == 0)
 		{
 			aStarter[starter_count] = aRecipes[a];
+			for(n = 0; n < aRecipes[a].numIngredients; n++)
+				aMain[starter_count].items[n].calories = aRecipes[a].items[n].calories / aRecipes[a].servings;
+			aMain[starter_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
 			starter_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "dessert") == 0)
 		{
 			aDessert[dessert_count] = aRecipes[a];
+			for(o = 0; o < aRecipes[a].numIngredients; o++)
+				aMain[dessert_count].items[o].calories = aRecipes[a].items[o].calories / aRecipes[a].servings;
+			aMain[dessert_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
 			dessert_count++;
 		}
 	}
@@ -894,15 +903,15 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	{
 		for(f = 0; f < starter_count; f++)
 		{
-			recipeDuo[h].main_recipe = aRecipes[e];
-			recipeDuo[h].starter_recipe = aRecipes[f];
+			recipeDuo[h].main_recipe = aMain[e];
+			recipeDuo[h].starter_recipe = aStarter[f];
 			recipeDuo[h].calorieTotal = recipeDuo[h].main_recipe.calorie_total + recipeDuo[h].starter_recipe.calorie_total;
 			h++;
 		}
 		for(g = 0; g < dessert_count; g++)
 		{
-			recipeDuo[h].main_recipe = aRecipes[e];
-			recipeDuo[h].dessert_recipe = aRecipes[g];
+			recipeDuo[h].main_recipe = aMain[e];
+			recipeDuo[h].dessert_recipe = aDessert[g];
 			recipeDuo[h].calorieTotal = recipeDuo[h].main_recipe.calorie_total + recipeDuo[h].dessert_recipe.calorie_total;
 			h++;
 		}
@@ -912,8 +921,8 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	{
 		for(g = 0; g < dessert_count; g++)
 		{
-			recipeDuo[h].starter_recipe = aRecipes[f];
-			recipeDuo[h].dessert_recipe = aRecipes[g];
+			recipeDuo[h].starter_recipe = aStarter[f];
+			recipeDuo[h].dessert_recipe = aDessert[g];
 			recipeDuo[h].calorieTotal = recipeDuo[h].starter_recipe.calorie_total + recipeDuo[h].dessert_recipe.calorie_total;
 			h++;
 		}
@@ -925,9 +934,9 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		{
 			for(k = 0; k < dessert_count; k++)
 			{
-				recipeTrio[l].main_recipe = aRecipes[i];
-				recipeTrio[l].starter_recipe = aRecipes[j];
-				recipeTrio[l].dessert_recipe = aRecipes[k];
+				recipeTrio[l].main_recipe = aMain[i];
+				recipeTrio[l].starter_recipe = aStarter[j];
+				recipeTrio[l].dessert_recipe = aDessert[k];
 				recipeTrio[l].calorieTotal = recipeTrio[l].main_recipe.calorie_total + recipeTrio[l].starter_recipe.calorie_total + recipeTrio[l].dessert_recipe.calorie_total;
 				l++;
 			}
@@ -951,6 +960,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	}
 	else
 	{
+		srand(time(NULL));
 		for(i = 0; i < saved_menu; i++)
 			DisplayRecipe(recommend[i]);
 	}
