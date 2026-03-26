@@ -328,6 +328,7 @@ int main()
 					printf("******* Menu Recommendation *******\n");
 					printf("Enter calorie goal: ");
 					scanf("%f", &calorie_goal);
+					scanf("%c", &garbage);
 					RecommendMenu(aRecipes, &numRecipes, calorie_goal);
 				}
 

@@ -849,17 +849,17 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	int num = 0;	// number of total recipeSets
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int saved_menu = 0, closest, random;
-	float calorie_diff[MAX_RECIPESETS];
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes];
 	recipe3 recipeSet[MAX_RECIPESETS];
 	recipe3 recommend[MAX_RECIPESETS];
+	float calorie_diff[MAX_RECIPESETS];
 	char option, garbage;
 
 	for(a = 0; a < *numRecipes; a++)
 	{
-		recommend[num].main = 0;
-		recommend[num].starter = 0;
-		recommend[num].dessert = 0;
+		recipeSet[num].main = 0;
+		recipeSet[num].starter = 0;
+		recipeSet[num].dessert = 0;
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
 			aMain[main_count] = aRecipes[a];
