@@ -364,6 +364,8 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 		fclose(CalText);
 		if(*calorie_info_count == start_count && unique == -8)	// unique == -8 means the function never found appropriate content
 			printf("File lacks content.\n");
+		else
+			printf("File loaded successfully!\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");
@@ -659,8 +661,8 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 			fprintf(RecipeList, "%d %s\n", aRecipes[a].servings, aRecipes[a].class);
 			fprintf(RecipeList, "Ingredients %d\n", aRecipes[a].numIngredients);
 			for(i = 0; i < aRecipes[a].numIngredients; i++)
-				fprintf(RecipeList, "%f %s %s\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
-			fprintf(RecipeList, "Steps:\n");
+				fprintf(RecipeList, "%.3f %s %s\n", aRecipes[a].items[i].quantity, aRecipes[a].items[i].unit, aRecipes[a].items[i].food);
+			fprintf(RecipeList, "Steps %d\n", aRecipes[a].numSteps);
 			for(j = 0; j < aRecipes[a].numSteps; j++)
 				fprintf(RecipeList, "%s\n", aRecipes[a].steps[j]);
 			fprintf(RecipeList, "\n");
@@ -691,23 +693,23 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 		do
 		{
 			scan_check = 0;
-			if(fscanf(RecipeList, " %[^\n] %d %s %s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
+			if(fscanf(RecipeList, " %20[^\n] %d %7s %12s %d", recipe.name, &recipe.servings, recipe.class, word, &recipe.numIngredients) == 5)
 			{
 				scan_check++;
 				ingredient_scan = 0;
 				for(i = 0; i < recipe.numIngredients; i++)
 				{
-					if(fscanf(RecipeList, " %f %s %[^\n]", &recipe.items[i].quantity, recipe.items[i].unit, recipe.items[i].food) == 3)
+					if(fscanf(RecipeList, " %f %15s %20[^\n]", &recipe.items[i].quantity, recipe.items[i].unit, recipe.items[i].food) == 3)
 						ingredient_scan++;
 				}
 				if(ingredient_scan == recipe.numIngredients)
 					scan_check++;
-				if(fscanf(RecipeList, " %s %d", word, &recipe.numSteps) == 2)
+				if(fscanf(RecipeList, " %6s %d", word, &recipe.numSteps) == 2)
 					scan_check++;
 				step_scan = 0;
 				for(j = 0; j < recipe.numSteps; j++)
 				{
-					if(fscanf(RecipeList, " %[^\n]", recipe.steps[j]) == 1)
+					if(fscanf(RecipeList, " %70[^\n]", recipe.steps[j]) == 1)
 						step_scan++;
 				}
 				if(step_scan == recipe.numSteps)
@@ -748,6 +750,8 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 		fclose(RecipeList);
 		if(*numRecipes == start_recipes && unique == -8)		// unique == -8 means the function never found appropriate content
 			printf("File lacks content.\n");
+		else
+			printf("File loaded successfully!\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");
@@ -844,7 +848,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
 	int main_match = 1, starter_match = 1, dessert_match = 1;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
-	float calorie_diff[MAX];
+	float calorie_diff[*numRecipes];
 	char option, garbage;
 
 	for(a = 0; a < *numRecipes; a++)
