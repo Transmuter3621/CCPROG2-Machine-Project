@@ -98,8 +98,7 @@ int main()
 					else if(box_option == 5)
 					{
 						printf("******* Add Recipe *******\n");
-						aRecipes[numRecipes] = AddRecipe(&aRecipes[numRecipes]);
-						numRecipes++;
+						AddRecipe(aRecipes, &numRecipes);
 					}
 
 					else if(box_option == 6)
@@ -107,6 +106,11 @@ int main()
 						do
 						{
 							printf("************** Modify Recipe **************\n");
+							DisplayRecipeTitles(aRecipes, &numRecipes);
+							printf("Choose recipe: ");
+							scanf("%[^\n]", recipeTitle);
+							scanf("%c", &garbage);
+							recipe_index = SearchName(aRecipes, &numRecipes, recipeTitle);
 							printf("[0] Return to update menu\n");
 							printf("[1] Add ingredient\n");
 							printf("[2] Delete ingredient\n");
@@ -123,10 +127,6 @@ int main()
 							}
 							if(recipe_option != 0)
 							{
-								printf("Choose recipe: ");
-								scanf("%[^\n]", recipeTitle);
-								scanf("%c", &garbage);
-								recipe_index = SearchName(aRecipes, &numRecipes, recipeTitle);
 								if(recipe_option == 1)
 								{
 									printf("********** Add Ingredient **********\n");
@@ -166,6 +166,7 @@ int main()
 					else if(box_option == 7)
 					{
 						printf("*********** Delete Recipe ***********\n");
+						DisplayRecipeTitles(aRecipes, &numRecipes);
 						printf("Enter recipe to delete: ");
 						scanf("%[^\n]", recipeTitle);
 						scanf("%c", &garbage);

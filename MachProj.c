@@ -23,15 +23,6 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 #define MAX 50		// recipes and food items
 #define MAX_INGREDIENTS 20
 #define MAX_STEPS 15
-/* For RecommendMenu
-   Maximum combinations of 1, 2, or 3 recipe classes in 50 recipes
-   Spilt 50 evenly: 17, 17, 16
-   1 recipe: 50
-   2 recipes: (17 * 17) + (17 * 16) + (17 * 16) = 833
-   3 recipes: 17 * 17 * 16 = 4624
-   Total: 5507
-*/
-#define MAX_RECIPESETS 5507
 
 typedef char string[21];
 typedef char string_unit[16];
@@ -404,53 +395,64 @@ ingredientType AddIngredient(ingredientType ingredient)
 /*
 	Function 8: Add Recipe
 	This function adds an ingredient to a recipe
-	Precondition: dish, class, and step only contain letters in the alphabet
+	Precondition: recipe name and steps only contain letters in the alphabet
 				  class can only be starter, main, or dessert
 				  servings must be a positive integer
+				  user will input steps in order (no insertion of steps in the middle)
 	@param aRecipe - recipe struct
-	@return aRecipe
+	@param numRecipes - number of recipes
 */
-recipeType AddRecipe(recipeType *aRecipe)
+void AddRecipe(recipeType aRecipes[], int *numRecipes)
 {
 	char garbage, option;
-	int i = 0, j = 0;
-	aRecipe->calorie_total = 0;
+	int a, found = 0, i = 0, j = 0;
+	aRecipes[*numRecipes].calorie_total = 0;
 
 	printf("Recipe: ");
-	scanf("%[^\n]", aRecipe->name);
+	scanf("%[^\n]", aRecipes[*numRecipes].name);
 	scanf("%c", &garbage);
 
-	printf("Class: ");
-	scanf("%[^\n]", aRecipe->class);
-	scanf("%c", &garbage);
-
-	printf("Servings: ");
-	scanf(" %d", &aRecipe->servings);
-	scanf("%c", &garbage);
-
-	printf("Ingredients:\n");
-	do
+	for(a = 0; a < *numRecipes; a++)
 	{
-		aRecipe->items[i] = AddIngredient(aRecipe->items[i]);
-		i++;
-		printf("Continue adding ingredients? Y/N ");
-		scanf(" %c", &option);
-		scanf("%c", &garbage);
-	} while(option == 'Y' || option == 'y');
-	aRecipe->numIngredients = i;
+		if(strcmp(aRecipes[*numRecipes].name, aRecipes[a].name) == 0)
+			found++;
+	}
 
-	printf("Steps:\n");
-	do
+	if(found == 0)
 	{
-		scanf("%[^\n]", aRecipe->steps[j]);
+		printf("Class: ");
+		scanf("%[^\n]", aRecipes[*numRecipes].class);
 		scanf("%c", &garbage);
-		j++;
-		printf("Continue adding steps? Y/N ");
-		scanf(" %c", &option);
-	} while(option == 'Y' || option == 'y');
-	aRecipe->numSteps = j;
 
-	return (*aRecipe);
+		printf("Servings: ");
+		scanf(" %d", &aRecipes[*numRecipes].servings);
+		scanf("%c", &garbage);
+
+		printf("Ingredients:\n");
+		do
+		{
+			aRecipes[*numRecipes].items[i] = AddIngredient(aRecipes[*numRecipes].items[i]);
+			i++;
+			printf("Continue adding ingredients? Y/N ");
+			scanf(" %c", &option);
+			scanf("%c", &garbage);
+		} while(option == 'Y' || option == 'y');
+		aRecipes[*numRecipes].numIngredients = i;
+
+		printf("Steps:\n");
+		do
+		{
+			scanf("%[^\n]", aRecipes[*numRecipes].steps[j]);
+			scanf("%c", &garbage);
+			j++;
+			printf("Continue adding steps? Y/N ");
+			scanf(" %c", &option);
+		} while(option == 'Y' || option == 'y');
+		aRecipes[*numRecipes].numSteps = j;
+		(*numRecipes)++;
+	}
+	else
+		printf("Recipe name already exists.\n");
 }
 
 /*
@@ -565,7 +567,7 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 	int a = 0, i;
 	int delete = SearchName(aRecipes, numRecipes, recipeTitle);
 	if(delete == -1)
-		printf("Recipe not found. ");
+		printf("Recipe not found.\n");
 	else
 	{
 		while(a < *numRecipes)
@@ -825,16 +827,6 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
 }
 
-struct threeRecipes
-{
-	recipeType main_recipe,
-			   starter_recipe,
-			   dessert_recipe;
-	int main, starter, dessert;		// signal that there's a main, starter, or dessert
-	float calorieTotal;
-};
-typedef struct threeRecipes recipe3;
-
 /*
 	Function 20: Recommend Menu
 	This function searches a recipe according to its ingredient
@@ -845,21 +837,17 @@ typedef struct threeRecipes recipe3;
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d, e, f, g, h, i, j, k, l;
-	int num = 0;	// number of total recipeSets
+	int a, b, c, d, e, f, g, h;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
-	int saved_menu = 0, closest, random;
-	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes];
-	recipe3 recipeSet[MAX_RECIPESETS];
-	recipe3 recommend[MAX_RECIPESETS];
-	float calorie_diff[MAX_RECIPESETS];
+	int closest_main, closest_starter, closest_dessert, random, saved = 0, closest = 0;
+	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
+	int main_match = 1, starter_match = 1, dessert_match = 1;
+	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
+	float calorie_diff[MAX];
 	char option, garbage;
 
 	for(a = 0; a < *numRecipes; a++)
 	{
-		recipeSet[num].main = 0;
-		recipeSet[num].starter = 0;
-		recipeSet[num].dessert = 0;
 		if(strcmp(aRecipes[a].class, "main") == 0)
 		{
 			aMain[main_count] = aRecipes[a];
@@ -870,8 +858,8 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aMain[main_count].items[b].calories = aRecipes[a].items[b].calories / aRecipes[a].servings;
 			}
 			aMain[main_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			recipeSet[num].main_recipe = aMain[main_count];
-			recipeSet[num].main = 1;
+			if(aMain[main_count].calorie_total <= calorie_goal)		// for getting main closest to calorie goal later
+				closest_main = main_count;
 			main_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "starter") == 0)
@@ -884,8 +872,8 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aStarter[starter_count].items[c].calories = aRecipes[a].items[c].calories / aRecipes[a].servings;
 			}
 			aStarter[starter_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			recipeSet[num].starter_recipe = aStarter[starter_count];
-			recipeSet[num].starter = 1;
+			if(aStarter[starter_count].calorie_total <= calorie_goal)	// for getting starter closest to calorie goal later
+				closest_starter = starter_count;
 			starter_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "dessert") == 0)
@@ -898,118 +886,90 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aDessert[dessert_count].items[d].calories = aRecipes[a].items[d].calories / aRecipes[a].servings;
 			}
 			aDessert[dessert_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			recipeSet[num].dessert_recipe = aDessert[dessert_count];
-			recipeSet[num].dessert = 1;
+			if(aDessert[dessert_count].calorie_total <= calorie_goal)	// for getting dessert closest to calorie goal later
+				closest_dessert = dessert_count;
 			dessert_count++;
 		}
-		recipeSet[num].calorieTotal = aRecipes[a].calorie_total / aRecipes[a].servings;
-		num++;
 	}
 
-	for(e = 0; e < main_count; e++)
+	for(a = 0; a < main_count; a++)
 	{
-		for(f = 0; f < starter_count; f++)
-		{
-			recipeSet[num].main_recipe = aMain[e];
-			recipeSet[num].starter_recipe = aStarter[f];
-			recipeSet[num].calorieTotal = recipeSet[num].main_recipe.calorie_total + recipeSet[num].starter_recipe.calorie_total;
-			recipeSet[num].main = 1;
-			recipeSet[num].starter = 1;
-			recipeSet[num].dessert = 0;
-			num++;
-		}
-		for(g = 0; g < dessert_count; g++)
-		{
-			recipeSet[num].main_recipe = aMain[e];
-			recipeSet[num].dessert_recipe = aDessert[g];
-			recipeSet[num].calorieTotal = recipeSet[num].main_recipe.calorie_total + recipeSet[num].dessert_recipe.calorie_total;
-			recipeSet[num].main = 1;
-			recipeSet[num].starter = 0;
-			recipeSet[num].dessert = 1;
-			num++;
-		}
+		calorie_diff[a] = calorie_goal - aMain[a].calorie_total;
+		if(calorie_diff[a] >= 0 && calorie_diff[a] < calorie_diff[closest_main])
+			closest_main = a;
 	}
-
-	for(f = 0; f < starter_count; f++)
+	if(closest_main != -1)
 	{
-		for(g = 0; g < dessert_count; g++)
+		main_index[0] = closest_main;
+		for(b = 0; b < main_count; b++)
 		{
-			recipeSet[num].starter_recipe = aStarter[f];
-			recipeSet[num].dessert_recipe = aDessert[g];
-			recipeSet[num].calorieTotal = recipeSet[num].starter_recipe.calorie_total + recipeSet[num].dessert_recipe.calorie_total;
-			recipeSet[num].main = 0;
-			recipeSet[num].starter = 1;
-			recipeSet[num].dessert = 1;
-			num++;
-		}
-	}
-
-	for(h = 0; h < main_count; h++)
-	{
-		for(i = 0; i < starter_count; i++)
-		{
-			for(j = 0; j < dessert_count; j++)
+			if(aMain[b].calorie_total == aMain[closest_main].calorie_total && b != closest_main)
 			{
-				recipeSet[num].main_recipe = aMain[h];
-				recipeSet[num].starter_recipe = aStarter[i];
-				recipeSet[num].dessert_recipe = aDessert[j];
-				recipeSet[num].calorieTotal = recipeSet[num].main_recipe.calorie_total + recipeSet[num].starter_recipe.calorie_total + recipeSet[num].dessert_recipe.calorie_total;
-				recipeSet[num].main = 1;
-				recipeSet[num].starter = 1;
-				recipeSet[num].dessert = 1;
-				num++;
+				main_index[main_match] = b;
+				main_match++;	// number of main recipes that have the same closest calorie total
 			}
 		}
+		random = rand() % main_match;
+		recommend[saved] = aMain[random];
+		calorie_goal -= recommend[saved].calorie_total;
+		saved++;
 	}
 
-	for(k = 0; k < num; k++)
+	for(c = 0; c < starter_count; c++)
 	{
-		calorie_diff[k] = calorie_goal - recipeSet[k].calorieTotal;
-		if(calorie_diff[k] >= 0)
-			closest = k;
-	}
-
-	for(k = 0; k < num; k++)
-	{
-		if(calorie_diff[k] < calorie_diff[closest] && calorie_diff[k] >= 0)
-			closest = k;
-	}
-
-	// to find recipe combinations of the same desired calorie total
-	for(k = 0; k < num; k++)
-	{
-		if(calorie_diff[k] == calorie_diff[closest])
+		calorie_diff[c] = calorie_goal - aStarter[c].calorie_total;
+		if(calorie_diff[c] >= 0 && calorie_diff[c] < calorie_diff[closest_starter])
 		{
-			recommend[saved_menu] = recipeSet[k];
-			saved_menu++;
+			recommend[saved] = aStarter[c];
+			calorie_goal -= recommend[saved].calorie_total;
+			saved++;
 		}
 	}
+	if(closest_starter != -1)
+	{
+		starter_index[0] = closest_starter;
+		for(d = 0; d < starter_count; d++)
+		{
+			if(aStarter[d].calorie_total == aStarter[closest_main].calorie_total && d != closest_main)
+			{
+				starter_index[starter_match] = d;
+				starter_match++;	// number of starter recipes that have the same closest calorie total
+			}
+		}
+		random = rand() % starter_match;
+		recommend[saved] = aMain[random];
+		calorie_goal -= recommend[saved].calorie_total;
+		saved++;
+	}
 
+	for(e = 0; e < dessert_count; e++)
+	{
+		calorie_diff[e] = calorie_goal - aDessert[e].calorie_total;
+		if(calorie_diff[e] >= 0 && calorie_diff[e] < 1)
+		{
+			recommend[saved] = aDessert[e];
+			saved++;
+		}
+	}
+	
 	// if all recipes are above calorie goal, find the one with the lowest calories since that would be closest to goal
-	if(saved_menu == 0)
+	if(saved == 0)
 	{
 		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Press Y to show. ");
 		scanf(" %c", &option);
 		scanf("%c", &garbage);
 		if(option == 'Y' || option == 'y')
 		{
-			closest = 0;
-			for(l = 0; l < *numRecipes; l++)
+			for(d = 0; d < *numRecipes; d++)
 			{
-				if(aRecipes[l].calorie_total < aRecipes[closest].calorie_total)
-					closest = l;
+				if(aRecipes[d].calorie_total < aRecipes[closest].calorie_total)
+					closest = d;
 			}
 			DisplayRecipe(aRecipes[closest]);
 		}
 	}
 	else
 	{
-		random = rand() % saved_menu;
-		if(recommend[random].main)
-			DisplayRecipe(recommend[random].main_recipe);
-		if(recommend[random].starter)
-			DisplayRecipe(recommend[random].starter_recipe);
-		if(recommend[random].dessert)
-			DisplayRecipe(recommend[random].dessert_recipe);
+		random = rand() % saved;
 	}
 }
