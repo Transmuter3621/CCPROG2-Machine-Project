@@ -839,7 +839,8 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
 	int a, b, c, d, e, f, g, h;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
-	int closest_main, closest_starter, closest_dessert, random, saved = 0, closest = 0;
+	int closest_main = -1, closest_starter = -1, closest_dessert = -1;	// -1 to signal no recipe was found to be below calorie goal
+	int random, saved = 0, closest = 0;
 	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
 	int main_match = 1, starter_match = 1, dessert_match = 1;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
@@ -910,7 +911,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			}
 		}
 		random = rand() % main_match;
-		recommend[saved] = aMain[random];
+		recommend[saved] = aMain[main_index[random]];
 		calorie_goal -= recommend[saved].calorie_total;
 		saved++;
 	}
@@ -937,7 +938,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			}
 		}
 		random = rand() % starter_match;
-		recommend[saved] = aMain[random];
+		recommend[saved] = aStarter[starter_index[random]];
 		calorie_goal -= recommend[saved].calorie_total;
 		saved++;
 	}
@@ -945,11 +946,26 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	for(e = 0; e < dessert_count; e++)
 	{
 		calorie_diff[e] = calorie_goal - aDessert[e].calorie_total;
-		if(calorie_diff[e] >= 0 && calorie_diff[e] < 1)
+		if(calorie_diff[e] >= 0 && calorie_diff[c] < calorie_diff[closest_dessert])
 		{
 			recommend[saved] = aDessert[e];
 			saved++;
 		}
+	}
+	if(closest_dessert != -1)
+	{
+		dessert_index[0] = closest_dessert;
+		for(f = 0; f < starter_count; f++)
+		{
+			if(aDessert[f].calorie_total == aDessert[closest_main].calorie_total && f != closest_main)
+			{
+				dessert_index[dessert_match] = f;
+				dessert_match++;	// number of starter recipes that have the same closest calorie total
+			}
+		}
+		random = rand() % dessert_match;
+		recommend[saved] = aDessert[dessert_index[random]];
+		saved++;
 	}
 	
 	// if all recipes are above calorie goal, find the one with the lowest calories since that would be closest to goal
@@ -960,16 +976,17 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		scanf("%c", &garbage);
 		if(option == 'Y' || option == 'y')
 		{
-			for(d = 0; d < *numRecipes; d++)
+			for(g = 0; g < *numRecipes; g++)
 			{
-				if(aRecipes[d].calorie_total < aRecipes[closest].calorie_total)
-					closest = d;
+				if(aRecipes[g].calorie_total < aRecipes[closest].calorie_total)
+					closest = g;
 			}
 			DisplayRecipe(aRecipes[closest]);
 		}
 	}
 	else
 	{
-		random = rand() % saved;
+		for(h = 0; h < saved; h++)
+			DisplayRecipe(recommend[h]);
 	}
 }

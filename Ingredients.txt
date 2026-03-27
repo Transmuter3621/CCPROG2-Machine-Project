@@ -7,6 +7,12 @@ broccoli
 cauliflower
 100.000 grams 25.000
 
+chocolate ice cream
+0.500 cup 143.000
+
+cookie
+100.000 grams 500.000
+
 garlic
 6.000 grams 4.000
 
@@ -36,4 +42,7 @@ onion powder
 
 tomato sauce
 100.000 grams 78.947
+
+vanilla ice cream
+0.500 cup 130.000
 

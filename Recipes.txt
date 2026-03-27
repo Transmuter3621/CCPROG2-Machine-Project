@@ -1,32 +1,42 @@
 Baked cauliflower
 3 starter
 Ingredients 6
-300 grams cauliflower
-75 milliters olive oil
-10 grams salt
-10 grams pepper
-10 grams garlic powder
-10 grams onion powder
-Steps 4
+300.000000 grams cauliflower
+75.000000 milliters olive oil
+10.000000 grams salt
+10.000000 grams pepper
+10.000000 grams garlic powder
+10.000000 grams onion powder
+Steps:
 Wash cauliflower
 Mix salt, pepper, garlic powder, onion powder, and olive oil
 Brush the seasoned oil on the cauliflower
 Bake at 150 degrees celsius for 20 minutes
 
+Ice cream sandwich
+1 dessert
+Ingredients 3
+0.500000 cup vanilla ice cream
+0.500000 cup chocolate ice cream
+20.000000 grams cookie
+Steps:
+Scoop ice cream onto cookie
+Put second cookie on top
+
 Lasagna
 4 main
 Ingredients 10
-200 grams lasagna sheets
-300 grams tomato sauce
-150 milliters olive oil
-300 grams ground beef
-300 grams ground pork
-10 grams salt
-10 grams pepper
-48 grams garlic
-48 grams onion
-100 grams mozzarella cheese
-Steps 7
+200.000000 grams lasagna sheets
+300.000000 grams tomato sauce
+150.000000 milliters olive oil
+300.000000 grams ground beef
+300.000000 grams ground pork
+10.000000 grams salt
+10.000000 grams pepper
+48.000000 grams garlic
+48.000000 grams onion
+100.000000 grams mozzarella cheese
+Steps:
 Boil lasagna sheets for 10 minutes
 Mix ground beef and pork with garlic and onion
 Sautee the meat in olive oil
@@ -35,12 +45,3 @@ Season with salt and pepper
 Layer the sheets, meat mixture, and cheese
 Bake at 350 degrees fahrenheit for 20 minutes
 
-Ice cream sandwich
-1 dessert
-Ingredients 3
-50 grams vanilla ice cream
-50 grams chocolate ice cream
-20 grams cookies
-Steps 2
-Scoop ice cream onto cookie
-Put second cookie on top
