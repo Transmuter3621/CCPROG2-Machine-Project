@@ -67,8 +67,13 @@ int main()
 					if(box_option == 1)
 					{
 						printf("********* Add Food-Calorie Info ********\n");
-						calorie_info[calorie_info_count] = AddFoodCalorie(calorie_input);
-						calorie_info_count++;
+						if(calorie_info_count == 50)
+							printf("Food item count is at limit, cannot add more.\n");
+						else
+						{
+							calorie_info[calorie_info_count] = AddFoodCalorie(calorie_input);
+							calorie_info_count++;
+						}
 					}
 					
 					else if(box_option == 2)
@@ -109,7 +114,10 @@ int main()
 					else if(box_option == 6)
 					{
 						printf("************** Add Recipe **************\n");
-						AddRecipe(aRecipes, &numRecipes);
+						if(numRecipes == 50)
+							printf("Recipe count is at limit, cannot add more.\n");
+						else
+							AddRecipe(aRecipes, &numRecipes);
 					}
 
 					else if(box_option == 7)
@@ -265,7 +273,7 @@ int main()
 						else
 						{
 							DisplayRecipeTitles(aRecipes, &numRecipes);
-							printf("Choose recipe: ");
+							printf("Enter recipe title: ");
 							scanf("%[^\n]", recipeTitle);
 							recipe_index = SearchName(aRecipes, &numRecipes, recipeTitle);
 							DisplayRecipe(aRecipes[recipe_index]);

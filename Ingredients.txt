@@ -1,6 +1,9 @@
 basil
 100.000 grams 23.000
 
+bread
+1.000 slice 82.000
+
 broccoli
 100.000 grams 31.000
 
@@ -12,6 +15,9 @@ chocolate ice cream
 
 cookie
 100.000 grams 500.000
+
+egg
+100.000 grams 155.000
 
 garlic
 6.000 grams 4.000
@@ -39,6 +45,9 @@ onion
 
 onion powder
 100.000 grams 342.000
+
+spam
+56.000 grams 180.000
 
 tomato sauce
 100.000 grams 78.947

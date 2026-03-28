@@ -187,7 +187,7 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 */
 void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 {
-	int i, delete = -1;
+	int a = 0, i, delete = -1;
 	for(i = 0; i < *food_count; i++)
 	{
 		if(strcmp(food_info[i].food, food) == 0)
@@ -197,9 +197,20 @@ void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 		printf("Food item not found.\n");
 	else
 	{
-		for(i = delete; i < *food_count - 1; i++)
-			food_info[i] = food_info[i + 1];
-		(*food_count)--;
+		while(a < *food_count)
+		{
+			if(a == delete)
+			{
+				if(a < *food_count - 1)
+				{
+					for(i = a; i < *food_count - 1; i++)
+						food_info[i] = food_info[i + 1];
+				}
+				(*food_count)--;
+			}
+			else
+				a++;
+		}
 	}
 }
 
@@ -283,6 +294,7 @@ void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 			fprintf(CalText, "%.3f\n\n", food_info[a].calories);
 		}
 		fclose(CalText);
+		printf("Food-calorie info saved successfully!\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");
@@ -380,21 +392,18 @@ ingredientType AddIngredient(ingredientType ingredient)
 void AddRecipe(recipeType aRecipes[], int *numRecipes)
 {
 	char garbage, option;
-	int a, found = 0, i = 0, j = 0;
-	aRecipes[*numRecipes].calorie_total = 0;
+	int i = 0, j = 0;
+	string recipe;
 
 	printf("Recipe: ");
-	scanf("%[^\n]", aRecipes[*numRecipes].name);
+	scanf("%[^\n]", recipe);
 	scanf("%c", &garbage);
 
-	for(a = 0; a < *numRecipes; a++)
+	if(SearchName(aRecipes, numRecipes, recipe) > -1)
 	{
-		if(strcmp(aRecipes[*numRecipes].name, aRecipes[a].name) == 0)
-			found++;
-	}
+		strcpy(aRecipes[*numRecipes].name, recipe);
+		aRecipes[*numRecipes].calorie_total = 0;
 
-	if(found == 0)
-	{
 		printf("Class: ");
 		scanf("%[^\n]", aRecipes[*numRecipes].class);
 		scanf("%c", &garbage);
@@ -417,6 +426,7 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 		printf("Steps:\n");
 		do
 		{
+			printf("%d. ", j);
 			scanf("%[^\n]", aRecipes[*numRecipes].steps[j]);
 			scanf("%c", &garbage);
 			j++;
@@ -439,15 +449,26 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 */
 void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
-	int i, delete;
+	int a = 0, i, delete;
 	for(i = 0; i < aRecipe->numIngredients; i++)
 	{
 		if(strcmp(aRecipe->items[i].food, ingredient) == 0)
 			delete = i;
 	}
-	for(i = delete; i < aRecipe->numIngredients - 1; i++)
-		aRecipe->items[i] = aRecipe->items[i + 1];
-	(aRecipe->numIngredients)--;
+	while(a < aRecipe->numIngredients)
+	{
+		if(a == delete)
+		{
+			if(a < aRecipe->numIngredients - 1)
+			{
+				for(i = delete; i < aRecipe->numIngredients - 1; i++)
+					aRecipe->items[i] = aRecipe->items[i + 1];
+			}
+			(aRecipe->numIngredients)--;
+		}
+		else
+			a++;
+	}
 }
 
 /*
@@ -477,11 +498,22 @@ void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 */
 void DeleteStep(recipeType *aRecipe, int step_remove)
 {
-	int i;
+	int a = 0, i;
 	step_remove--;
-	for(i = step_remove; i < aRecipe->numSteps - 1; i++)
-		strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
-	(aRecipe->numSteps)--;
+	while(a < aRecipe->numSteps)
+	{
+		if(a == step_remove)
+		{
+			if(a < aRecipe->numIngredients - 1)
+			{
+				for(i = step_remove; i < aRecipe->numSteps - 1; i++)
+					strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
+			}
+			(aRecipe->numSteps)--;
+		}
+		else
+			a++;
+	}
 }
 
 /*
@@ -502,7 +534,7 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 	{
 		while(a < *numRecipes)
 		{
-			if(strcmp(aRecipes[a].name, aRecipes[delete].name) == 0)
+			if(a == delete)
 			{
 				if(a < *numRecipes - 1)
 				{
@@ -601,6 +633,7 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 			fprintf(RecipeList, "\n");
 		}
 		fclose(RecipeList);
+		printf("Recipes saved successfully!\n");
 	}
 	else
 		printf("Error loading file. Please try again.\n");
