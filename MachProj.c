@@ -807,14 +807,14 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d, e, f, g, h;
+	int a, b, c = 0, d, e = 0, f, g, h, i, j, k, l;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int closest_main = -1, closest_starter = -1, closest_dessert = -1;	// -1 to signal no recipe was found to be below calorie goal
 	int random, saved = 0, closest = 0;
 	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
 	int main_match = 1, starter_match = 1, dessert_match = 1;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
-	float calorie_diff[*numRecipes];
+	float calorie_diff[*numRecipes], actual_calories = 0;
 	char option, garbage;
 
 	for(a = 0; a < *numRecipes; a++)
@@ -829,8 +829,6 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aMain[main_count].items[b].calories = aRecipes[a].items[b].calories / aRecipes[a].servings;
 			}
 			aMain[main_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			if(aMain[main_count].calorie_total <= calorie_goal)		// for getting main closest to calorie goal later
-				closest_main = main_count;
 			main_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "starter") == 0)
@@ -843,8 +841,6 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aStarter[starter_count].items[c].calories = aRecipes[a].items[c].calories / aRecipes[a].servings;
 			}
 			aStarter[starter_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			if(aStarter[starter_count].calorie_total <= calorie_goal)	// for getting starter closest to calorie goal later
-				closest_starter = starter_count;
 			starter_count++;
 		}
 		else if(strcmp(aRecipes[a].class, "dessert") == 0)
@@ -857,26 +853,30 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				aDessert[dessert_count].items[d].calories = aRecipes[a].items[d].calories / aRecipes[a].servings;
 			}
 			aDessert[dessert_count].calorie_total = aRecipes[a].calorie_total / aRecipes[a].servings;
-			if(aDessert[dessert_count].calorie_total <= calorie_goal)	// for getting dessert closest to calorie goal later
-				closest_dessert = dessert_count;
 			dessert_count++;
 		}
 	}
 
-	for(a = 0; a < main_count; a++)
+	do
 	{
-		calorie_diff[a] = calorie_goal - aMain[a].calorie_total;
-		if(calorie_diff[a] >= 0 && calorie_diff[a] < calorie_diff[closest_main])
-			closest_main = a;
-	}
+		if(aMain[e].calorie_total <= calorie_goal)
+			closest_main = e;
+		e++;
+	} while(closest_main == -1 && e < main_count);
 	if(closest_main != -1)
 	{
-		main_index[0] = closest_main;
-		for(b = 0; b < main_count; b++)
+		for(e = 0; e < main_count; e++)
 		{
-			if(aMain[b].calorie_total == aMain[closest_main].calorie_total && b != closest_main)
+			calorie_diff[e] = calorie_goal - aMain[e].calorie_total;
+			if(calorie_diff[e] >= 0 && aMain[e].calorie_total > aMain[closest_main].calorie_total)
+				closest_main = e;
+		}
+		main_index[0] = closest_main;
+		for(f = 0; f < main_count; f++)
+		{
+			if(aMain[f].calorie_total == aMain[closest_main].calorie_total && f != closest_main)
 			{
-				main_index[main_match] = b;
+				main_index[main_match] = f;
 				main_match++;	// number of main recipes that have the same closest calorie total
 			}
 		}
@@ -886,24 +886,26 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		saved++;
 	}
 
-	for(c = 0; c < starter_count; c++)
+	do
 	{
-		calorie_diff[c] = calorie_goal - aStarter[c].calorie_total;
-		if(calorie_diff[c] >= 0 && calorie_diff[c] < calorie_diff[closest_starter])
-		{
-			recommend[saved] = aStarter[c];
-			calorie_goal -= recommend[saved].calorie_total;
-			saved++;
-		}
-	}
+		if(aStarter[g].calorie_total <= calorie_goal)
+			closest_starter = g;
+		g++;
+	} while(closest_starter == -1 && g < starter_count);
 	if(closest_starter != -1)
 	{
-		starter_index[0] = closest_starter;
-		for(d = 0; d < starter_count; d++)
+		for(g = 0; g < starter_count; g++)
 		{
-			if(aStarter[d].calorie_total == aStarter[closest_main].calorie_total && d != closest_main)
+			calorie_diff[g] = calorie_goal - aStarter[g].calorie_total;
+			if(calorie_diff[g] >= 0 && aStarter[g].calorie_total > aStarter[closest_starter].calorie_total)
+				closest_starter = g;
+		}
+		starter_index[0] = closest_starter;
+		for(h = 0; h < starter_count; h++)
+		{
+			if(aStarter[h].calorie_total == aStarter[closest_main].calorie_total && h != closest_starter)
 			{
-				starter_index[starter_match] = d;
+				starter_index[starter_match] = h;
 				starter_match++;	// number of starter recipes that have the same closest calorie total
 			}
 		}
@@ -913,23 +915,26 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		saved++;
 	}
 
-	for(e = 0; e < dessert_count; e++)
+	do
 	{
-		calorie_diff[e] = calorie_goal - aDessert[e].calorie_total;
-		if(calorie_diff[e] >= 0 && calorie_diff[c] < calorie_diff[closest_dessert])
-		{
-			recommend[saved] = aDessert[e];
-			saved++;
-		}
-	}
+		if(aDessert[i].calorie_total <= calorie_goal)
+			closest_dessert = i;
+		i++;
+	} while(closest_dessert == -1 && i < dessert_count);
 	if(closest_dessert != -1)
 	{
-		dessert_index[0] = closest_dessert;
-		for(f = 0; f < starter_count; f++)
+		for(i = 0; i < dessert_count; i++)
 		{
-			if(aDessert[f].calorie_total == aDessert[closest_main].calorie_total && f != closest_main)
+			calorie_diff[i] = calorie_goal - aDessert[i].calorie_total;
+			if(calorie_diff[i] >= 0 && aDessert[i].calorie_total > aDessert[closest_dessert].calorie_total)
+				closest_dessert = i;
+		}
+		dessert_index[0] = closest_dessert;
+		for(j = 0; j < starter_count; j++)
+		{
+			if(aDessert[j].calorie_total == aDessert[closest_main].calorie_total && j != closest_dessert)
 			{
-				dessert_index[dessert_match] = f;
+				dessert_index[dessert_match] = j;
 				dessert_match++;	// number of starter recipes that have the same closest calorie total
 			}
 		}
@@ -946,18 +951,22 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		scanf("%c", &garbage);
 		if(option == 'Y' || option == 'y')
 		{
-			for(g = 0; g < *numRecipes; g++)
+			for(k = 0; k < *numRecipes; k++)
 			{
-				if(aRecipes[g].calorie_total < aRecipes[closest].calorie_total)
-					closest = g;
+				if(aRecipes[k].calorie_total < aRecipes[closest].calorie_total)
+					closest = k;
 			}
 			DisplayRecipe(aRecipes[closest]);
 		}
 	}
 	else
 	{
-		for(h = 0; h < saved; h++)
-			DisplayRecipe(recommend[h]);
+		for(l = 0; l < saved; l++)
+		{
+			DisplayRecipe(recommend[l]);
+			actual_calories += recommend[l].calorie_total;
+		}
+		printf("Calorie total: %.3f\n", actual_calories);
 	}
 }
 
