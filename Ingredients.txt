@@ -7,6 +7,9 @@ bread
 broccoli
 100.000 grams 31.000
 
+canola oil
+1.000 tablespoon 124.000
+
 cauliflower
 100.000 grams 25.000
 
@@ -45,6 +48,9 @@ onion
 
 onion powder
 100.000 grams 342.000
+
+rice
+100.000 grams 130.000
 
 spam
 56.000 grams 180.000

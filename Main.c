@@ -261,6 +261,7 @@ int main()
 										scanf("%c", &garbage);
 									}
 								}
+								printf("\n");
 							}while(a < numRecipes && displaynext != 'X');
 						}
 					}

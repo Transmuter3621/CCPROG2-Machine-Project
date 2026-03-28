@@ -400,7 +400,7 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 	scanf("%[^\n]", recipe);
 	scanf("%c", &garbage);
 
-	if(SearchName(aRecipes, numRecipes, recipe) > -1)
+	if(SearchName(aRecipes, numRecipes, recipe) == -1)
 	{
 		strcpy(aRecipes[*numRecipes].name, recipe);
 		aRecipes[*numRecipes].calorie_total = 0;
@@ -427,12 +427,13 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 		printf("Steps:\n");
 		do
 		{
-			printf("%d. ", j);
+			printf("%d. ", j + 1);
 			scanf("%[^\n]", aRecipes[*numRecipes].steps[j]);
 			scanf("%c", &garbage);
 			j++;
 			printf("Continue adding steps? Y/N ");
 			scanf(" %c", &option);
+			scanf("%c", &garbage);
 		} while(option == 'Y' || option == 'y');
 		aRecipes[*numRecipes].numSteps = j;
 		(*numRecipes)++;
@@ -751,7 +752,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 			save++;
 		}
 	}
-	if(found > 0)
+	if(save > 0)
 	{
 		AlphabeticalSort(savedRecipes, &save);
 		s = 0;
@@ -769,6 +770,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 					scanf(" %c", &displaynext);
 				}
 			}
+			printf("\n");
 		} while(s < save && displaynext != 'X');
 	}
 	else
