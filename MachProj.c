@@ -807,7 +807,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c = 0, d, e = 0, f, g, h, i, j, k, l;
+	int a, b, c, d, e = 0, f, g = 0, h, i = 0, j, k, l;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int closest_main = -1, closest_starter = -1, closest_dessert = -1;	// -1 to signal no recipe was found to be below calorie goal
 	int random, saved = 0, closest = 0;
@@ -935,7 +935,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			if(aDessert[j].calorie_total == aDessert[closest_main].calorie_total && j != closest_dessert)
 			{
 				dessert_index[dessert_match] = j;
-				dessert_match++;	// number of starter recipes that have the same closest calorie total
+				dessert_match++;	// number of dessert recipes that have the same closest calorie total
 			}
 		}
 		random = rand() % dessert_match;
@@ -966,7 +966,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			DisplayRecipe(recommend[l]);
 			actual_calories += recommend[l].calorie_total;
 		}
-		printf("Calorie total: %.3f\n", actual_calories);
+		printf("Calorie total: %.2f\n", actual_calories);
 	}
 }
 
