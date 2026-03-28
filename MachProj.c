@@ -187,33 +187,19 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 */
 void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 {
-	int a, b = 0, c, delete = -1;
-	char garbage;	// to get rid of leftover \n
-
-	for(a = 0; a < *food_count; a++)
+	int i, delete = -1;
+	for(i = 0; i < *food_count; i++)
 	{
-		if(strcmp(food_info[a].food, food))
-			delete = a;
+		if(strcmp(food_info[i].food, food) == 0)
+			delete = i;
 	}
-
 	if(delete == -1)
 		printf("Food item not found.\n");
 	else
 	{
-		while(b < *food_count)
-		{
-			if(b == delete)
-			{
-				if(b < *food_count)
-				{
-					for(c = b; c < *food_count; c++)
-						food_info[c] = food_info[c + 1];
-				}
-				(*food_count)--;
-			}
-			else
-				b++;
-		}
+		for(i = delete; i < *food_count - 1; i++)
+			food_info[i] = food_info[i + 1];
+		(*food_count)--;
 	}
 }
 
@@ -453,31 +439,15 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 */
 void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
-	int a = 0, i, delete;
-	if(aRecipe->numIngredients <= 1)
-		printf("Cannot delete any more ingredients.\n");
-	else
+	int i, delete;
+	for(i = 0; i < aRecipe->numIngredients; i++)
 	{
-		for(i = 0; i < aRecipe->numIngredients; i++)
-		{
-			if(strcmp(aRecipe->items[i].food, ingredient) == 0)
-				delete = i;
-		}
-		while(a < aRecipe->numIngredients)
-		{
-			if(a == delete)
-			{
-				if(a < aRecipe->numIngredients - 1)
-				{
-					for(i = a; i < aRecipe->numIngredients - 1; i++)
-						aRecipe->items[i] = aRecipe->items[i + 1];
-				}
-				(aRecipe->numIngredients)--;
-			}
-			else
-				a++;
-		}
+		if(strcmp(aRecipe->items[i].food, ingredient) == 0)
+			delete = i;
 	}
+	for(i = delete; i < aRecipe->numIngredients - 1; i++)
+		aRecipe->items[i] = aRecipe->items[i + 1];
+	(aRecipe->numIngredients)--;
 }
 
 /*
@@ -522,7 +492,7 @@ void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 */
 void DeleteStep(recipeType *aRecipe, int step_remove)
 {
-	int a = 0, i;
+	int i;
 	char garbage;
 	if(aRecipe->numSteps == 1)
 		printf("Cannot delete any more steps.\n");
@@ -535,20 +505,9 @@ void DeleteStep(recipeType *aRecipe, int step_remove)
 			scanf("%c", &garbage);
 		}
 		step_remove--;
-		while(a < aRecipe->numSteps)
-		{
-			if(a == step_remove)
-			{
-				if(a < aRecipe->numSteps - 1)
-				{
-					for(i = a; i < aRecipe->numSteps - 1; i++)
-						strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
-				}
-				(aRecipe->numSteps)--;
-			}
-			else
-				a++;
-		}
+		for(i = step_remove; i < aRecipe->numSteps - 1; i++)
+			strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
+		(aRecipe->numSteps)--;
 	}
 }
 
@@ -595,9 +554,14 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 {
 	int i;
-	AlphabeticalSort(aRecipes, numRecipes);
-	for(i = 0; i < *numRecipes; i++)
-		printf("%s\n", aRecipes[i].name);
+	if(*numRecipes == 0)
+		printf("No recipes to show.\n");
+	else
+	{
+		AlphabeticalSort(aRecipes, numRecipes);
+		for(i = 0; i < *numRecipes; i++)
+			printf("%s\n", aRecipes[i].name);
+	}
 }
 
 /*

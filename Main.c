@@ -7,7 +7,7 @@ int main()
 	int access_check, recipe_option, box_option;
 	int calorie_info_count = 0;		// to be updated whenever the user adds food items
 	int numRecipes = 0;		// to be updated whenever the user adds recipes
-	int a, b, c, recipe_index, ingredient_index, step_insert, step_remove;
+	int a, recipe_index, ingredient_index, step_insert, step_remove;
 	recipeType aRecipes[MAX], savedRecipes[MAX];
 	string food, recipeTitle, ingredient, filename;
 	ingredientType calorie_input, calorie_info[MAX];
@@ -46,7 +46,7 @@ int main()
 					printf("\n************** Update Recipe Box **************\n");
 					printf("[0] Return to main menu\n");
 					printf("[1] Add food-calorie info\n");
-					printf("[2] Add food-calorie info\n");
+					printf("[2] Delete food-calorie info\n");
 					printf("[3] View food-calorie chart\n");
 					printf("[4] Save calorie info\n");
 					printf("[5] Load calorie info\n");
@@ -77,6 +77,8 @@ int main()
 						printf("Enter food item to delete: ");
 						scanf("%[^\n]", food);
 						scanf("%c", &garbage);
+						DeleteFoodCalorie(calorie_info, &calorie_info_count, food);
+						printf("Deleted %s successfully.\n", food);
 					}
 
 					else if(box_option == 3)
@@ -146,10 +148,15 @@ int main()
 								else if(recipe_option == 2)
 								{
 									printf("********* Delete Ingredient ********\n");
-									printf("Ingredient: ");
-									scanf("%[^\n]", ingredient);
-									scanf("%c", &garbage);
-									DeleteIngredient(&aRecipes[recipe_index], food);
+									if(aRecipes[recipe_index].numIngredients <= 1)
+										printf("Cannot delete any more ingredients.\n");
+									else
+									{
+										printf("Ingredient: ");
+										scanf("%[^\n]", ingredient);
+										scanf("%c", &garbage);
+										DeleteIngredient(&aRecipes[recipe_index], food);
+									}
 								}
 								else if(recipe_option == 3)
 								{
@@ -257,10 +264,8 @@ int main()
 			else
 				printf("Invalid username and password. Please try again.\n");
 
-			for(b = 0; b < calorie_info_count; b++)
-				DeleteFoodCalorie(calorie_info, &calorie_info_count, &calorie_info[b]);
-			for(c = 0; c < numRecipes; c++)
-				DeleteRecipe(aRecipes, numRecipes, aRecipes[c].name);
+			calorie_info_count = 0;
+			numRecipes = 0;
 		}
 		else if(main_option == 'A')
 		{
@@ -352,6 +357,9 @@ int main()
 
 				CalorieMatcher(aRecipes, &numRecipes, calorie_info, &calorie_info_count);
 			}while(box_option != 0);
+
+			calorie_info_count = 0;
+			numRecipes = 0;
 		}
 		else if(main_option != 'U' && main_option != 'A' && main_option != 'E')
 			printf("Invalid option.\n");
