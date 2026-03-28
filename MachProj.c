@@ -130,12 +130,12 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 
 /*
 	Function 1: Password Checker
-	This function checks for user's password
-	Precondition: option must be a single character
+	This function checks if the user's inputted username and password are correct
+	Precondition: username and password can only be 20 characters at most
 	@param username - username input
-	@param sUsername - saved username
+	@param current_username - saved username
 	@param password - password input
-	@param sPassword - saved password
+	@param current_password - saved password
 	@returns 0 or 1 depending on whether or not both username and password match
 */
 int PassCheck(string username, string current_username, string password, string current_password)
@@ -179,11 +179,12 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 
 /*
 	Function 3: Delete food-calorie info
-	This function adds the info of a certain food item
+	This function deletes the info of a certain food item
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
+	@param food - name of food item to delete
 */
 void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 {
@@ -216,7 +217,7 @@ void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 
 /*
 	Function 4: View food-calorie chart
-	This function displays the food, its quantity, unit, and calorie count
+	This function displays the food, its quantity, unit, and calorie count in a chart
 	Precondition: the number of food items must not exceed 50
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
@@ -275,11 +276,11 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 
 /*
 	Function 5: Save Calorie Info
-	This function checks for user's password
-	Precondition: 
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
-	@param numItems - number of ingredients
+	This function exports the current food-calorie info to the user's choice of file
+	Precondition: the number of food items must not exceed 50
 	@param filename - name of file that will store food-calorie info
+	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param food_count - number of food items
 */
 void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 {
@@ -518,7 +519,7 @@ void DeleteStep(recipeType *aRecipe, int step_remove)
 
 /*
 	Function 12: Delete Recipe
-	This function deletes a recipe from the repository
+	This function deletes a recipe from the list
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipe - recipe struct
 	@param recipeTitle - name of recipe to be deleted
@@ -551,8 +552,8 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 
 /*
 	Function 13: Display Recipe Titles
-	This function checks for user's password
-	Precondition: 
+	This function displays each recipe title in alphabetical order
+	Precondition: number of recipes must not exceed 50
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
 */
@@ -572,7 +573,7 @@ void DisplayRecipeTitles(recipeType aRecipes[], int *numRecipes)
 /*
 	Function 14: Display Recipe
 	This function displays one recipe's details
-	Precondition: 
+	Precondition: aRecipe has all valid contents
 	@param aRecipe - recipe struct
 */
 void DisplayRecipe(recipeType aRecipe)
@@ -778,7 +779,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 /*
 	Function 19: Generate Shopping List
 	This function randomizes a shopping list for the user
-	Precondition: option must be a single character
+	Precondition: number of recipes must not exceed 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 */
@@ -800,7 +801,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 /*
 	Function 20: Recommend Menu
 	This function searches a recipe according to its ingredient
-	Precondition: numRecipes is at most 50
+	Precondition: number of recipes must not exceed 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 	@param calorie_goal - amount of calories the user aims to gain
