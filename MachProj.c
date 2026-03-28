@@ -461,26 +461,11 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 {
 	int a;
-	char garbage;
-	if(aRecipe->numSteps > MAX_STEPS)
-		printf("Step count has exceeded limit.\n");
-	else if(step_insert > aRecipe->numSteps)
-	{
-		do
-		{
-			printf("Invalid placement. Please try again: ");
-			scanf("%d", &step_insert);
-			scanf("%c", &garbage);
-		} while(step_insert > aRecipe->numSteps);
-	}
-	else
-	{
-		aRecipe->numSteps++;
-		for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
-			strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
-		step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
-		strcpy(aRecipe->steps[step_insert], step);
-	}
+	aRecipe->numSteps++;
+	for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
+		strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
+	step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
+	strcpy(aRecipe->steps[step_insert], step);
 }
 
 /*
@@ -493,22 +478,10 @@ void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 void DeleteStep(recipeType *aRecipe, int step_remove)
 {
 	int i;
-	char garbage;
-	if(aRecipe->numSteps == 1)
-		printf("Cannot delete any more steps.\n");
-	else
-	{
-		while(step_remove > aRecipe->numSteps || step_remove < 1)
-		{
-			printf("Invalid step number. Please try again: \n");
-			scanf("%d", &step_remove);
-			scanf("%c", &garbage);
-		}
-		step_remove--;
-		for(i = step_remove; i < aRecipe->numSteps - 1; i++)
-			strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
-		(aRecipe->numSteps)--;
-	}
+	step_remove--;
+	for(i = step_remove; i < aRecipe->numSteps - 1; i++)
+		strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
+	(aRecipe->numSteps)--;
 }
 
 /*
