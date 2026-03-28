@@ -129,60 +129,7 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 }
 
 /*
-	Function 1: Username and Password Changer
-	This function changes the user's username and/or password
-	Precondition: username and password can only be 20 characters max
-	@param username - current username
-	@param password - current password
-*/
-void AccessModifier(string username, string password)
-{
-	string old_username, new_username, old_password, new_password;
-	char option, garbage;
-	printf("What will you change? Press U for username, P for password, or X for exit. ");
-	scanf("%c", &option);
-	scanf("%c", &garbage);
-	while(option != 'X')
-	{
-		if(option == 'U')
-		{
-			printf("Old username: ");
-			scanf("%[^\n]", old_username);
-			scanf("%c", &garbage);
-			if(strcmp(old_username, username) == 0)
-			{
-				printf("New username: ");
-				scanf("%[^\n]", new_username);
-				scanf("%c", &garbage);
-				strcpy(username, new_username);
-			}
-			else
-				printf("Invalid username. Please try again.\n");
-		}
-		else if(option == 'P')
-		{
-			printf("Old password: ");
-			scanf("%[^\n]", old_password);
-			scanf("%c", &garbage);
-			if(strcmp(old_password, password) == 0)
-			{
-				printf("New password: ");
-				scanf("%[^\n]", new_password);
-				scanf("%c", &garbage);
-				strcpy(password, new_password);
-			}
-			else
-				printf("Invalid password. Please try again.\n");
-		}
-		else
-			printf("Invalid input, please try again.\n");
-		printf("What will you change? Press U for username, P for password, or X for exit. ");
-		scanf(" %c", &option);
-	}
-}
-
-/*
-	Function 2: Password Checker
+	Function 1: Password Checker
 	This function checks for user's password
 	Precondition: option must be a single character
 	@param username - username input
@@ -204,7 +151,7 @@ int PassCheck(string username, string current_username, string password, string 
 }
 
 /*
-	Function 3: Add food-calorie info
+	Function 2: Add food-calorie info
 	This function adds the info of a certain food item
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
@@ -228,6 +175,46 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	scanf("%c", &garbage);
 
 	return food_info;
+}
+
+/*
+	Function 3: Delete food-calorie info
+	This function adds the info of a certain food item
+	Precondition: quantity can only be a non-negative float
+				  quantity and unit are to be inputted with a space between
+	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param food_count - number of existing food items
+*/
+void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
+{
+	int a, b = 0, c, delete = -1;
+	char garbage;	// to get rid of leftover \n
+
+	for(a = 0; a < *food_count; a++)
+	{
+		if(strcmp(food_info[a].food, food))
+			delete = a;
+	}
+
+	if(delete == -1)
+		printf("Food item not found.\n");
+	else
+	{
+		while(b < *food_count)
+		{
+			if(b == delete)
+			{
+				if(b < *food_count)
+				{
+					for(c = b; c < *food_count; c++)
+						food_info[c] = food_info[c + 1];
+				}
+				(*food_count)--;
+			}
+			else
+				b++;
+		}
+	}
 }
 
 /*
@@ -466,8 +453,7 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 */
 void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
-	int a = 0, i;
-	string delete;
+	int a = 0, i, delete;
 	if(aRecipe->numIngredients <= 1)
 		printf("Cannot delete any more ingredients.\n");
 	else
@@ -475,14 +461,11 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 		for(i = 0; i < aRecipe->numIngredients; i++)
 		{
 			if(strcmp(aRecipe->items[i].food, ingredient) == 0)
-			{
-				strcpy(delete, aRecipe->items[i].food);
-				aRecipe->calorie_total -= aRecipe->items[i].calories;
-			}
+				delete = i;
 		}
 		while(a < aRecipe->numIngredients)
 		{
-			if(strcmp(aRecipe->items[a].food, delete) == 0)
+			if(a == delete)
 			{
 				if(a < aRecipe->numIngredients - 1)
 				{
@@ -540,12 +523,17 @@ void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 void DeleteStep(recipeType *aRecipe, int step_remove)
 {
 	int a = 0, i;
+	char garbage;
 	if(aRecipe->numSteps == 1)
 		printf("Cannot delete any more steps.\n");
 	else
 	{
 		while(step_remove > aRecipe->numSteps || step_remove < 1)
-			printf("Invalid step number.\n");
+		{
+			printf("Invalid step number. Please try again: \n");
+			scanf("%d", &step_remove);
+			scanf("%c", &garbage);
+		}
 		step_remove--;
 		while(a < aRecipe->numSteps)
 		{
@@ -1000,5 +988,58 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	{
 		for(h = 0; h < saved; h++)
 			DisplayRecipe(recommend[h]);
+	}
+}
+
+/*
+	Function 21: Username and Password Changer
+	This function changes the user's username and/or password
+	Precondition: username and password can only be 20 characters max
+	@param username - current username
+	@param password - current password
+*/
+void AccessModifier(string username, string password)
+{
+	string old_username, new_username, old_password, new_password;
+	char option, garbage;
+	printf("What will you change? Press U for username, P for password, or X for exit. ");
+	scanf("%c", &option);
+	scanf("%c", &garbage);
+	while(option != 'X')
+	{
+		if(option == 'U')
+		{
+			printf("Old username: ");
+			scanf("%[^\n]", old_username);
+			scanf("%c", &garbage);
+			if(strcmp(old_username, username) == 0)
+			{
+				printf("New username: ");
+				scanf("%[^\n]", new_username);
+				scanf("%c", &garbage);
+				strcpy(username, new_username);
+			}
+			else
+				printf("Invalid username. Please try again.\n");
+		}
+		else if(option == 'P')
+		{
+			printf("Old password: ");
+			scanf("%[^\n]", old_password);
+			scanf("%c", &garbage);
+			if(strcmp(old_password, password) == 0)
+			{
+				printf("New password: ");
+				scanf("%[^\n]", new_password);
+				scanf("%c", &garbage);
+				strcpy(password, new_password);
+			}
+			else
+				printf("Invalid password. Please try again.\n");
+		}
+		else
+			printf("Invalid input, please try again.\n");
+		printf("What will you change? Press U for username, P for password, or X for exit. ");
+		scanf(" %c", &option);
 	}
 }
