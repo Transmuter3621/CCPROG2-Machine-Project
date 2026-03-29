@@ -792,32 +792,55 @@ void AccessModifier(string username, string password)
 
 /*
 	Function 19: Search Recipe by Ingredient
-	This function searches a recipe according to its ingredient
+	This function searches a recipe according to the user's inputted ingredients (at least 1)
 	Precondition: 0 < numRecipes <= 50
-				  fooditem is at least 1 character and does not exceed 20
+				  0 < ingredient_count <= 5
+				  ingredient is at least 1 character and does not exceed 20
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
-	@param fooditem - user-inputted ingredient
 	@param savedRecipes[] - list of recipes that have searched ingredient
 */
-void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, recipeType savedRecipes[])
+void ScanByIngredient(recipeType aRecipes[], int *numRecipes, recipeType savedRecipes[])
 {
-	int a, i, found, save = 0, s;
-	char displaynext;
+	int a, b, c, i, ingredient_count, found[*numRecipes], save = 0, s;
+	string ingredient[5];
+	char garbage, displaynext;
+
+	printf("Enter number of ingredients (1-5): ");
+	scanf("%d", &ingredient_count);
+	scanf("%c", &garbage);
+	while(ingredient_count < 1 || ingredient_count > 5)
+	{
+		printf("Invalid input, can only input a number from 1-5.\n");
+		printf("Please try again: ");
+		scanf("%d", &ingredient_count);
+		scanf("%c", &garbage);
+	}
+	for(i = 0; i < ingredient_count; i++)
+	{
+		printf("Ingredient %d: ", i + 1);
+		scanf("%[^\n]", ingredient[i]);
+		scanf("%c", &garbage);
+	}
+
 	for(a = 0; a < *numRecipes; a++)
 	{
-		found = 0;
-		for(i = 0; i < aRecipes[a].numIngredients; i++)
+		found[a] = 0;
+		for(b = 0; b < ingredient_count; b++)
 		{
-			if(strcmp(aRecipes[a].items[i].food, fooditem) == 0)
-				found++;
+			for(c = 0; c < aRecipes[a].numIngredients; c++)
+			{
+				if(strcmp(aRecipes[a].items[c].food, ingredient[b]) == 0)
+					found[a]++;
+			}
 		}
-		if(found > 0)
+		if(found[a] == ingredient_count)
 		{
 			savedRecipes[save] = aRecipes[a];
 			save++;
 		}
 	}
+	
 	if(save > 0)
 	{
 		AlphabeticalSort(savedRecipes, &save);

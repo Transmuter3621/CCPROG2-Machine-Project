@@ -56,15 +56,16 @@ int main()
 					printf("[9] List Recipe Titles\n");
 					printf("[10] Scan Recipes\n");
 					printf("[11] Search Recipe by Title\n");
-					printf("[12] Export Recipes\n");
-					printf("[13] Import Recipes\n");
-					printf("[14] Change Username and/or Password\n");
-					printf("Choose an update option from 0-14: ");
+					printf("[12] Scan Recipes by Ingredient\n");
+					printf("[13] Export Recipes\n");
+					printf("[14] Import Recipes\n");
+					printf("[15] Change Username and/or Password\n");
+					printf("Choose an update option from 0-15: ");
 					scanf(" %d", &box_option);
 					scanf("%c", &garbage);
 					printf("\n");
 					
-					while(box_option < 0 || box_option > 14)
+					while(box_option < 0 || box_option > 15)
 					{
 						printf("Invalid option. Please try again: ");
 						scanf(" %d", &box_option);
@@ -325,8 +326,17 @@ int main()
 								DisplayRecipe(aRecipes[recipe_index]);
 						}
 					}
-
+				
 					else if(box_option == 12)
+					{
+						printf("****** Scan Recipes By Ingredient ******\n");
+						if(numRecipes == 0)
+							printf("No recipes to search.\n");
+						else
+							ScanByIngredient(aRecipes, &numRecipes, savedRecipes);
+					}
+
+					else if(box_option == 13)
 					{
 						printf("************ Export Recipes ************\n");
 						printf("Save data to what file? ");
@@ -334,7 +344,7 @@ int main()
 						ExportRecipes(aRecipes, &numRecipes, filename);
 					}
 
-					else if(box_option == 13)
+					else if(box_option == 14)
 					{
 						printf("************ Import Recipes ************\n");
 						printf("Load data from what file? ");
@@ -342,7 +352,7 @@ int main()
 						ImportRecipes(aRecipes, &numRecipes, filename);
 					}
 
-					else if(box_option == 14)
+					else if(box_option == 15)
 					{
 						printf("******** Change Username or Password ********\n");
 						AccessModifier(current_username, current_password);
@@ -480,12 +490,7 @@ int main()
 					if(numRecipes == 0)
 						printf("No recipes to search.\n");
 					else
-					{
-						printf("Enter ingredient: ");
-						scanf("%[^\n]", ingredient);
-						scanf("%c", &garbage);
-						ScanByIngredient(aRecipes, &numRecipes, ingredient, savedRecipes);
-					}
+						ScanByIngredient(aRecipes, &numRecipes, savedRecipes);
 				}
 
 				else if(box_option == 8)
