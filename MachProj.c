@@ -54,6 +54,7 @@ typedef struct recipeTag recipeType;
 	Helper Function 1: Alphabetical Organizer
 	This function organizes the recipe list in increasing alphabetical order
 	Precondition: all recipe info is valid
+				  0 < numRecipes <= 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 */
@@ -554,7 +555,7 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 /*
 	Function 13: Display Recipe Titles
 	This function displays each recipe title in alphabetical order
-	Precondition: number of recipes must not exceed 50
+	Precondition: numRecipes <= 50
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
 */
@@ -775,6 +776,7 @@ void AccessModifier(string username, string password)
 			printf("Invalid input, please try again.\n");
 		printf("What will you change? Press U for username, P for password, or X for exit. ");
 		scanf(" %c", &option);
+		scanf("%c", &garbage);
 	}
 }
 
