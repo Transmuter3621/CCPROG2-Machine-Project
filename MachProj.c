@@ -1,14 +1,15 @@
-/***************************************************************************
+/****************************************************************************************************
 This is to certify that this project is my own work, based on my personal efforts in studying and applying the
 concepts learned. I have constructed the functions and their respective algorithms and corresponding code by
 myself. The program was run, tested, and debugged by my own efforts. I further certify that I have not copied in
-part or whole or otherwise plagiarized the work of other students and/or persons.
+part or whole or otherwise plagiarized the work of other students and/or persons, nor did I employ the use of AI 
+in any part of the deliverable.
 Eryn Claire Go Sy, DLSU ID# 12506621
-***************************************************************************/
+****************************************************************************************************/
 
 /*
-	Description: This program is a meal repository with access and modification features on the recipes,
-	as well as having a shopping list generator and a menu recommendation function.
+	Description: This program is a meal repository with access and modification features on recipes and their
+	calorie information, as well as having a shopping list generator and a menu recommendation function.
 	Programmed by: Sy, Eryn Claire Go, S21B
 	Last modified: March 30, 2026
 	Version: 
@@ -52,7 +53,7 @@ typedef struct recipeTag recipeType;
 
 /*
 	Helper Function 1: Alphabetical Organizer
-	This function organizes the recipe list in increasing alphabetical order
+	This function organizes the recipe list in increasing ASCII value order
 	Precondition: all recipe info is valid
 				  0 < numRecipes <= 50
 	@param aRecipes[] - list of recipes
@@ -60,20 +61,20 @@ typedef struct recipeTag recipeType;
 */
 void AlphabeticalSort(recipeType aRecipes[], int *numRecipes)
 {
-	int i, j, min;
+	int a, b, min;
 	recipeType temp;
-	for(i = 0; i < *numRecipes; i++)
+	for(a = 0; a < *numRecipes; a++)
 	{
-		min = i;
-		for(j = i; j < *numRecipes; j++)
+		min = a;
+		for(b = a; b < *numRecipes; b++)
 		{
-			if(strcmp(aRecipes[min].name, aRecipes[j].name) > 0)
-				min = j;
+			if(strcmp(aRecipes[min].name, aRecipes[b].name) > 0)
+				min = b;
 		}
-		if(i != min)
+		if(a != min)
 		{
-			temp = aRecipes[i];
-			aRecipes[i] = aRecipes[min];
+			temp = aRecipes[a];
+			aRecipes[a] = aRecipes[min];
 			aRecipes[min] = temp;
 		}
 	}
@@ -83,6 +84,7 @@ void AlphabeticalSort(recipeType aRecipes[], int *numRecipes)
 	Helper Function 2: Search recipe title
 	This function searches for a recipe title in an array of recipes
 	Precondition: all recipe info is valid
+				  0 < numRecipes <= 50
 	@param aRecipes[] - list of recipes
 	@param recipeTitle - recipe name the user is trying to find
 	@param numRecipes - number of recipes
@@ -103,9 +105,11 @@ int SearchName(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 	Helper Function 3: Calorie matcher
 	This function matches the amount of calories of the ingredients in a recipe
 	Precondition: all entries in aRecipes and food_info are complete
+				  0 < numRecipes <= 50
+				  0 < food_count <= 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
-	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param food_info - list of food-calorie information
 	@param food_count - number of existing food items
 */
 void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_info[], int *food_count)
@@ -137,7 +141,7 @@ void CalorieMatcher(recipeType aRecipes[], int *numRecipes, ingredientType food_
 	@param current_username - saved username
 	@param password - password input
 	@param current_password - saved password
-	@returns 0 or 1 depending on whether or not both username and password match
+	@returns 0, 1, 2, or 3 depending on whether or not both username and password match
 */
 int PassCheck(string username, string current_username, string password, string current_password)
 {
@@ -183,6 +187,7 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 	This function deletes the info of a certain food item
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
+				  0 < food_count <= 50
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
 	@param food - name of food item to delete
@@ -219,7 +224,8 @@ void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 /*
 	Function 4: View food-calorie chart
 	This function displays the food, its quantity, unit, and calorie count in a chart
-	Precondition: the number of food items must not exceed 50
+	Precondition: all contents of food_info are valid
+				  0 < food_count <= 50
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of existing food items
 */
@@ -278,7 +284,9 @@ void ViewCalorie(ingredientType food_info[], int *food_count)
 /*
 	Function 5: Save Calorie Info
 	This function exports the current food-calorie info to the user's choice of file
-	Precondition: the number of food items must not exceed 50
+	Precondition: filename must not exceed 20 characters
+				  all contents of food_info are valid
+				  0 < food_count <= 50
 	@param filename - name of file that will store food-calorie info
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
 	@param food_count - number of food items
@@ -305,7 +313,9 @@ void SaveCalorie(string filename, ingredientType food_info[], int *food_count)
 /*
 	Function 6: Load Calorie Info
 	This function loads a food item's calorie info
-	Precondition: 
+	Precondition: filename must not exceed 20 characters
+				  all contents of calorie_info are valid
+				  0 < calorie_info_count <= 50
 	@param filename - name of file that contains food-calorie info
 	@param calorie_info - struct that saves the food items
 	@param calorie_info_count - number of food items stored in the program (starting point of adding file calorie-info)
@@ -364,7 +374,7 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 	Precondition: quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
 	@param ingredient - struct that holds an ingredient's name and quantity in certain units
-	@return ingredient which has the ingredient name,  quantity, and unit
+	@return ingredient which has the ingredient name, quantity, and unit
 */
 ingredientType AddIngredient(ingredientType ingredient)
 {
@@ -384,10 +394,9 @@ ingredientType AddIngredient(ingredientType ingredient)
 /*
 	Function 8: Add Recipe
 	This function adds an ingredient to a recipe
-	Precondition: recipe name and steps only contain letters in the alphabet
-				  class can only be starter, main, or dessert
+	Precondition: class can only be starter, main, or dessert
 				  servings must be a positive integer
-				  user will input steps in order (no insertion of steps in the middle)
+				  user will input steps in order (no insertion of steps in the middle - this can be done in modify recipe)
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
 */
@@ -448,7 +457,7 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 	This function deletes an ingredient from a recipe
 	Precondition: the name of the ingredient only contains letters in the alphabet
 	@param aRecipe - recipe struct
-	@param ingredient - ingredient to be deleted
+	@param ingredient - name of ingredient to be deleted
 */
 void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
@@ -522,10 +531,11 @@ void DeleteStep(recipeType *aRecipe, int step_remove)
 /*
 	Function 12: Delete Recipe
 	This function deletes a recipe from the list
-	Precondition: recipeTitle contains 20 characters at most
+	Precondition: 0 < numRecipes <= 50
+				  recipeTitle contains 20 characters at most
 	@param aRecipe - recipe struct
-	@param recipeTitle - name of recipe to be deleted
 	@param numRecipes - number of recipes
+	@param recipeTitle - name of recipe to be deleted
 */
 void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
@@ -555,7 +565,7 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 /*
 	Function 13: Display Recipe Titles
 	This function displays each recipe title in alphabetical order
-	Precondition: numRecipes <= 50
+	Precondition: 0 <= numRecipes <= 50
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
 */
@@ -596,8 +606,8 @@ void DisplayRecipe(recipeType aRecipe)
 	This function searches a recipe by its title
 	Precondition: recipeTitle contains 20 characters at most
 	@param aRecipes[] - list of recipes
-	@param recipeTitle - recipe the user is trying to find
 	@param numRecipes - number of recipes
+	@param recipeTitle - recipe the user is trying to find
 */
 void SearchByTitle(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
@@ -612,7 +622,7 @@ void SearchByTitle(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 /*
 	Function 16: Export Recipes
 	This function saves the current list of recipes in the user's text file of choice (if it's found)
-	Precondition: recipeTitle contains 20 characters at most
+	Precondition: filename contains 20 characters at most
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 	@param filename - name of file that will contain all recipes made at the time
@@ -645,7 +655,7 @@ void ExportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 /*
 	Function 17: Import Recipes
 	This function loads a list of recipes from the user's inputted text file (if it's found)
-	Precondition: recipeTitle contains 20 characters at most
+	Precondition: filename contains 20 characters at most
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes (starting point of recipe adding)
 	@param filename - name of file user will load recipes from
@@ -783,7 +793,8 @@ void AccessModifier(string username, string password)
 /*
 	Function 19: Search Recipe by Ingredient
 	This function searches a recipe according to its ingredient
-	Precondition: 
+	Precondition: 0 < numRecipes <= 50
+				  fooditem is at least 1 character and does not exceed 20
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 	@param fooditem - user-inputted ingredient
@@ -828,6 +839,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 			printf("\n");
 		} while(s < save && displaynext != 'X');
 	}
+	// save = 0 does not get updated, which means no recipes were found/stored in savedRecipes
 	else
 		printf("No recipes matching ingredient.\n");
 	
@@ -836,7 +848,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 /*
 	Function 20: Generate Shopping List
 	This function randomizes a shopping list for the user
-	Precondition: number of recipes must not exceed 50
+	Precondition: 0 < numRecipes <= 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 */
@@ -858,20 +870,20 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 /*
 	Function 21: Recommend Menu
 	This function searches a recipe according to its ingredient
-	Precondition: number of recipes must not exceed 50
+	Precondition: 0 < numRecipes <= 50
 	@param aRecipes[] - list of recipes
 	@param numRecipes - number of recipes
 	@param calorie_goal - amount of calories the user aims to gain
 */
 void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 {
-	int a, b, c, d, e = 0, f, g = 0, h, i = 0, j, k, l;
+	int a, b, c, d, e = 0, f, g = 0, h, i = 0, j, k, z;
 	int main_count = 0, starter_count = 0, dessert_count = 0;
 	int closest_main = -1, closest_starter = -1, closest_dessert = -1;	// -1 to signal no recipe was found to be below calorie goal
 	int random, saved = 0, closest = 0;
 	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
 	int main_match = 0, starter_match = 0, dessert_match = 0, exact_main = 0, exact_starter = 0;
-	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
+	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[3], temp;
 	float calorie_diff[*numRecipes], actual_calories = 0;
 	char option, garbage;
 
@@ -939,13 +951,13 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 				main_match++;	// number of main recipes that have the same closest calorie total
 			}
 		}
-		random = rand() % main_match;
+		random = rand() % main_match;	// randomize which of the equal main recipes get chosen
 		recommend[saved] = aMain[main_index[random]];
-		calorie_goal -= recommend[saved].calorie_total;
+		calorie_goal -= recommend[saved].calorie_total;		// decrease chosen main's calories from calorie goal
 		saved++;
 	}
 
-	if(exact_main == 0)		// no main meal was found to exactly match calorie goal
+	if(exact_main == 0)		// no main meal was found to exactly match calorie goal, so there's still space for starter and/or dessert
 	{
 		do
 		{
@@ -971,13 +983,13 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 					starter_match++;	// number of starter recipes that have the same closest calorie total
 				}
 			}
-			random = rand() % starter_match;
+			random = rand() % starter_match;	// randomize which of the equal starter recipes get chosen
 			recommend[saved] = aStarter[starter_index[random]];
-			calorie_goal -= recommend[saved].calorie_total;
+			calorie_goal -= recommend[saved].calorie_total;		// decrease chosen starter's calories from calorie goal
 			saved++;
 		}
 
-		if(exact_starter == 0)
+		if(exact_starter == 0)	// no starter meal was found to exactly match remaining calorie goal, so there's still space for dessert
 		{
 			do
 			{
@@ -1001,7 +1013,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 						dessert_match++;	// number of dessert recipes that have the same closest calorie total
 					}
 				}
-				random = rand() % dessert_match;
+				random = rand() % dessert_match;	// randomize which of the equal dessert recipes get chosen
 				recommend[saved] = aDessert[dessert_index[random]];
 				saved++;
 			}
@@ -1014,7 +1026,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		printf("No recipe is below calorie goal. Show recipe closest to calorie goal? Press Y to show. ");
 		scanf(" %c", &option);
 		scanf("%c", &garbage);
-		if(option == 'Y' || option == 'y')
+		if(option == 'Y')
 		{
 			for(k = 0; k < *numRecipes; k++)
 			{
@@ -1026,10 +1038,21 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	}
 	else
 	{
-		for(l = 0; l < saved; l++)
+		if(strcmp(recommend[0].class, "main") == 0 && strcmp(recommend[1].class, "starter") == 0)	// swap main and starter if both exist
 		{
-			DisplayRecipe(recommend[l]);
-			actual_calories += recommend[l].calorie_total;
+			temp = recommend[0];
+			recommend[0] = recommend[1];
+			recommend[1] = temp;
+		}
+		for(z = 0; z < saved; z++)
+		{
+			DisplayRecipe(recommend[z]);
+			actual_calories += recommend[z].calorie_total;
+			if(z + 1 < saved)
+			{
+				printf("Press any key to view next recipe. ");
+				scanf(" %c", &option);
+			}
 		}
 		printf("Calorie total: %.2f\n", actual_calories);
 	}
