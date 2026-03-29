@@ -868,7 +868,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 	int closest_main = -1, closest_starter = -1, closest_dessert = -1;	// -1 to signal no recipe was found to be below calorie goal
 	int random, saved = 0, closest = 0;
 	int main_index[*numRecipes], starter_index[*numRecipes], dessert_index[*numRecipes];
-	int main_match = 1, starter_match = 1, dessert_match = 1;
+	int main_match = 0, starter_match = 0, dessert_match = 0, exact_main = 0, exact_starter = 0;
 	recipeType aMain[*numRecipes], aStarter[*numRecipes], aDessert[*numRecipes], recommend[*numRecipes];
 	float calorie_diff[*numRecipes], actual_calories = 0;
 	char option, garbage;
@@ -927,10 +927,11 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			if(calorie_diff[e] >= 0 && aMain[e].calorie_total > aMain[closest_main].calorie_total)
 				closest_main = e;
 		}
-		main_index[0] = closest_main;
+		if(aMain[closest_main].calorie_total == calorie_goal)
+			exact_main++;
 		for(f = 0; f < main_count; f++)
 		{
-			if(aMain[f].calorie_total == aMain[closest_main].calorie_total && f != closest_main)
+			if(aMain[f].calorie_total == aMain[closest_main].calorie_total)
 			{
 				main_index[main_match] = f;
 				main_match++;	// number of main recipes that have the same closest calorie total
@@ -942,61 +943,67 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 		saved++;
 	}
 
-	do
+	if(exact_main == 0)		// no main meal was found to exactly match calorie goal
 	{
-		if(aStarter[g].calorie_total <= calorie_goal)
-			closest_starter = g;
-		g++;
-	} while(closest_starter == -1 && g < starter_count);
-	if(closest_starter != -1)
-	{
-		for(g = 0; g < starter_count; g++)
+		do
 		{
-			calorie_diff[g] = calorie_goal - aStarter[g].calorie_total;
-			if(calorie_diff[g] >= 0 && aStarter[g].calorie_total > aStarter[closest_starter].calorie_total)
+			if(aStarter[g].calorie_total <= calorie_goal)
 				closest_starter = g;
-		}
-		starter_index[0] = closest_starter;
-		for(h = 0; h < starter_count; h++)
+			g++;
+		} while(closest_starter == -1 && g < starter_count);
+		if(closest_starter != -1)
 		{
-			if(aStarter[h].calorie_total == aStarter[closest_main].calorie_total && h != closest_starter)
+			for(g = 0; g < starter_count; g++)
 			{
-				starter_index[starter_match] = h;
-				starter_match++;	// number of starter recipes that have the same closest calorie total
+				calorie_diff[g] = calorie_goal - aStarter[g].calorie_total;
+				if(calorie_diff[g] >= 0 && aStarter[g].calorie_total > aStarter[closest_starter].calorie_total)
+					closest_starter = g;
 			}
+			if(aStarter[closest_starter].calorie_total == calorie_goal)
+				exact_starter++;
+			for(h = 0; h < starter_count; h++)
+			{
+				if(aStarter[h].calorie_total == aStarter[closest_starter].calorie_total)
+				{
+					starter_index[starter_match] = h;
+					starter_match++;	// number of starter recipes that have the same closest calorie total
+				}
+			}
+			random = rand() % starter_match;
+			recommend[saved] = aStarter[starter_index[random]];
+			calorie_goal -= recommend[saved].calorie_total;
+			saved++;
 		}
-		random = rand() % starter_match;
-		recommend[saved] = aStarter[starter_index[random]];
-		calorie_goal -= recommend[saved].calorie_total;
-		saved++;
-	}
 
-	do
-	{
-		if(aDessert[i].calorie_total <= calorie_goal)
-			closest_dessert = i;
-		i++;
-	} while(closest_dessert == -1 && i < dessert_count);
-	if(closest_dessert != -1)
-	{
-		for(i = 0; i < dessert_count; i++)
+		if(exact_starter == 0)
 		{
-			calorie_diff[i] = calorie_goal - aDessert[i].calorie_total;
-			if(calorie_diff[i] >= 0 && aDessert[i].calorie_total > aDessert[closest_dessert].calorie_total)
-				closest_dessert = i;
-		}
-		dessert_index[0] = closest_dessert;
-		for(j = 0; j < starter_count; j++)
-		{
-			if(aDessert[j].calorie_total == aDessert[closest_main].calorie_total && j != closest_dessert)
+			do
 			{
-				dessert_index[dessert_match] = j;
-				dessert_match++;	// number of dessert recipes that have the same closest calorie total
+				if(aDessert[i].calorie_total <= calorie_goal)
+					closest_dessert = i;
+				i++;
+			} while(closest_dessert == -1 && i < dessert_count);
+			if(closest_dessert != -1)
+			{
+				for(i = 0; i < dessert_count; i++)
+				{
+					calorie_diff[i] = calorie_goal - aDessert[i].calorie_total;
+					if(calorie_diff[i] >= 0 && aDessert[i].calorie_total > aDessert[closest_dessert].calorie_total)
+						closest_dessert = i;
+				}
+				for(j = 0; j < starter_count; j++)
+				{
+					if(aDessert[j].calorie_total == aDessert[closest_dessert].calorie_total)
+					{
+						dessert_index[dessert_match] = j;
+						dessert_match++;	// number of dessert recipes that have the same closest calorie total
+					}
+				}
+				random = rand() % dessert_match;
+				recommend[saved] = aDessert[dessert_index[random]];
+				saved++;
 			}
 		}
-		random = rand() % dessert_match;
-		recommend[saved] = aDessert[dessert_index[random]];
-		saved++;
 	}
 	
 	// if all recipes are above calorie goal, find the one with the lowest calories since that would be closest to goal
