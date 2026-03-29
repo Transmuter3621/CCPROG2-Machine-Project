@@ -1,3 +1,6 @@
+bangus
+100.000 grams 148.000
+
 basil
 100.000 grams 23.000
 

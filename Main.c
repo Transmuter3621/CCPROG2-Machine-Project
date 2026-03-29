@@ -132,88 +132,118 @@ int main()
 							scanf("%[^\n]", recipeTitle);
 							scanf("%c", &garbage);
 							recipe_index = SearchName(aRecipes, &numRecipes, recipeTitle);
-							do
+							if(recipe_index != -1)
 							{
-								printf("[0] Return to update menu\n");
-								printf("[1] Add ingredient\n");
-								printf("[2] Delete ingredient\n");
-								printf("[3] Add step\n");
-								printf("[4] Delete step\n");
-								printf("Choose what to modify from 0-4: ");
-								scanf(" %d", &recipe_option);
-								scanf("%c", &garbage);
-								while(recipe_option < 0 || recipe_option > 4)
+								do
 								{
-									printf("Invalid option. Choose from 0-4 only: ");
+									printf("Editing %s...\n", aRecipes[recipe_index].name);
+									printf("[0] Return to update menu\n");
+									printf("[1] Change recipe title\n");
+									printf("[2] Change class\n");
+									printf("[3] Change servings\n");
+									printf("[4] Add ingredient\n");
+									printf("[5] Delete ingredient\n");
+									printf("[6] Add step\n");
+									printf("[7] Delete step\n");
+									printf("[8] Display recipe\n");
+									printf("Choose what to modify from 0-8: ");
 									scanf(" %d", &recipe_option);
 									scanf("%c", &garbage);
-								}
-								if(recipe_option != 0)
-								{
-									if(recipe_option == 1)
+									while(recipe_option < 0 || recipe_option > 8)
 									{
-										printf("********** Add Ingredient **********\n");
-										ingredient_index = aRecipes[recipe_index].numIngredients;
-										aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index]);
-										aRecipes[recipe_index].numIngredients++;
+										printf("Invalid option. Choose from 0-8 only: ");
+										scanf(" %d", &recipe_option);
+										scanf("%c", &garbage);
 									}
-									else if(recipe_option == 2)
+									if(recipe_option != 0)
 									{
-										printf("********* Delete Ingredient ********\n");
-										if(aRecipes[recipe_index].numIngredients <= 1)
-											printf("Cannot delete any more ingredients.\n");
-										else
+										if(recipe_option == 1)
 										{
-											printf("Ingredient: ");
-											scanf("%[^\n]", ingredient);
+											printf("New recipe title: ");
+											scanf("%[^\n]", aRecipes[recipe_index].name);
 											scanf("%c", &garbage);
-											DeleteIngredient(&aRecipes[recipe_index], food);
 										}
-									}
-									else if(recipe_option == 3)
-									{
-										printf("************* Add Step *************\n");
-										if(aRecipes[recipe_index].numSteps > MAX_STEPS)
-											printf("Step count has exceeded limit.\n");
-										else
+										else if(recipe_option == 2)
 										{
-											printf("Enter step number to insert: ");
-											scanf("%d", &step_insert);
+											printf("Class: main, starter, or dessert? ");
+											scanf("%s", aRecipes[recipe_index].class);
 											scanf("%c", &garbage);
-											while(step_insert - 1 > aRecipes[recipe_index].numSteps)
+										}
+										else if(recipe_option == 3)
+										{
+											printf("Servings: ");
+											scanf("%d", aRecipes[recipe_index].servings);
+											scanf("%c", &garbage);
+										}
+										else if(recipe_option == 4)
+										{
+											printf("********** Add Ingredient **********\n");
+											ingredient_index = aRecipes[recipe_index].numIngredients;
+											aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index]);
+											aRecipes[recipe_index].numIngredients++;
+										}
+										else if(recipe_option == 5)
+										{
+											printf("********* Delete Ingredient ********\n");
+											if(aRecipes[recipe_index].numIngredients <= 1)
+												printf("Cannot delete any more ingredients.\n");
+											else
 											{
-												printf("Invalid placement. Please try again: ");
+												printf("Ingredient: ");
+												scanf("%[^\n]", ingredient);
+												scanf("%c", &garbage);
+												DeleteIngredient(&aRecipes[recipe_index], food);
+											}
+										}
+										else if(recipe_option == 6)
+										{
+											printf("************* Add Step *************\n");
+											if(aRecipes[recipe_index].numSteps > MAX_STEPS)
+												printf("Step count has exceeded limit.\n");
+											else
+											{
+												printf("Enter step number to insert: ");
 												scanf("%d", &step_insert);
 												scanf("%c", &garbage);
+												while(step_insert - 1 > aRecipes[recipe_index].numSteps)
+												{
+													printf("Invalid placement. Please try again: ");
+													scanf("%d", &step_insert);
+													scanf("%c", &garbage);
+												}
+												printf("Enter step: ");
+												scanf("%[^\n]", step);
+												scanf("%c", &garbage);
+												AddStep(&aRecipes[recipe_index], step_insert, step);
 											}
-											printf("Enter step: ");
-											scanf("%[^\n]", step);
-											scanf("%c", &garbage);
-											AddStep(&aRecipes[recipe_index], step_insert, step);
 										}
-									}
-									else if(recipe_option == 4)
-									{
-										printf("************ Delete Step ***********\n");
-										if(aRecipes[recipe_index].numSteps == 1)
-											printf("Cannot delete any more steps.\n");
-										else
+										else if(recipe_option == 7)
 										{
-											printf("Enter step number to delete: ");
-											scanf("%d", &step_remove);
-											scanf("%c", &garbage);
-											while(step_remove - 1 > aRecipes[recipe_index].numSteps || step_remove < 1)
+											printf("************ Delete Step ***********\n");
+											if(aRecipes[recipe_index].numSteps == 1)
+												printf("Cannot delete any more steps.\n");
+											else
 											{
-												printf("Invalid step number. Please try again: \n");
+												printf("Enter step number to delete: ");
 												scanf("%d", &step_remove);
 												scanf("%c", &garbage);
+												while(step_remove - 1 > aRecipes[recipe_index].numSteps || step_remove < 1)
+												{
+													printf("Invalid step number. Please try again: \n");
+													scanf("%d", &step_remove);
+													scanf("%c", &garbage);
+												}
+												DeleteStep(&aRecipes[recipe_index], step_remove);
 											}
-											DeleteStep(&aRecipes[recipe_index], step_remove);
 										}
+										else if(recipe_option == 8)
+											DisplayRecipe(aRecipes[recipe_index]);
 									}
-								}
-								printf("\n");
-							} while(recipe_option != 0);
+									printf("\n");
+								} while(recipe_option != 0);
+							}
+							else
+								printf("Recipe not found.\n");
 						}
 					}
 
