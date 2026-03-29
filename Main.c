@@ -176,14 +176,14 @@ int main()
 										else if(recipe_option == 2)
 										{
 											printf("************* Change Class *************\n");
-											printf("Class: main, starter, or dessert? ");
+											printf("New class: main, starter, or dessert? ");
 											scanf("%s", aRecipes[recipe_index].class);
 											scanf("%c", &garbage);
 										}
 										else if(recipe_option == 3)
 										{
 											printf("************ Change Servings ***********\n");
-											printf("Servings: ");
+											printf("New servings: ");
 											scanf("%d", &aRecipes[recipe_index].servings);
 											scanf("%c", &garbage);
 										}

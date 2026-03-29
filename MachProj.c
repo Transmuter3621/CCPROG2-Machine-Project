@@ -427,6 +427,7 @@ ingredientType AddIngredient(ingredientType ingredient)
 	This function adds an ingredient to a recipe
 	Precondition: class can only be starter, main, or dessert
 				  servings must be a positive integer
+				  all ingredients are unique
 				  user will input steps in order (no insertion of steps in the middle - this can be done in modify recipe)
 	@param aRecipe - recipe struct
 	@param numRecipes - number of recipes
@@ -1129,7 +1130,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			actual_calories += recommend[z].calorie_total;
 			if(z + 1 < saved)
 			{
-				printf("Press any key to view next recipe. ");
+				printf("Press any key (except enter) to view next recipe. ");
 				scanf(" %c", &option);
 				printf("\n");
 			}
