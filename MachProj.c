@@ -158,28 +158,53 @@ int PassCheck(string username, string current_username, string password, string 
 /*
 	Function 2: Add food-calorie info
 	This function adds the info of a certain food item
-	Precondition: quantity can only be a non-negative float
+	Precondition: food must have at least 1 character and not exceed 20
+				  quantity can only be a non-negative float
 				  quantity and unit are to be inputted with a space between
 	@param food_info - struct that holds a food item's name, quantity in certain units, and calorie count
+	@param calorie_info - list of existing food-calorie info
+	@param info_count - number of existing food-calorie info
 	@return food_info
 */
-ingredientType AddFoodCalorie(ingredientType food_info)
+void AddFoodCalorie(ingredientType food_info, ingredientType calorie_info[], int *calorie_info_count)
 {
+	int a, same = 0;
 	char garbage;	// to get rid of leftover \n
 
 	printf("Food item: ");
 	scanf("%[^\n]", food_info.food);
 	scanf("%c", &garbage);
 
-	printf("Quantity and Unit: ");
-	scanf(" %f %s", &food_info.quantity, food_info.unit);
-	scanf("%c", &garbage);
+	while(strlen(food_info.food) == 0)
+	{
+		printf("Invalid food item. Please try again: ");
+		scanf("%[^\n]", food_info.food);
+		scanf("%c", &garbage);
+	}
 
-	printf("Calorie amount: ");
-	scanf(" %f", &food_info.calories);
-	scanf("%c", &garbage);
+	for(a = 0; a < *calorie_info_count; a++)
+	{
+		if(strcmp(food_info.food, calorie_info[a].food) == 0)
+			same++;
+	}
 
-	return food_info;
+	if(same == 1)
+		printf("Food item already exists. If you want to overwrite it, delete it first.\n");
+
+	else if(same == 0)
+	{
+		printf("Quantity and Unit: ");
+		scanf(" %f %s", &food_info.quantity, food_info.unit);
+		scanf("%c", &garbage);
+
+		printf("Calorie amount: ");
+		scanf(" %f", &food_info.calories);
+		scanf("%c", &garbage);
+
+		calorie_info[*calorie_info_count] = food_info;
+		(*calorie_info_count)++;
+		printf("Food item added successfully.\n");
+	}
 }
 
 /*
@@ -195,28 +220,34 @@ ingredientType AddFoodCalorie(ingredientType food_info)
 void DeleteFoodCalorie(ingredientType food_info[], int *food_count, string food)
 {
 	int a = 0, i, delete = -1;
-	for(i = 0; i < *food_count; i++)
-	{
-		if(strcmp(food_info[i].food, food) == 0)
-			delete = i;
-	}
-	if(delete == -1)
-		printf("Food item not found.\n");
+	if(*food_count == 0)
+		printf("Cannot delete anything.\n");
 	else
 	{
-		while(a < *food_count)
+		for(i = 0; i < *food_count; i++)
 		{
-			if(a == delete)
+			if(strcmp(food_info[i].food, food) == 0)
+				delete = i;
+		}
+		if(delete == -1)
+			printf("Food item not found.\n");
+		else
+		{
+			while(a < *food_count)
 			{
-				if(a < *food_count - 1)
+				if(a == delete)
 				{
-					for(i = a; i < *food_count - 1; i++)
-						food_info[i] = food_info[i + 1];
+					if(a < *food_count - 1)
+					{
+						for(i = a; i < *food_count - 1; i++)
+							food_info[i] = food_info[i + 1];
+					}
+					(*food_count)--;
 				}
-				(*food_count)--;
+				else
+					a++;
 			}
-			else
-				a++;
+			printf("Deleted %s successfully.\n", food);
 		}
 	}
 }
@@ -343,18 +374,18 @@ void LoadCalorie(string filename, ingredientType calorie_info[], int *calorie_in
 			}
 			else
 			{
-				printf("This recipe already exists. Overwrite saved recipe? Y/N ");
+				printf("%s already exists. Overwrite saved recipe? Y/N ", food_info.food);
 				scanf(" %c", &overwrite);
 				scanf("%c", &garbage);
-				while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n')
+				while(overwrite != 'Y' && overwrite != 'N')
 				{
 					printf("Invalid input. Please try again.\n");
 					scanf(" %c", &overwrite);
 					scanf("%c", &garbage);
 				}
-				if(overwrite == 'Y' || overwrite == 'y')
+				if(overwrite == 'Y')
 					calorie_info[unique] = food_info;
-				else if(overwrite == 'N' || overwrite == 'n')
+				else if(overwrite == 'N')
 					printf("%s skipped.\n", food_info.food);
 			}
 		}
@@ -410,6 +441,13 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 	scanf("%[^\n]", recipe);
 	scanf("%c", &garbage);
 
+	while(strlen(recipe) == 0)
+	{
+		printf("Invalid recipe. Please try again: ");
+		scanf("%[^\n]", recipe);
+		scanf("%c", &garbage);
+	}
+
 	if(SearchName(aRecipes, numRecipes, recipe) == -1)
 	{
 		strcpy(aRecipes[*numRecipes].name, recipe);
@@ -449,7 +487,7 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 		(*numRecipes)++;
 	}
 	else
-		printf("Recipe name already exists.\n");
+		printf("Recipe already exists.\n");
 }
 
 /*
@@ -461,25 +499,30 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 */
 void DeleteIngredient(recipeType *aRecipe, string ingredient)
 {
-	int a = 0, i, delete;
+	int a = 0, i, delete = -1;
 	for(i = 0; i < aRecipe->numIngredients; i++)
 	{
 		if(strcmp(aRecipe->items[i].food, ingredient) == 0)
 			delete = i;
 	}
-	while(a < aRecipe->numIngredients)
+	if(delete == -1)
+		printf("Ingredient not found.\n");
+	else
 	{
-		if(a == delete)
+		while(a < aRecipe->numIngredients)
 		{
-			if(a < aRecipe->numIngredients - 1)
+			if(a == delete)
 			{
-				for(i = delete; i < aRecipe->numIngredients - 1; i++)
-					aRecipe->items[i] = aRecipe->items[i + 1];
+				if(a < aRecipe->numIngredients - 1)
+				{
+					for(i = delete; i < aRecipe->numIngredients - 1; i++)
+						aRecipe->items[i] = aRecipe->items[i + 1];
+				}
+				(aRecipe->numIngredients)--;
 			}
-			(aRecipe->numIngredients)--;
+			else
+				a++;
 		}
-		else
-			a++;
 	}
 }
 
@@ -487,6 +530,7 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 	Function 10: Add Step
 	This function adds a step to a recipe
 	Precondition: step contains at most 70 characters
+				  0 < resulting aRecipe->numSteps <= 15
 	@param aRecipe - recipe struct
 	@param step_insert - step number (not index) where new step will be inserted
 	@param step - step to be added
@@ -505,6 +549,8 @@ void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 	Function 11: Delete Step
 	This function deletes a step to a recipe
 	Precondition: step contains at most 70 characters
+				  0 < aRecipe->numSteps <= 15
+				  step_remove <= aRecipe->numSteps
 	@param aRecipe - recipe struct
 	@param step_remove - step number (not index) to be deleted
 */
@@ -541,23 +587,28 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 {
 	int a = 0, i;
 	int delete = SearchName(aRecipes, numRecipes, recipeTitle);
-	if(delete == -1)
-		printf("Recipe not found.\n");
+	if(*numRecipes == 0)
+		printf("No recipes exist to delete.\n");
 	else
 	{
-		while(a < *numRecipes)
+		if(delete == -1)
+			printf("Recipe not found.\n");
+		else
 		{
-			if(a == delete)
+			while(a < *numRecipes)
 			{
-				if(a < *numRecipes - 1)
+				if(a == delete)
 				{
-					for(i = a; i < *numRecipes - 1; i++)
-						aRecipes[i] = aRecipes[i + 1];
+					if(a < *numRecipes - 1)
+					{
+						for(i = a; i < *numRecipes - 1; i++)
+							aRecipes[i] = aRecipes[i + 1];
+					}
+					(*numRecipes)--;
 				}
-				(*numRecipes)--;
+				else
+					a++;
 			}
-			else
-				a++;
 		}
 	}
 }
@@ -709,18 +760,18 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 				}
 				else	// a recipe is found to have the same name
 				{
-					printf("This recipe already exists. Overwrite saved recipe? Y/N ");
+					printf("%s already exists. Overwrite saved recipe? Y/N ", recipe.name);
 					scanf(" %c", &overwrite);
 					scanf("%c", &garbage);
-					while(overwrite != 'Y' && overwrite != 'y' && overwrite != 'N' && overwrite != 'n')
+					while(overwrite != 'Y' && overwrite != 'N')
 					{
 						printf("Invalid input. Please try again.\n");
 						scanf(" %c", &overwrite);
 						scanf("%c", &garbage);
 					}
-					if(overwrite == 'Y' || overwrite == 'y')
+					if(overwrite == 'Y')
 						aRecipes[unique] = recipe;
-					else if(overwrite == 'N' || overwrite == 'n')
+					else if(overwrite == 'N')
 						printf("Recipe %s skipped.\n", recipe.name);
 				}
 			}
@@ -740,6 +791,7 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 	Function 18: Username and Password Changer
 	This function changes the user's username and/or password
 	Precondition: username and password can only be 20 characters max
+				  new_username and new_password will be different from username and password
 	@param username - current username
 	@param password - current password
 */
@@ -792,7 +844,7 @@ void AccessModifier(string username, string password)
 
 /*
 	Function 19: Search Recipe by Ingredient
-	This function searches a recipe according to the user's inputted ingredients (at least 1)
+	This function searches a recipe according to the user's inputted ingredients (1-5)
 	Precondition: 0 < numRecipes <= 50
 				  0 < ingredient_count <= 5
 				  ingredient is at least 1 character and does not exceed 20
@@ -863,7 +915,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, recipeType savedRe
 	}
 	// save = 0 does not get updated, which means no recipes were found/stored in savedRecipes
 	else
-		printf("No recipes matching ingredient.\n");
+		printf("No recipes matching ingredients.\n");
 	
 }
 
@@ -882,11 +934,16 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 	printf("Choose recipe: ");
 	scanf("%[^\n]", recipe);
 	index = SearchName(aRecipes, numRecipes, recipe);
-	printf("Enter number of people: ");	
-	scanf(" %d", &num);
-	printf("List of ingredients for %s:\n", aRecipes[index].name);
-	for(i = 0; i < aRecipes[index].numIngredients; i++)
-		printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
+	if(index != -1)
+	{
+		printf("Enter number of people: ");	
+		scanf(" %d", &num);
+		printf("List of ingredients for %s:\n", aRecipes[index].name);
+		for(i = 0; i < aRecipes[index].numIngredients; i++)
+			printf("%.2f %s %s\n", aRecipes[index].items[i].quantity / aRecipes[index].servings * num, aRecipes[index].items[i].unit, aRecipes[index].items[i].food);
+	}
+	else
+		printf("Recipe not found.\n");
 }
 
 /*

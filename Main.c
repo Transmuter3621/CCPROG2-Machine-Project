@@ -79,20 +79,19 @@ int main()
 						if(calorie_info_count == 50)
 							printf("Food item count is at limit, cannot add more.\n");
 						else
-						{
-							calorie_info[calorie_info_count] = AddFoodCalorie(calorie_input);
-							calorie_info_count++;
-						}
+							AddFoodCalorie(calorie_input, calorie_info, &calorie_info_count);
 					}
 					
 					else if(box_option == 2)
 					{
 						printf("******* Delete Food-Calorie Info *******\n");
-						printf("Enter food item to delete: ");
-						scanf("%[^\n]", food);
-						scanf("%c", &garbage);
+						if(calorie_info_count != 0)
+						{
+							printf("Enter food item to delete: ");
+							scanf("%[^\n]", food);
+							scanf("%c", &garbage);
+						}
 						DeleteFoodCalorie(calorie_info, &calorie_info_count, food);
-						printf("Deleted %s successfully.\n", food);
 					}
 
 					else if(box_option == 3)
@@ -191,9 +190,14 @@ int main()
 										else if(recipe_option == 4)
 										{
 											printf("************ Add Ingredient ************\n");
-											ingredient_index = aRecipes[recipe_index].numIngredients;
-											aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index]);
-											aRecipes[recipe_index].numIngredients++;
+											if(aRecipes[recipe_index].numIngredients <= MAX_INGREDIENTS)
+											{
+												ingredient_index = aRecipes[recipe_index].numIngredients;
+												aRecipes[recipe_index].items[ingredient_index] = AddIngredient(aRecipes[recipe_index].items[ingredient_index]);
+												aRecipes[recipe_index].numIngredients++;
+											}
+											else
+												printf("Cannot add any more ingredients.\n");
 										}
 										else if(recipe_option == 5)
 										{
