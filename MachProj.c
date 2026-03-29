@@ -836,7 +836,6 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 					scanf(" %c", &displaynext);
 				}
 			}
-			printf("\n");
 		} while(s < save && displaynext != 'X');
 	}
 	// save = 0 does not get updated, which means no recipes were found/stored in savedRecipes
@@ -1052,6 +1051,7 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			{
 				printf("Press any key to view next recipe. ");
 				scanf(" %c", &option);
+				printf("\n");
 			}
 		}
 		printf("Calorie total: %.2f\n", actual_calories);
