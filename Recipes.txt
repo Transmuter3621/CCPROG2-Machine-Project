@@ -16,12 +16,13 @@ Bake at 150 degrees celsius for 20 minutes
 Garlic rice
 4 starter
 Ingredients 3
-30.000 grams garlic
-150.000 grams rice
+40.000 grams garlic
+200.000 grams rice
 1.000 tablespoon canola oil
-Steps 2
-Heat up the oil
-Cook rice and garlic in wok
+Steps 3
+Heat up oil in a wok
+Cook rice and garlic
+Continue stirring
 
 Ice cream sandwich
 1 dessert

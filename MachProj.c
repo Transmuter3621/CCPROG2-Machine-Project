@@ -726,7 +726,60 @@ void ImportRecipes(recipeType aRecipes[], int *numRecipes, string filename)
 }
 
 /*
-	Function 18: Search Recipe by Ingredient
+	Function 18: Username and Password Changer
+	This function changes the user's username and/or password
+	Precondition: username and password can only be 20 characters max
+	@param username - current username
+	@param password - current password
+*/
+void AccessModifier(string username, string password)
+{
+	string old_username, new_username, old_password, new_password;
+	char option, garbage;
+	printf("What will you change? Press U for username, P for password, or X for exit. ");
+	scanf("%c", &option);
+	scanf("%c", &garbage);
+	while(option != 'X')
+	{
+		if(option == 'U')
+		{
+			printf("Old username: ");
+			scanf("%[^\n]", old_username);
+			scanf("%c", &garbage);
+			if(strcmp(old_username, username) == 0)
+			{
+				printf("New username: ");
+				scanf("%[^\n]", new_username);
+				scanf("%c", &garbage);
+				strcpy(username, new_username);
+			}
+			else
+				printf("Invalid username. Please try again.\n");
+		}
+		else if(option == 'P')
+		{
+			printf("Old password: ");
+			scanf("%[^\n]", old_password);
+			scanf("%c", &garbage);
+			if(strcmp(old_password, password) == 0)
+			{
+				printf("New password: ");
+				scanf("%[^\n]", new_password);
+				scanf("%c", &garbage);
+				strcpy(password, new_password);
+			}
+			else
+				printf("Invalid password. Please try again.\n");
+		}
+		else
+			printf("Invalid input, please try again.\n");
+		printf("What will you change? Press U for username, P for password, or X for exit. ");
+		scanf(" %c", &option);
+	}
+}
+
+/*
+	Function 19: Search Recipe by Ingredient
 	This function searches a recipe according to its ingredient
 	Precondition: 
 	@param aRecipes[] - list of recipes
@@ -779,7 +832,7 @@ void ScanByIngredient(recipeType aRecipes[], int *numRecipes, string fooditem, r
 }
 
 /*
-	Function 19: Generate Shopping List
+	Function 20: Generate Shopping List
 	This function randomizes a shopping list for the user
 	Precondition: number of recipes must not exceed 50
 	@param aRecipes[] - list of recipes
@@ -801,7 +854,7 @@ void ShoppingList(recipeType aRecipes[], int *numRecipes)
 }
 
 /*
-	Function 20: Recommend Menu
+	Function 21: Recommend Menu
 	This function searches a recipe according to its ingredient
 	Precondition: number of recipes must not exceed 50
 	@param aRecipes[] - list of recipes
@@ -970,58 +1023,5 @@ void RecommendMenu(recipeType aRecipes[], int *numRecipes, float calorie_goal)
 			actual_calories += recommend[l].calorie_total;
 		}
 		printf("Calorie total: %.2f\n", actual_calories);
-	}
-}
-
-/*
-	Function 21: Username and Password Changer
-	This function changes the user's username and/or password
-	Precondition: username and password can only be 20 characters max
-	@param username - current username
-	@param password - current password
-*/
-void AccessModifier(string username, string password)
-{
-	string old_username, new_username, old_password, new_password;
-	char option, garbage;
-	printf("What will you change? Press U for username, P for password, or X for exit. ");
-	scanf("%c", &option);
-	scanf("%c", &garbage);
-	while(option != 'X')
-	{
-		if(option == 'U')
-		{
-			printf("Old username: ");
-			scanf("%[^\n]", old_username);
-			scanf("%c", &garbage);
-			if(strcmp(old_username, username) == 0)
-			{
-				printf("New username: ");
-				scanf("%[^\n]", new_username);
-				scanf("%c", &garbage);
-				strcpy(username, new_username);
-			}
-			else
-				printf("Invalid username. Please try again.\n");
-		}
-		else if(option == 'P')
-		{
-			printf("Old password: ");
-			scanf("%[^\n]", old_password);
-			scanf("%c", &garbage);
-			if(strcmp(old_password, password) == 0)
-			{
-				printf("New password: ");
-				scanf("%[^\n]", new_password);
-				scanf("%c", &garbage);
-				strcpy(password, new_password);
-			}
-			else
-				printf("Invalid password. Please try again.\n");
-		}
-		else
-			printf("Invalid input, please try again.\n");
-		printf("What will you change? Press U for username, P for password, or X for exit. ");
-		scanf(" %c", &option);
 	}
 }
