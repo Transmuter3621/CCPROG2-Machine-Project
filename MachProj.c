@@ -12,7 +12,7 @@ Eryn Claire Go Sy, DLSU ID# 12506621
 	calorie information, as well as having a shopping list generator and a menu recommendation function.
 	Programmed by: Sy, Eryn Claire Go, S21B
 	Last modified: March 30, 2026
-	Version: 
+	Version: 86.0
 	[Acknowledgements: <stdio.h>, <stdlib.h>, <string.h>, <time.h>]
 */
 
@@ -174,13 +174,6 @@ void AddFoodCalorie(ingredientType food_info, ingredientType calorie_info[], int
 	printf("Food item: ");
 	scanf("%[^\n]", food_info.food);
 	scanf("%c", &garbage);
-
-	while(strlen(food_info.food) == 0)
-	{
-		printf("Invalid food item. Please try again: ");
-		scanf("%[^\n]", food_info.food);
-		scanf("%c", &garbage);
-	}
 
 	for(a = 0; a < *calorie_info_count; a++)
 	{
@@ -441,13 +434,6 @@ void AddRecipe(recipeType aRecipes[], int *numRecipes)
 	printf("Recipe: ");
 	scanf("%[^\n]", recipe);
 	scanf("%c", &garbage);
-
-	while(strlen(recipe) == 0)
-	{
-		printf("Invalid recipe. Please try again: ");
-		scanf("%[^\n]", recipe);
-		scanf("%c", &garbage);
-	}
 
 	if(SearchName(aRecipes, numRecipes, recipe) == -1)
 	{
