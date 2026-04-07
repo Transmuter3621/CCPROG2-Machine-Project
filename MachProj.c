@@ -505,10 +505,10 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 					for(i = delete; i < aRecipe->numIngredients - 1; i++)
 						aRecipe->items[i] = aRecipe->items[i + 1];
 				}
+				printf("%s deleted.\n", ingredient);
 				(aRecipe->numIngredients)--;
 			}
-			else
-				a++;
+			a++;
 		}
 	}
 }
@@ -522,13 +522,14 @@ void DeleteIngredient(recipeType *aRecipe, string ingredient)
 	@param step_insert - step number (not index) where new step will be inserted
 	@param step - step to be added
 */
+// To-do: fix step indexing
 void AddStep(recipeType *aRecipe, int step_insert, string_step step)
 {
 	int a;
+	for(a = aRecipe->numSteps; a > step_insert; a--)		// step_insert is the index of the step after the one that will be inserted
+		strcpy(aRecipe->steps[a], aRecipe->steps[a - 1]);
+	step_insert++;	// step array starts at 0 but step list starts at 1 so increment to go to actual index
 	aRecipe->numSteps++;
-	for(a = step_insert; a < aRecipe->numSteps; a++)		// step_insert is the index of the step after the one that will be inserted
-		strcpy(aRecipe->steps[a], aRecipe->steps[a + 1]);
-	step_insert--;	// step array starts at 0 but step list starts at 1 so decrement to go to actual index
 	strcpy(aRecipe->steps[step_insert], step);
 }
 
@@ -554,10 +555,10 @@ void DeleteStep(recipeType *aRecipe, int step_remove)
 				for(i = step_remove; i < aRecipe->numSteps - 1; i++)
 					strcpy(aRecipe->steps[i], aRecipe->steps[i + 1]);
 			}
+			printf("Step %d deleted.\n", a);
 			(aRecipe->numSteps)--;
 		}
-		else
-			a++;
+		a++;
 	}
 }
 
@@ -593,8 +594,7 @@ void DeleteRecipe(recipeType aRecipes[], int *numRecipes, string recipeTitle)
 					}
 					(*numRecipes)--;
 				}
-				else
-					a++;
+				a++;
 			}
 		}
 	}

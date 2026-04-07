@@ -56,7 +56,7 @@ int main()
 					printf("[0] Return to Main Menu\n");
 					printf("[1] Add Food-Calorie Info\n");
 					printf("[2] Delete Food-Calorie Info\n");
-					printf("[3] View Food-Calorie chart\n");
+					printf("[3] View Food-Calorie Chart\n");
 					printf("[4] Save Calorie Info\n");
 					printf("[5] Load Calorie Info\n");
 					printf("[6] Add Recipe\n");
@@ -154,7 +154,7 @@ int main()
 								do
 								{
 									printf("Editing %s...\n", aRecipes[recipe_index].name);
-									printf("[0] Return to update menu\n");
+									printf("[0] Return to Update Menu\n");
 									printf("[1] Change Recipe Title\n");
 									printf("[2] Change Class\n");
 									printf("[3] Change Servings\n");
@@ -265,7 +265,6 @@ int main()
 										else if(recipe_option == 8)
 											DisplayRecipe(aRecipes[recipe_index]);
 									}
-									printf("\n");
 								} while(recipe_option != 0);
 							}
 							else
@@ -395,7 +394,7 @@ int main()
 				printf("\n**************** Access Recipe Box ****************\n");
 				printf("[0] Return to Main Menu\n");
 				printf("[1] Load Calorie Info\n");
-				printf("[2] View Food-Calorie chart\n");
+				printf("[2] View Food-Calorie Chart\n");
 				printf("[3] Import Recipes\n");
 				printf("[4] List Recipe Titles\n");
 				printf("[5] Scan Recipes\n");
